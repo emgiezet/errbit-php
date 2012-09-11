@@ -54,6 +54,7 @@ class Errbit {
 	const NOTICES_PATH  = '/notifier_api/v2/notices/';
 
 	private $_config;
+	private $_observers = array();
 
 	/**
 	 * Initialize a new client with the given config.
@@ -66,6 +67,25 @@ class Errbit {
 	 */
 	public function __construct($config = array()) {
 		$this->_config = $config;
+	}
+
+	/**
+	 * Add a handler to be invoked after a notification occurs.
+	 *
+	 * @param [Callback] $callback
+	 *   any callable function
+	 *
+	 * @return [Errbit]
+	 *   the current instance
+	 */
+	public function onNotify($callback) {
+		if (!is_callable($callback)) {
+			throw new Errbit_Exception('Notify callback must be callable');
+		}
+
+		$this->_observers[] = $callback;
+
+		return $this;
 	}
 
 	/**
@@ -144,6 +164,11 @@ class Errbit {
 			)
 		));
 		curl_exec($ch);
+
+		foreach ($this->_observers as $observer) {
+			$observer($exception, $options);
+		}
+
 		return $this;
 	}
 
