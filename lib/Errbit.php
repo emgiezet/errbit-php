@@ -96,7 +96,7 @@ class Errbit {
 	 *   the current instance of the client
 	 */
 	public function configure($config = array()) {
-		$this->_config = $config;
+		$this->_config = array_merge($this->_config, $config);
 		$this->_checkConfig();
 		return $this;
 	}
