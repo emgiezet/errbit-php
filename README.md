@@ -64,6 +64,17 @@ your own, you can just leave out the call to `start()`, then wherever you
 catch an Exception (note the errors *must* be converted to Exceptions), simply
 call `Errbit::instance()->notify($exception)`.
 
+## Using only some of the default handlers
+
+There are three error handlers installed by Errbit: exception, error and fatal.
+
+By default all three are used. If you want to use your own for some handlers,
+but not for others, pass the list into the `start()` method.
+
+``` php
+Errbit::instance()->start(array('error', 'fatal')); // using our own exception handler
+```
+
 ## TODO
 
 Some tests would be nice.
