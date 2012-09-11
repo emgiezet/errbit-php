@@ -64,6 +64,10 @@ your own, you can just leave out the call to `start()`, then wherever you
 catch an Exception (note the errors *must* be converted to Exceptions), simply
 call `Errbit::instance()->notify($exception)`.
 
+## TODO
+
+Some tests would be nice.
+
 ## License & Copyright
 
 Copyright © Flippa.com Pty. Ltd. Licensed under the MIT license. See the LICENSE
