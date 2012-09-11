@@ -1,12 +1,45 @@
 <?php
 
-require_once dirname(__FILE__) . '/Errbit/Exception.php';
-require_once dirname(__FILE__) . '/Errbit/Notice.php';
-require_once dirname(__FILE__) . '/Errbit/XmlBuilder.php';
+/**
+ * Errbit PHP Notifier.
+ *
+ * Copyright © Flippa.com Pty. Ltd.
+ * See the LICENSE file for details.
+ */
 
+require_once dirname(__FILE__) . '/Errbit/Exception.php';
+
+require_once dirname(__FILE__) . '/Errbit/XmlBuilder.php';
+require_once dirname(__FILE__) . '/Errbit/Notice.php';
+
+require_once dirname(__FILE__) . '/Errbit/Errors/Base.php';
+require_once dirname(__FILE__) . '/Errbit/Errors/Notice.php';
+require_once dirname(__FILE__) . '/Errbit/Errors/Warning.php';
+require_once dirname(__FILE__) . '/Errbit/Errors/Error.php';
+require_once dirname(__FILE__) . '/Errbit/Errors/Fatal.php';
+
+require_once dirname(__FILE__) . '/Errbit/ErrorHandlers.php';
+
+/**
+ * The Errbit client.
+ *
+ * @example Configuring the client
+ *    Errbit::instance()->configure(array( ... ))->start();
+ *
+ * @example Notify an Exception manually
+ *    Errbit::instance()->notify($exception);
+ */
 class Errbit {
 	private static $_instance = null;
 
+	/**
+	 * Get a singleton instance of the client.
+	 *
+	 * This is the intended way to access the Errbit client.
+	 *
+	 * @return [Errbit]
+	 *   a singleton
+	 */
 	public static function instance() {
 		if (!isset(self::$_instance)) {
 			self::$_instance = new self();
@@ -22,23 +55,78 @@ class Errbit {
 
 	private $_config;
 
+	/**
+	 * Initialize a new client with the given config.
+	 *
+	 * This is made public for flexibility, though it is not expected you
+	 * should use it.
+	 *
+	 * @param [Array] $config
+	 *   the configuration for the API
+	 */
 	public function __construct($config = array()) {
 		$this->_config = $config;
 	}
 
+	/**
+	 * Set the full configuration for the client.
+	 *
+	 * The only required keys are `api_key' and `host', but other supported
+	 * options are:
+	 *
+	 *   - api_key
+	 *   - host
+	 *   - port
+	 *   - secure
+	 *   - project_root
+	 *   - environment_name
+	 *   - url
+	 *   - controller
+	 *   - action
+	 *   - session_data
+	 *   - parameters
+	 *   - cgi_data
+	 *   - parameters_filters
+	 *   - backtrace_filters
+	 *
+	 * @param [Array] $config
+	 *   the full configuration
+	 *
+	 * @return [Errbit]
+	 *   the current instance of the client
+	 */
 	public function configure($config = array()) {
 		$this->_config = $config;
 		$this->_checkConfig();
 		return $this;
 	}
 
+	/**
+	 * Register all error handlers around this instance.
+	 *
+	 * @return [Errbit]
+	 *   the current instance
+	 */
 	public function start() {
 		$this->_checkConfig();
-		//Errbit_ErrorHandlers::register($this);
+		Errbit_ErrorHandlers::register($this);
 		return $this;
 	}
 
-	public function notify(Exception $exception, $options = array()) {
+	/**
+	 * Notify an individual exception manually.
+	 *
+	 * @param [Exception] $exception
+	 *   the Exception to notify (errors must first be converted)
+	 *
+	 * @param [Array] $options
+	 *   an array of options, which override the client configuration
+	 *
+	 * @return [Errbit]
+	 *   the current instance
+	 */
+	public function notify($exception, $options = array()) {
+		var_dump($exception->getTrace());
 		//var_dump($this->_buildNoticeFor($exception, $options)); return;
 		$config = array_merge($this->_config, $options);
 
@@ -104,7 +192,7 @@ class Errbit {
 		);
 	}
 
-	private function _buildNoticeFor(Exception $exception, $options) {
+	private function _buildNoticeFor($exception, $options) {
 		return Errbit_Notice::forException($exception, $options)->asXml();
 	}
 }

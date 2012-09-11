@@ -7,5 +7,5 @@
  * See the LICENSE file for details.
  */
 
-class Errbit_Exception extends Exception {
+class Errbit_Errors_Warning extends Errbit_Errors_Base {
 }

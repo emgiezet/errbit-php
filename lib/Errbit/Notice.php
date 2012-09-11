@@ -1,10 +1,29 @@
 <?php
 
+/**
+ * Errbit PHP Notifier.
+ *
+ * Copyright © Flippa.com Pty. Ltd.
+ * See the LICENSE file for details.
+ */
+
+/**
+ * Builds a complete payload for the notice sent to Errbit.
+ */
 class Errbit_Notice {
 	private $_exception;
 	private $_options;
 
-	public function __construct(Exception $exception, $options = array()) {
+	/**
+	 * Create a new notice for the given Exception with the given $options.
+	 *
+	 * @param [Exception] $exception
+	 *   the exception that occurred
+	 *
+	 * @param [Array] $options
+	 *   full configuration + options
+	 */
+	public function __construct($exception, $options = array()) {
 		$this->_exception = $exception;
 		$this->_options   = array_merge(
 			array(
@@ -19,10 +38,22 @@ class Errbit_Notice {
 		$this->_filterData();
 	}
 
-	public static function forException(Exception $exception, $options = array()) {
+	/**
+	 * Convenience method to instantiate a new notice.
+	 */
+	public static function forException($exception, $options = array()) {
 		return new self($exception, $options);
 	}
 
+	/**
+	 * Extract a human-readable method/function name from the given stack frame.
+	 *
+	 * @param [Array] $frame
+	 *   a single entry for the backtrace
+	 *
+	 * @return [String]
+	 *   the name of the method/function
+	 */
 	public static function formatMethod($frame) {
 		if (!empty($frame['class']) && !empty($frame['type']) && !empty($frame['function'])) {
 			return sprintf('%s%s%s()', $frame['class'], $frame['type'], $frame['function']);
@@ -31,6 +62,15 @@ class Errbit_Notice {
 		}
 	}
 
+	/**
+	 * Recursively build an list of the all the vars in the given array.
+	 *
+	 * @param [XmlBuilder] $builder
+	 *   the builder instance to set the data into
+	 *
+	 * @param [Array] $array
+	 *   the stack frame entry
+	 */
 	public static function xmlVarsFor($builder, $array) {
 		foreach ($array as $key => $value) {
 			if (is_array($value)) {
@@ -43,6 +83,12 @@ class Errbit_Notice {
 		}
 	}
 
+	/**
+	 * Build the full XML document for the notice.
+	 *
+	 * @return [String]
+	 *   the XML
+	 */
 	public function asXml() {
 		$exception = $this->_exception;
 		$options   = $this->_options;
