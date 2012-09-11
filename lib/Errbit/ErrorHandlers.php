@@ -18,9 +18,12 @@ class Errbit_ErrorHandlers {
 	 *
 	 * @param [Errbit] $errbit
 	 *   the client instance
+	 *
+	 * @param [Array] $handlers
+	 *   an array of handler names, instead of registering all
 	 */
-	public static function register($errbit) {
-		new self($errbit);
+	public static function register($errbit, $handlers = array('exception', 'error', 'fatal')) {
+		new self($errbit, $handlers);
 	}
 
 	private $_errbit;
@@ -31,9 +34,9 @@ class Errbit_ErrorHandlers {
 	 * @param [Errbit] $errbit
 	 *   the client to use
 	 */
-	public function __construct($errbit) {
+	public function __construct($errbit, $handlers) {
 		$this->_errbit = $errbit;
-		$this->_install();
+		$this->_install($handlers);
 	}
 
 	// -- Handlers
@@ -71,9 +74,17 @@ class Errbit_ErrorHandlers {
 
 	// -- Private Methods
 
-	private function _install() {
-		set_error_handler(array($this, 'onError'), error_reporting());
-		set_exception_handler(array($this, 'onException'));
-		register_shutdown_function(array($this, 'onShutdown'));
+	private function _install($handlers) {
+		if (in_array('error', $handlers)) {
+			set_error_handler(array($this, 'onError'), error_reporting());
+		}
+
+		if (in_array('exception', $handlers)) {
+			set_exception_handler(array($this, 'onException'));
+		}
+
+		if (in_array('fatal', $handlers)) {
+			register_shutdown_function(array($this, 'onShutdown'));
+		}
 	}
 }

@@ -104,12 +104,15 @@ class Errbit {
 	/**
 	 * Register all error handlers around this instance.
 	 *
+	 * @param [Array] $handlers
+	 *   an array of handler names (one or all of 'exception', 'error', 'fatal')
+	 *
 	 * @return [Errbit]
 	 *   the current instance
 	 */
-	public function start() {
+	public function start($handlers = array('exception', 'error', 'fatal')) {
 		$this->_checkConfig();
-		Errbit_ErrorHandlers::register($this);
+		Errbit_ErrorHandlers::register($this, $handlers);
 		return $this;
 	}
 
