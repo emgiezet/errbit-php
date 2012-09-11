@@ -84,6 +84,27 @@ class Errbit_Notice {
 	}
 
 	/**
+	 * Perform search/replace filters on a backtrace entry.
+	 *
+	 * @param [String] $str
+	 *   the entry from the backtrace
+	 *
+	 * @return [String]
+	 *   the filtered entry
+	 */
+	public function filterTrace($str) {
+		if (empty($this->_options['backtrace_filters'])) {
+			return $str;
+		}
+
+		foreach ($this->_options['backtrace_filters'] as $pattern => $replacement) {
+			$str = preg_replace($pattern, $replacement, $str);
+		}
+
+		return $str;
+	}
+
+	/**
 	 * Build the full XML document for the notice.
 	 *
 	 * @return [String]
@@ -93,11 +114,12 @@ class Errbit_Notice {
 		$exception = $this->_exception;
 		$options   = $this->_options;
 		$builder   = new Errbit_XmlBuilder();
+		$self      = $this;
 
 		return $builder->tag(
 			'notice',
 			array('version' => Errbit::API_VERSION),
-			function($notice) use ($exception, $options) {
+			function($notice) use ($exception, $options, $self) {
 				$notice->tag('api-key',  $options['api_key']);
 				$notice->tag('notifier', function($notifier) {
 					$notifier->tag('name',    Errbit::PROJECT_NAME);
@@ -105,17 +127,17 @@ class Errbit_Notice {
 					$notifier->tag('url',     Errbit::PROJECT_URL);
 				});
 
-				$notice->tag('error', function($error) use ($exception) {
-					$error->tag('class',     get_class($exception));
-					$error->tag('message',   $exception->getMessage());
-					$error->tag('backtrace', function($backtrace) use ($exception) {
+				$notice->tag('error', function($error) use ($exception, $self) {
+					$error->tag('class',     $self->filterTrace(get_class($exception)));
+					$error->tag('message',   $self->filterTrace($exception->getMessage()));
+					$error->tag('backtrace', function($backtrace) use ($exception, $self) {
 						foreach ($exception->getTrace() as $frame) {
 							$backtrace->tag(
 								'line',
 								array(
 									'number' => isset($frame['line']) ? $frame['line'] : 0,
-									'file'   => isset($frame['file']) ? $frame['file'] : '<unknown>',
-									'method' => Errbit_Notice::formatMethod($frame)
+									'file'   => isset($frame['file']) ? $self->filterTrace($frame['file']) : '<unknown>',
+									'method' => $self->filterTrace(Errbit_Notice::formatMethod($frame))
 								)
 							);
 						}
@@ -164,6 +186,26 @@ class Errbit_Notice {
 	// -- Private Methods
 
 	private function _filterData() {
-		// FIXME: consult $this->_options['blacklist'] ? and filter the stuff
+		if (empty($this->_options['params_filters'])) {
+			return;
+		}
+
+		foreach (array('parameters', 'session_data', 'cgi_data') as $name) {
+			$this->_filterParams($name);
+		}
+	}
+
+	private function _filterParams($name) {
+		if (empty($this->_options[$name])) {
+			return;
+		}
+
+		foreach ($this->_options['params_filters'] as $pattern) {
+			foreach ($this->_options[$name] as $key => $value) {
+				if (preg_match($pattern, $key)) {
+					$this->_options[$name][$key] = '[FILTERED]';
+				}
+			}
+		}
 	}
 }

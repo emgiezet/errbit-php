@@ -86,7 +86,7 @@ class Errbit {
 	 *   - session_data
 	 *   - parameters
 	 *   - cgi_data
-	 *   - parameters_filters
+	 *   - params_filters
 	 *   - backtrace_filters
 	 *
 	 * @param [Array] $config
@@ -126,8 +126,6 @@ class Errbit {
 	 *   the current instance
 	 */
 	public function notify($exception, $options = array()) {
-		var_dump($exception->getTrace());
-		//var_dump($this->_buildNoticeFor($exception, $options)); return;
 		$config = array_merge($this->_config, $options);
 
 		$ch = curl_init();
@@ -144,6 +142,7 @@ class Errbit {
 		));
 		$response = curl_exec($ch);
 		var_dump($response);
+		// FIXME: Do something meaningful with the response?
 		return $this;
 	}
 
@@ -176,6 +175,10 @@ class Errbit {
 
 		if (empty($this->_config['environment_name'])) {
 			$this->_config['environment_name'] = 'development';
+		}
+
+		if (!isset($this->_config['params_filters'])) {
+			$this->_config['params_filters'] = array('/password/');
 		}
 	}
 
