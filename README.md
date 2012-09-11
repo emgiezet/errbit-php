@@ -62,7 +62,11 @@ try {
 If you don't want Errbit to install its own error handlers and prefer to use
 your own, you can just leave out the call to `start()`, then wherever you
 catch an Exception (note the errors *must* be converted to Exceptions), simply
-call `Errbit::instance()->notify($exception)`.
+call
+
+``` php
+Errbit::instance()->notify($exception);
+```
 
 ## Using only some of the default handlers
 
