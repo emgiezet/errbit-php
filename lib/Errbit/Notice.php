@@ -27,7 +27,7 @@ class Errbit_Notice {
 		$this->_exception = $exception;
 		$this->_options   = array_merge(
 			array(
-				'url'        => !empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null,
+				'url'        => $this->_buildRequestUrl(),
 				'parameters' => !empty($_REQUEST) ? $_REQUEST : array(),
 				'session'    => !empty($_SESSION) ? $_SESSION : array(),
 				'cgi_data'   => !empty($_SERVER)  ? $_SERVER  : array()
@@ -206,6 +206,44 @@ class Errbit_Notice {
 					$this->_options[$name][$key] = '[FILTERED]';
 				}
 			}
+		}
+	}
+
+	private function _buildRequestUrl() {
+		if (!empty($_SERVER['REQUEST_URI'])) {
+			return sprintf(
+				'%s://%s%s%s',
+				$this->_guessProtocol(),
+				$this->_guessHost(),
+				$this->_guessPort(),
+				$_SERVER['REQUEST_URI']
+			);
+		}
+	}
+
+	private function _guessProtocol() {
+		if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+			return $_SERVER['HTTP_X_FORWARDED_PROTO'];
+		} elseif (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) {
+			return 'https';
+		} else {
+			return 'http';
+		}
+	}
+
+	private function _guessHost() {
+		if (!empty($_SERVER['HTTP_HOST'])) {
+			return $_SERVER['HTTP_HOST'];
+		} elseif (!empty($_SERVER['SERVER_NAME'])) {
+			return $_SERVER['SERVER_NAME'];
+		} else {
+			return '127.0.0.1';
+		}
+	}
+
+	private function _guessPort() {
+		if (!empty($_SERVER['SERVER_PORT']) && !in_array($_SERVER['SERVER_PORT'], array(80, 443))) {
+			return sprintf(':%d', $_SERVER['SERVER_PORT']);
 		}
 	}
 }
