@@ -140,9 +140,7 @@ class Errbit {
 				'Accept: text/xml, application/xml'
 			)
 		));
-		$response = curl_exec($ch);
-		var_dump($response);
-		// FIXME: Do something meaningful with the response?
+		curl_exec($ch);
 		return $this;
 	}
 
