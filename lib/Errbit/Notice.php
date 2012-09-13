@@ -63,6 +63,34 @@ class Errbit_Notice {
 	}
 
 	/**
+	 * Get a human readable class name for the Exception.
+	 *
+	 * Native PHP errors are named accordingly.
+	 *
+	 * @param [Exception] $exception
+	 *   the exception object
+	 *
+	 * @return [String]
+	 *   the name to display
+	 */
+	public static function className($exception) {
+		$name = get_class($exception);
+
+		switch ($name) {
+			case 'Errbit_Errors_Notice':
+				return 'Notice';
+			case 'Errbit_Errors_Warning':
+				return 'Warning';
+			case 'Errbit_Errors_Error':
+				return 'Error';
+			case 'Errbit_Errors_Fatal':
+				return 'Fatal Error';
+			default:
+				return $name;
+		}
+	}
+
+	/**
 	 * Recursively build an list of the all the vars in the given array.
 	 *
 	 * @param [XmlBuilder] $builder
@@ -128,8 +156,9 @@ class Errbit_Notice {
 				});
 
 				$notice->tag('error', function($error) use ($exception, $self) {
-					$error->tag('class',     $self->filterTrace(get_class($exception)));
-					$error->tag('message',   $self->filterTrace($exception->getMessage()));
+					$klass = Errbit_Notice::className($exception);
+					$error->tag('class',     $self->filterTrace($klass));
+					$error->tag('message',   $self->filterTrace(sprintf('%s: %s', $klass, $exception->getMessage())));
 					$error->tag('backtrace', function($backtrace) use ($exception, $self) {
 						foreach ($exception->getTrace() as $frame) {
 							$backtrace->tag(
