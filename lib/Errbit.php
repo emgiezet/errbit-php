@@ -166,7 +166,7 @@ class Errbit {
 		curl_exec($ch);
 
 		foreach ($this->_observers as $observer) {
-			$observer($exception, $options);
+			$observer($exception, $config);
 		}
 
 		return $this;
