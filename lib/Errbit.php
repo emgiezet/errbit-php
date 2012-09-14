@@ -206,6 +206,12 @@ class Errbit {
 		if (!isset($this->_config['params_filters'])) {
 			$this->_config['params_filters'] = array('/password/');
 		}
+
+		if (!isset($this->_config['backtrace_filters'])) {
+			$this->_config['backtrace_filters'] = array(
+				sprintf('/^%s/', preg_quote($this->_config['project_root'], '/')) => '[PROJECT_ROOT]'
+			);
+		}
 	}
 
 	private function _buildApiUrl() {
