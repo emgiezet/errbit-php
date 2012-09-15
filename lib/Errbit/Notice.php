@@ -101,6 +101,10 @@ class Errbit_Notice {
 	 */
 	public static function xmlVarsFor($builder, $array) {
 		foreach ($array as $key => $value) {
+			if (is_object($value)) {
+				$value = (array)$value;
+			}
+
 			if (is_array($value)) {
 				$builder->tag('var', array('key' => $key), function($var) use ($value) {
 					Errbit_Notice::xmlVarsFor($var, $value);
