@@ -27,10 +27,10 @@ class Errbit_Notice {
 		$this->_exception = $exception;
 		$this->_options   = array_merge(
 			array(
-				'url'        => $this->_buildRequestUrl(),
-				'parameters' => !empty($_REQUEST) ? $_REQUEST : array(),
-				'session'    => !empty($_SESSION) ? $_SESSION : array(),
-				'cgi_data'   => !empty($_SERVER)  ? $_SERVER  : array()
+				'url'          => $this->_buildRequestUrl(),
+				'parameters'   => !empty($_REQUEST) ? $_REQUEST : array(),
+				'session_data' => !empty($_SESSION) ? $_SESSION : array(),
+				'cgi_data'     => !empty($_SERVER)  ? $_SERVER  : array()
 			),
 			$options
 		);
