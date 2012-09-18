@@ -164,15 +164,29 @@ class Errbit_Notice {
 					$error->tag('class',     $self->filterTrace($klass));
 					$error->tag('message',   $self->filterTrace(sprintf('%s: %s', $klass, $exception->getMessage())));
 					$error->tag('backtrace', function($backtrace) use ($exception, $self) {
-						foreach ($exception->getTrace() as $frame) {
+						$trace = $exception->getTrace();
+
+						// if there is no trace we should add an empty element
+						if (empty($trace)) {
 							$backtrace->tag(
 								'line',
 								array(
-									'number' => isset($frame['line']) ? $frame['line'] : 0,
-									'file'   => isset($frame['file']) ? $self->filterTrace($frame['file']) : '<unknown>',
-									'method' => $self->filterTrace(Errbit_Notice::formatMethod($frame))
+									 'number' => '',
+									 'file' => '',
+									 'method' => ''
 								)
 							);
+						} else {
+							foreach ($trace as $frame) {
+								$backtrace->tag(
+									'line',
+									array(
+										'number' => isset($frame['line']) ? $frame['line'] : 0,
+										'file'   => isset($frame['file']) ? $self->filterTrace($frame['file']) : '<unknown>',
+										'method' => $self->filterTrace(Errbit_Notice::formatMethod($frame))
+									)
+								);
+							}
 						}
 					});
 				});
