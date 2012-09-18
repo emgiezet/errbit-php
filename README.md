@@ -16,7 +16,7 @@ self-hosted Airbrake-compatible application).
 We haven't put this in PEAR or anything like that (please feel to contribute)
 so you need to install it locally.
 
-    git clone git://github.com/flippa/errbit-php
+    git clone git://github.com/flippa/errbit-php.git
 
 ## Usage
 
@@ -29,13 +29,13 @@ require_once 'errbit-php/lib/Errbit.php';
 
 Errbit::instance()
   ->configure(array(
-    'api_key'          => 'YOUR API KEY',
-    'host'             => 'YOUR ERRBIT HOST, OR api.airbrake.io FOR AIRBRAKE',
-    'port'             => 80,                                   // optional
-    'secure'           => false,                                // optional
-    'project_root'     => '/your/project/root',                 // optional
-    'environment_name' => 'production',                         // optional
-    'params_filters'   => array('/password/', '/card_number/'), // optional
+    'api_key'           => 'YOUR API KEY',
+    'host'              => 'YOUR ERRBIT HOST, OR api.airbrake.io FOR AIRBRAKE',
+    'port'              => 80,                                   // optional
+    'secure'            => false,                                // optional
+    'project_root'      => '/your/project/root',                 // optional
+    'environment_name'  => 'production',                         // optional
+    'params_filters'    => array('/password/', '/card_number/'), // optional
     'backtrace_filters' => array('#/some/long/path#' => '')     // optional
   ))
   ->start();
