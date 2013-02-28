@@ -166,6 +166,12 @@ class Errbit_Notice {
 					$error->tag('backtrace', function($backtrace) use ($exception, $self) {
 						$trace = $exception->getTrace();
 
+						$backtrace->tag('line', [
+							'number' => $exception->getLine(),
+							'file' => $exception->getFile(),
+							'method' => null
+						]);
+
 						// if there is no trace we should add an empty element
 						if (empty($trace)) {
 							$backtrace->tag(
