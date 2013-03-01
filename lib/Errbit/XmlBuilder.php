@@ -66,12 +66,14 @@ class Errbit_XmlBuilder {
 
 		array_shift($args);
 		foreach ($args as $arg) {
-			if (is_string($arg)) {
-				$value = $arg;
-			} elseif (is_callable($arg)) {
+			if (is_callable($arg)) {
 				$callback = $arg;
 			} elseif (is_array($arg)) {
 				$attributes = $arg;
+			} elseif (is_scalar($arg)) {
+				$value = (string)$arg;
+			} elseif (is_object($arg)) {
+				$value = "[" . get_class($arg) . "]";
 			}
 		}
 
