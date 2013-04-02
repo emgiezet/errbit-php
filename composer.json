@@ -20,5 +20,5 @@
     "autoload": {
         "psr-0": { "Errbit": "" }
     },
-    "target-dir": "Errbit"
+    "target-dir": "errbit-php"
 }
