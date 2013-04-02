@@ -1,4 +1,5 @@
 <?php
+namespace Errbit\lib;
 
 /**
  * Errbit PHP Notifier.
