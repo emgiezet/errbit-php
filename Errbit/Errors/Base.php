@@ -1,11 +1,12 @@
 <?php
-namespace Errbit\Errbit\Errors;
 /**
  * Errbit PHP Notifier.
  *
  * Copyright © Flippa.com Pty. Ltd.
  * See the LICENSE file for details.
  */
+namespace Errbit\Errbit\Errors;
+
 
 /**
  * Converts a native PHP error, notice, or warning into something that
@@ -23,6 +24,11 @@ class Base
 
     /**
      * Create a new error wrapping the given error context info.
+     * 
+     * @param string  $message message
+     * @param integer $line    line
+     * @param string  $file    filename
+     * @param string  $trace   stacktrace
      */
     public function __construct($message, $line, $file, $trace)
     {
@@ -31,17 +37,30 @@ class Base
         $this->_file    = $file;
         $this->_trace   = $trace;
     }
-
+    /**
+     * Message getter
+     * 
+     * @return string error message
+     * 
+     */
     public function getMessage()
     {
         return $this->_message;
     }
-
+    /**
+     * Line getter
+     * 
+     * @return integer the number of line
+     */
     public function getLine()
     {
         return $this->_line;
     }
-
+    /**
+     * File getter
+     * 
+     * @return string name of the file
+     */
     public function getFile()
     {
         return $this->_file;

@@ -1,5 +1,12 @@
 <?php
+/**
+ * Errbit PHP Notifier.
+ *
+ * Copyright © Flippa.com Pty. Ltd.
+ * See the LICENSE file for details.
+ */
 namespace Errbit\Errbit;
+
 
 /**
  * Errbit PHP Notifier.
@@ -8,6 +15,6 @@ namespace Errbit\Errbit;
  * See the LICENSE file for details.
  */
 
-class Exception extends Exception
+class Exception extends \Exception
 {
 }

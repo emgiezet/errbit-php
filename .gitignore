@@ -1,0 +1,13 @@
+
+.buildpath
+.settings
+.project
+test_result
+build
+results
+
+*.DS_Store
+*._*
+*.orig
+errbit-php.sublime-project
+errbit-php.sublime-workspace
