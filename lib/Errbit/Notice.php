@@ -35,8 +35,6 @@ class Notice
      *
      * @param mixed $exception - the exception that occurred
      * @param array $options   - full configuration + options
-     * 
-     * 
      */
     public function __construct($exception, $options = array())
     {
@@ -51,7 +49,7 @@ class Notice
             $options
         );
 
-        $this->filterData();
+        $this->_filterData();
     }
 
     /**
@@ -113,9 +111,10 @@ class Notice
     /**
      * Recursively build an list of the all the vars in the given array.
      *
-     * @param Errbit\XmlBuilder $builder - the builder instance to set the data into
-     * @param array $array                  - the stack frame entry
+     * @param Errbit\XmlBuilder $builder the builder instance to set the data into
+     * @param array             $array   the stack frame entry
      * 
+     * @return null
      */
     public static function xmlVarsFor($builder, $array)
     {
@@ -141,9 +140,9 @@ class Notice
     /**
      * Perform search/replace filters on a backtrace entry.
      *
-     * @param string $str - the entry from the backtrace
+     * @param string $str the entry from the backtrace
      *
-     * @return string       - the filtered entry
+     * @return string the filtered entry
      */
     public function filterTrace($str)
     {
@@ -161,8 +160,7 @@ class Notice
     /**
      * Build the full XML document for the notice.
      *
-     * @return [String]
-     *   the XML
+     * @return string the XML
      */
     public function asXml()
     {
@@ -291,8 +289,10 @@ class Notice
     // -- Private Methods
     /**
      * Filtering data
+     * 
+     * @return null
     */
-    private function filterData()
+    private function _filterData()
     {
         if (empty($this->_options['params_filters'])) {
             return;
@@ -304,10 +304,12 @@ class Notice
     }
     /**
      * Filtering params
-     * @param strin @name - param name
      * 
+     * @param strin $name param name
+     * 
+     * @return null
      */
-    private function filterParams($name)
+    private function _filterParams($name)
     {
         if (empty($this->_options[$name])) {
             return;
@@ -321,12 +323,14 @@ class Notice
             }
         }
     }
-/**
- * Building request url
- * @return string url
- * 
- */
-    private function buildRequestUrl()
+
+    /**
+     * Building request url
+     * 
+     * @return string url
+     * 
+     */
+    private function _buildRequestUrl()
     {
         if (!empty($_SERVER['REQUEST_URI'])) {
             return sprintf(
@@ -338,11 +342,12 @@ class Notice
             );
         }
     }
-/**
- * 
- * 
- */
-    private function guessProtocol()
+    /**
+     *  Protocol guesser
+     * 
+     * @return string http or https protocol
+     */
+    private function _guessProtocol()
     {
         if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
             return $_SERVER['HTTP_X_FORWARDED_PROTO'];
@@ -352,11 +357,12 @@ class Notice
             return 'http';
         }
     }
-/**
- * 
- * 
- */
-    private function guessHost()
+    /**
+     * Host guesser
+     * 
+     * @return string servername
+     */
+    private function _guessHost()
     {
         if (!empty($_SERVER['HTTP_HOST'])) {
             return $_SERVER['HTTP_HOST'];
@@ -366,11 +372,13 @@ class Notice
             return '127.0.0.1';
         }
     }
-/**
- * 
- * 
- */
-    private function guessPort()
+    /**
+     * Port guesser
+     * 
+     * @return string port
+     * 
+     */
+    private function _guessPort()
     {
         if (!empty($_SERVER['SERVER_PORT']) && !in_array($_SERVER['SERVER_PORT'], array(80, 443))) {
             return sprintf(':%d', $_SERVER['SERVER_PORT']);
