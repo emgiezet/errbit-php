@@ -1,5 +1,5 @@
 <?php
-
+namespace Errbit\Errbit\Errors;
 /**
  * Errbit PHP Notifier.
  *
@@ -14,35 +14,41 @@
  * If PHP's Exception class wasn't so f***ing stupid and didn't make
  * everything final, this would inherit from it, but alas...
  */
-class Errbit_Errors_Base {
-	private $_message;
-	private $_line;
-	private $_file;
-	private $_trace;
+class Base
+{
+    private $_message;
+    private $_line;
+    private $_file;
+    private $_trace;
 
-	/**
-	 * Create a new error wrapping the given error context info.
-	 */
-	public function __construct($message, $line, $file, $trace) {
-		$this->_message = $message;
-		$this->_line    = $line;
-		$this->_file    = $file;
-		$this->_trace   = $trace;
-	}
+    /**
+     * Create a new error wrapping the given error context info.
+     */
+    public function __construct($message, $line, $file, $trace)
+    {
+        $this->_message = $message;
+        $this->_line    = $line;
+        $this->_file    = $file;
+        $this->_trace   = $trace;
+    }
 
-	public function getMessage() {
-		return $this->_message;
-	}
+    public function getMessage()
+    {
+        return $this->_message;
+    }
 
-	public function getLine() {
-		return $this->_line;
-	}
+    public function getLine()
+    {
+        return $this->_line;
+    }
 
-	public function getFile() {
-		return $this->_file;
-	}
+    public function getFile()
+    {
+        return $this->_file;
+    }
 
-	public function getTrace() {
-		return $this->_trace;
-	}
+    public function getTrace()
+    {
+        return $this->_trace;
+    }
 }

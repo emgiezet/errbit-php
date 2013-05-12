@@ -1,11 +1,14 @@
 <?php
-
 /**
  * Errbit PHP Notifier.
  *
  * Copyright © Flippa.com Pty. Ltd.
  * See the LICENSE file for details.
  */
+namespace Errbit\Errbit\Errors;
 
-class Errbit_Errors_Notice extends Errbit_Errors_Base {
+
+
+class Notice extends Base
+{
 }

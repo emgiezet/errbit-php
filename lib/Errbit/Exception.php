@@ -1,4 +1,5 @@
 <?php
+namespace Errbit\Errbit;
 
 /**
  * Errbit PHP Notifier.
@@ -7,5 +8,6 @@
  * See the LICENSE file for details.
  */
 
-class Errbit_Exception extends Exception {
+class Exception extends Exception
+{
 }
