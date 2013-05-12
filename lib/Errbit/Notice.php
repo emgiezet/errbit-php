@@ -36,6 +36,7 @@ class Notice
      * @param mixed $exception - the exception that occurred
      * @param array $options   - full configuration + options
      * 
+     * 
      */
     public function __construct($exception, $options = array())
     {
@@ -96,16 +97,16 @@ class Notice
         $name = get_class($exception);
 
         switch ($name) {
-            case 'Notice':
-                return 'Notice';
-            case 'Warning':
-                return 'Warning';
-            case 'Error':
-                return 'Error';
-            case 'Fatal':
-                return 'Fatal Error';
-            default:
-                return $name;
+        case 'Notice':
+            return 'Notice';
+        case 'Warning':
+            return 'Warning';
+        case 'Error':
+            return 'Error';
+        case 'Fatal':
+            return 'Fatal Error';
+        default:
+            return $name;
         }
     }
 
@@ -113,8 +114,8 @@ class Notice
      * Recursively build an list of the all the vars in the given array.
      *
      * @param Errbit\XmlBuilder $builder - the builder instance to set the data into
-     *
-     * @param array $array - the stack frame entry
+     * @param array $array                  - the stack frame entry
+     * 
      */
     public static function xmlVarsFor($builder, $array)
     {
@@ -124,9 +125,13 @@ class Notice
             }
 
             if (is_array($value)) {
-                $builder->tag('var', array('key' => $key), function($var) use ($value) {
-                    Notice::xmlVarsFor($var, $value);
-                });
+                $builder->tag(
+                    'var',
+                    array('key' => $key),
+                    function ($var) use ($value) {
+                            Notice::xmlVarsFor($var, $value);
+                    }
+                );
             } else {
                 $builder->tag('var', $value, array('key' => $key));
             }
@@ -136,11 +141,9 @@ class Notice
     /**
      * Perform search/replace filters on a backtrace entry.
      *
-     * @param [String] $str
-     *   the entry from the backtrace
+     * @param string $str - the entry from the backtrace
      *
-     * @return [String]
-     *   the filtered entry
+     * @return string       - the filtered entry
      */
     public function filterTrace($str)
     {
@@ -171,88 +174,116 @@ class Notice
         return $builder->tag(
             'notice',
             array('version' => Errbit::API_VERSION),
-            function($notice) use ($exception, $options, $self) {
+            function ($notice) use ($exception, $options, $self) {
                 $notice->tag('api-key',  $options['api_key']);
-                $notice->tag('notifier', function($notifier) {
-                    $notifier->tag('name',    Errbit::PROJECT_NAME);
-                    $notifier->tag('version', Errbit::VERSION);
-                    $notifier->tag('url',     Errbit::PROJECT_URL);
-                });
+                $notice->tag(
+                    'notifier',
+                    function ($notifier) {
+                        $notifier->tag('name',    Errbit::PROJECT_NAME);
+                        $notifier->tag('version', Errbit::VERSION);
+                        $notifier->tag('url',     Errbit::PROJECT_URL);
+                    }
+                );
 
-                $notice->tag('error', function($error) use ($exception, $self) {
-                    $klass = Errbit_Notice::className($exception);
-                    $error->tag('class',     $self->filterTrace($klass));
-                    $error->tag('message',   $self->filterTrace(sprintf('%s: %s', $klass, $exception->getMessage())));
-                    $error->tag('backtrace', function($backtrace) use ($exception, $self) {
-                        $trace = $exception->getTrace();
+                $notice->tag(
+                    'error',
+                    function ($error) use ($exception, $self) {
+                        $class = Notice::className($exception);
+                        $error->tag('class',     $self->filterTrace($class));
+                        $error->tag('message',   $self->filterTrace(sprintf('%s: %s', $class, $exception->getMessage())));
+                        $error->tag(
+                            'backtrace',
+                            function ($backtrace) use ($exception, $self) {
+                                $trace = $exception->getTrace();
 
-                        $file1 = $exception->getFile();
-                        $backtrace->tag('line', array(
-                            'number' => $exception->getLine(),
-                            'file' => !empty($file1) ? $self->filterTrace($file1) : '<unknown>',
-                            'method' =>  "<unknown>"
-                    	));
-
-                        // if there is no trace we should add an empty element
-                        if (empty($trace)) {
-                            $backtrace->tag(
-                                'line',
-                                array(
-                                     'number' => '',
-                                     'file' => '',
-                                     'method' => ''
-                                )
-                            );
-                        } else {
-                            foreach ($trace as $frame) {
+                                $file1 = $exception->getFile();
                                 $backtrace->tag(
                                     'line',
                                     array(
-                                        'number' => isset($frame['line']) ? $frame['line'] : 0,
-                                        'file'   => isset($frame['file']) ? $self->filterTrace($frame['file']) : '<unknown>',
-                                        'method' => $self->filterTrace(Errbit_Notice::formatMethod($frame))
+                                        'number' => $exception->getLine(),
+                                        'file' => !empty($file1) ? $self->filterTrace($file1) : '<unknown>',
+                                        'method' =>  "<unknown>"
                                     )
                                 );
+
+                                // if there is no trace we should add an empty element
+                                if ( empty($trace) ) {
+                                    $backtrace->tag(
+                                        'line',
+                                        array(
+                                             'number' => '',
+                                             'file' => '',
+                                             'method' => ''
+                                        )
+                                    );
+                                } else {
+                                    foreach ($trace as $frame) {
+                                        $backtrace->tag(
+                                            'line',
+                                            array(
+                                                'number' => isset($frame['line']) ? $frame['line'] : 0,
+                                                'file'   => isset($frame['file']) ? $self->filterTrace($frame['file']) : '<unknown>',
+                                                'method' => $self->filterTrace(Errbit_Notice::formatMethod($frame))
+                                            )
+                                        );
+                                    }
+                                }
                             }
-                        }
-                    });
-                });
+                        );
+                    }
+                );
 
                 if (!empty($options['url'])
                     || !empty($options['controller'])
                     || !empty($options['action'])
                     || !empty($options['parameters'])
                     || !empty($options['session_data'])
-                    || !empty($options['cgi_data'])) {
-                    $notice->tag('request', function($request) use ($options) {
-                        $request->tag('url',       !empty($options['url']) ? $options['url'] : '');
-                        $request->tag('component', !empty($options['controller']) ? $options['controller'] : '');
-                        $request->tag('action',    !empty($options['action']) ? $options['action'] : '');
-                        if (!empty($options['parameters'])) {
-                            $request->tag('params', function($params) use ($options) {
-                                Errbit_Notice::xmlVarsFor($params, $options['parameters']);
-                            });
-                        }
+                    || !empty($options['cgi_data'])
+                ) {
+                    $notice->tag(
+                        'request',
+                        function ($request) use ($options) {
+                            $request->tag('url',       !empty($options['url']) ? $options['url'] : '');
+                            $request->tag('component', !empty($options['controller']) ? $options['controller'] : '');
+                            $request->tag('action',    !empty($options['action']) ? $options['action'] : '');
+                            if (!empty($options['parameters'])) {
+                                $request->tag(
+                                    'params',
+                                    function ($params) use ($options) {
+                                        Notice::xmlVarsFor($params, $options['parameters']);
+                                    }
+                                );
+                            }
 
-                        if (!empty($options['session_data'])) {
-                            $request->tag('session', function($session) use ($options) {
-                                Errbit_Notice::xmlVarsFor($session, $options['session_data']);
-                            });
-                        }
+                            if (!empty($options['session_data'])) {
+                                $request->tag(
+                                    'session',
+                                    function ($session) use ($options) {
+                                        Notice::xmlVarsFor($session, $options['session_data']);
+                                    }
+                                );
+                            }
 
-                        if (!empty($options['cgi_data'])) {
-                            $request->tag('cgi-data', function($cgiData) use ($options) {
-                                Errbit_Notice::xmlVarsFor($cgiData, $options['cgi_data']);
-                            });
+                            if (!empty($options['cgi_data'])) {
+                                $request->tag(
+                                    'cgi-data',
+                                    function ($cgiData) use ($options) {
+                                        Notice::xmlVarsFor($cgiData, $options['cgi_data']);
+                                    }
+                                );
+                            }
                         }
-                    });
+                    );
                 }
 
-                $notice->tag('server-environment', function($env) use ($options) {
-                    $env->tag('project-root',     $options['project_root']);
-                    $env->tag('environment-name', $options['environment_name']);
-                    $env->tag('hostname',         $options['hostname']);
-                });
+                $notice->tag(
+                    'server-environment',
+                    function ($env) use ($options) {
+                        $env->tag('project-root',     $options['project_root']);
+                        $env->tag('environment-name', $options['environment_name']);
+                        $env->tag('hostname',         $options['hostname']);
+                    }
+                );
             }
         )->asXml();
     }
@@ -290,7 +321,11 @@ class Notice
             }
         }
     }
-
+/**
+ * Building request url
+ * @return string url
+ * 
+ */
     private function buildRequestUrl()
     {
         if (!empty($_SERVER['REQUEST_URI'])) {
@@ -303,7 +338,10 @@ class Notice
             );
         }
     }
-
+/**
+ * 
+ * 
+ */
     private function guessProtocol()
     {
         if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
@@ -314,8 +352,11 @@ class Notice
             return 'http';
         }
     }
-
-    private function _guessHost()
+/**
+ * 
+ * 
+ */
+    private function guessHost()
     {
         if (!empty($_SERVER['HTTP_HOST'])) {
             return $_SERVER['HTTP_HOST'];
@@ -325,8 +366,11 @@ class Notice
             return '127.0.0.1';
         }
     }
-
-    private function _guessPort()
+/**
+ * 
+ * 
+ */
+    private function guessPort()
     {
         if (!empty($_SERVER['SERVER_PORT']) && !in_array($_SERVER['SERVER_PORT'], array(80, 443))) {
             return sprintf(':%d', $_SERVER['SERVER_PORT']);
