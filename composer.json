@@ -1,7 +1,7 @@
 {
-    "name": "flippa/errbit-php",
+    "name": "emgiezet/errbit-php",
     "type": "library",
-    "description": "errbit integration with php",
+    "description": "errbit integration with php with phpcs-2",
     "keywords": ["errbit", "errbit-php", "error tracking"],
     "homepage": "http://github.com/flippa/errbit-php",
     "license": "MIT",
