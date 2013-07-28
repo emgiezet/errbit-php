@@ -1,12 +1,12 @@
 <?php
 namespace Errbit;
 
-use Errbit\Errbit\Exception;
-use Errbit\Errbit\Notice;
+use Errbit\Exception\Exception;
+use Errbit\Exception\Notice;
 
-use Errbit\Errbit\Errors\Notice;
-use Errbit\Errbit\Errors\Error;
-use Errbit\Errbit\Errors\Fatal;
+use Errbit\Errors\Notice;
+use Errbit\Errors\Error;
+use Errbit\Errors\Fatal;
 
 /**
  * The Errbit client.
@@ -16,18 +16,18 @@ use Errbit\Errbit\Errors\Fatal;
  *
  * @example Notify an Exception manually
  *    Errbit::instance()->notify($exception);
+ * 
  */
 class Errbit
 {
-private static $_instance = null;
+    private static $_instance = null;
 
     /**
      * Get a singleton instance of the client.
      *
      * This is the intended way to access the Errbit client.
      *
-     * @return [Errbit]
-     *   a singleton
+     * @return Errbit a singleton
      */
     public static function instance()
     {
@@ -53,8 +53,7 @@ private static $_instance = null;
      * This is made public for flexibility, though it is not expected you
      * should use it.
      *
-     * @param [Array] $config
-     *   the configuration for the API
+     * @param array $config the configuration for the API
      */
     public function __construct($config = array())
     {
@@ -64,11 +63,9 @@ private static $_instance = null;
     /**
      * Add a handler to be invoked after a notification occurs.
      *
-     * @param [Callback] $callback
-     *   any callable function
+     * @param [Callback] $callback any callable function
      *
-     * @return [Errbit]
-     *   the current instance
+     * @return [Errbit] the current instance
      */
     public function onNotify($callback)
     {
@@ -102,11 +99,9 @@ private static $_instance = null;
      *   - params_filters
      *   - backtrace_filters
      *
-     * @param [Array] $config
-     *   the full configuration
+     * @param [Array] $config the full configuration
      *
-     * @return [Errbit]
-     *   the current instance of the client
+     * @return [Errbit] the current instance of the client
      */
     public function configure($config = array())
     {
@@ -119,8 +114,7 @@ private static $_instance = null;
     /**
      * Register all error handlers around this instance.
      *
-     * @param [Array] $handlers
-     *   an array of handler names (one or all of 'exception', 'error', 'fatal')
+     * @param [Array] $handlers an array of handler names (one or all of 'exception', 'error', 'fatal')
      *
      * @return [Errbit]
      *   the current instance
@@ -136,11 +130,8 @@ private static $_instance = null;
     /**
      * Notify an individual exception manually.
      *
-     * @param [Exception] $exception
-     *   the Exception to notify (errors must first be converted)
-     *
-     * @param [Array] $options
-     *   an array of options, which override the client configuration
+     * @param [Exception] $exception the Exception to notify (errors must first be converted)
+     * @param [Array]     $options   an array of options, which override the client configuration
      *
      * @return [Errbit]
      *   the current instance
@@ -150,17 +141,20 @@ private static $_instance = null;
         $config = array_merge($this->_config, $options);
 
         $ch = curl_init();
-        curl_setopt_array($ch, array(
-            CURLOPT_URL            => $this->_buildApiUrl(),
-            CURLOPT_HEADER         => true,
-            CURLOPT_POST           => true,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POSTFIELDS     => $this->_buildNoticeFor($exception, $config),
-            CURLOPT_HTTPHEADER     => array(
-                'Content-Type: text/xml',
-                'Accept: text/xml, application/xml'
+        curl_setopt_array(
+            $ch,
+            array(
+                CURLOPT_URL            => $this->_buildApiUrl(),
+                CURLOPT_HEADER         => true,
+                CURLOPT_POST           => true,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POSTFIELDS     => $this->_buildNoticeFor($exception, $config),
+                CURLOPT_HTTPHEADER     => array(
+                    'Content-Type: text/xml',
+                    'Accept: text/xml, application/xml'
+                )
             )
-        ));
+        );
         curl_exec($ch);
 
         foreach ($this->_observers as $observer) {
@@ -171,7 +165,12 @@ private static $_instance = null;
     }
 
     // -- Private Methods
-
+    /**
+     * Config checker
+     * 
+     * @throws Exception
+     * @return null
+     */
     private function _checkConfig()
     {
         if (empty($this->_config['api_key'])) {
@@ -213,6 +212,11 @@ private static $_instance = null;
         }
     }
 
+    /**
+     * Api Url Builder
+     * 
+     * @return string api url
+     */
     private function _buildApiUrl()
     {
         $this->_checkConfig();
@@ -227,9 +231,13 @@ private static $_instance = null;
             )
         );
     }
-
+    /**
+     *  Notice Builder
+     * 
+     * 
+     */
     private function _buildNoticeFor($exception, $options)
     {
-        return Errbit_Notice::forException($exception, $options)->asXml();
+        return Notice::forException($exception, $options)->asXml();
     }
 }

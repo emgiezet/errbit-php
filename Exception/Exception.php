@@ -5,7 +5,7 @@
  * Copyright © Flippa.com Pty. Ltd.
  * See the LICENSE file for details.
  */
-namespace Errbit\Errbit;
+namespace Errbit\Exception;
 
 
 /**

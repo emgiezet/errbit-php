@@ -13,7 +13,7 @@
  * @license    https://github.com/emgiezet/errbit-php/blob/master/LICENSE MIT
  * @link       https://github.com/emgiezet/errbit-php Repo
  */
-namespace Errbit\Errbit;
+namespace Errbit\Exception;
 
 /**
  * Builds a complete payload for the notice sent to Errbit.

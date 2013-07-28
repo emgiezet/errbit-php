@@ -17,6 +17,10 @@
     "require": {
         "php": ">=5.3.2"
     },
+    "require-dev": {
+        "php": ">=5.3.2",
+        "mockery/mockery": "dev-master"
+    },
     "autoload": {
         "psr-0": { "Errbit": "" }
     },
