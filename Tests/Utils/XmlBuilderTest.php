@@ -3,7 +3,7 @@ namespace Errbit\Tests\Utils;
 
 use \Mockery as m;
 
-class XmlBuilderTest extends PHPUnit_Framework_TestCase
+class XmlBuilderTest extends \PHPUnit_Framework_TestCase
 {
 
     public function tearDown()

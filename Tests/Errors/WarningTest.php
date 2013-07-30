@@ -3,7 +3,7 @@ namespace Errbit\Tests\Errors;
 
 use \Mockery as m;
 
-class WarningTest extends PHPUnit_Framework_TestCase
+class WarningTest extends \PHPUnit_Framework_TestCase
 {
 
     public function tearDown()

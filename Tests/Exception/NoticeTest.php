@@ -3,7 +3,7 @@ namespace Errbit\Tests\Exception;
 
 use \Mockery as m;
 
-class NoticeTest extends PHPUnit_Framework_TestCase
+class NoticeTest extends \PHPUnit_Framework_TestCase
 {
 
     public function tearDown()
