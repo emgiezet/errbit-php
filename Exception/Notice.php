@@ -14,6 +14,8 @@
  * @link       https://github.com/emgiezet/errbit-php Repo
  */
 namespace Errbit\Exception;
+use Errbit\Utils\XmlBuilder;
+use Errbit\Errbit;
 
 /**
  * Builds a complete payload for the notice sent to Errbit.
@@ -118,21 +120,23 @@ class Notice
      */
     public static function xmlVarsFor($builder, $array)
     {
-        foreach ($array as $key => $value) {
-            if (is_object($value)) {
-                $value = (array) $value;
-            }
+        if (is_array($array)) {
+            foreach ($array as $key => $value) {
+                if (is_object($value)) {
+                    $value = (array) $value;
+                }
 
-            if (is_array($value)) {
-                $builder->tag(
-                    'var',
-                    array('key' => $key),
-                    function ($var) use ($value) {
-                            Notice::xmlVarsFor($var, $value);
-                    }
-                );
-            } else {
-                $builder->tag('var', $value, array('key' => $key));
+                if (is_array($value)) {
+                    $builder->tag(
+                        'var',
+                        array('key' => $key),
+                        function ($var) use ($value) {
+                                Notice::xmlVarsFor($var, $value);
+                        }
+                    );
+                } else {
+                    $builder->tag('var', $value, array('key' => $key));
+                }
             }
         }
     }
@@ -146,7 +150,8 @@ class Notice
      */
     public function filterTrace($str)
     {
-        if (empty($this->_options['backtrace_filters'])) {
+        
+        if (empty($this->_options['backtrace_filters']) || !is_array($this->_options['backtrace_filters'])) {
             return $str;
         }
 
@@ -166,7 +171,7 @@ class Notice
     {
         $exception = $this->_exception;
         $options   = $this->_options;
-        $builder   = new Errbit_XmlBuilder();
+        $builder   = new XmlBuilder();
         $self      = $this;
 
         return $builder->tag(
@@ -221,7 +226,7 @@ class Notice
                                             array(
                                                 'number' => isset($frame['line']) ? $frame['line'] : 0,
                                                 'file'   => isset($frame['file']) ? $self->filterTrace($frame['file']) : '<unknown>',
-                                                'method' => $self->filterTrace(Errbit_Notice::formatMethod($frame))
+                                                'method' => $self->filterTrace(self::formatMethod($frame))
                                             )
                                         );
                                     }
@@ -315,10 +320,13 @@ class Notice
             return;
         }
 
-        foreach ($this->_options['params_filters'] as $pattern) {
-            foreach ($this->_options[$name] as $key => $value) {
-                if (preg_match($pattern, $key)) {
-                    $this->_options[$name][$key] = '[FILTERED]';
+        if (is_array($this->_options['params_filters'])) {
+            foreach ($this->_options['params_filters'] as $pattern) {
+                foreach ($this->_options[$name] as $key => $value) {
+                    
+                    if (preg_match($pattern, $key)) {
+                        $this->_options[$name][$key] = '[FILTERED]';
+                    }
                 }
             }
         }

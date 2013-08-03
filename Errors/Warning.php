@@ -1,5 +1,5 @@
 <?php
-namespace Errbit\Errbit\Errors;
+namespace Errbit\Errors;
 
 /**
  * Errbit PHP Notifier.

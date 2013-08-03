@@ -1,5 +1,5 @@
 <?php
-namespace Errbit\Errbit;
+namespace Errbit\Utils;
 
 /**
  * Errbit PHP Notifier.
@@ -39,7 +39,7 @@ class XmlBuilder
      */
     public function __construct($xml = null)
     {
-        $this->_xml = $xml ? $xml : new SimpleXMLElement('<__ErrbitXMLBuilder__/>');
+        $this->_xml = $xml ? $xml : new \SimpleXMLElement('<__ErrbitXMLBuilder__/>');
     }
 
     /**

@@ -2,7 +2,7 @@
 namespace Errbit;
 
 use Errbit\Exception\Exception;
-use Errbit\Exception\Notice;
+use Errbit\Exception\Notice as ENotice;
 
 use Errbit\Errors\Notice;
 use Errbit\Errors\Error;
@@ -238,6 +238,6 @@ class Errbit
      */
     private function _buildNoticeFor($exception, $options)
     {
-        return Notice::forException($exception, $options)->asXml();
+        return ENotice::forException($exception, $options)->asXml();
     }
 }
