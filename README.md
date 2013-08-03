@@ -5,8 +5,9 @@
 [![Build Status](https://travis-ci.org/emgiezet/errbit-php.png?branch=master)](https://travis-ci.org/emgiezet/errbit-php)
 
 This is a full-featured client to add integration with Errbit (or Airbrake)
-to any PHP >= 5.3 application.
+to any PHP >= 5.3 application. 
 
+Original idea and source has no support for php namespaces. Moreover it has a bug and with newest errbit version the xml has not supported chars.
 
 
 ## Installation
@@ -34,7 +35,7 @@ enforced and you may instantiate multiple instances if for some bizarre
 reason you need to, or the word singleton makes you cry unicorn tears.
 
 ``` php
-require_once 'errbit-php/lib/Errbit.php';
+use Errbit\Errbit;
 
 Errbit::instance()
   ->configure(array(
@@ -56,6 +57,8 @@ your `error_reporting` settings) and log them to Errbit.
 If you want to notify an exception manually, you can call `notify()`.
 
 ``` php
+use Errbit\Errbit;
+
 try {
   somethingErrorProne();
 } catch (Exception $e) {
@@ -74,6 +77,7 @@ catch an Exception (note the errors *must* be converted to Exceptions), simply
 call
 
 ``` php
+use Errbit\Errbit;
 Errbit::instance()->notify($exception);
 ```
 
@@ -85,11 +89,12 @@ By default all three are used. If you want to use your own for some handlers,
 but not for others, pass the list into the `start()` method.
 
 ``` php
+use Errbit\Errbit;
 Errbit::instance()->start(array('error', 'fatal')); // using our own exception handler
 ```
 
 
 ## License & Copyright
 
-Copyright © mmx3.pl Licensed under the MIT license. Based on idea of  git clone git://github.com/flippa/errbit-php.git . See the LICENSE
+Copyright © mmx3.pl Licensed under the MIT license. Based on idea of git://github.com/flippa/errbit-php.git . See the LICENSE
 file for details.
