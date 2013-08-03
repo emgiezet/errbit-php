@@ -226,7 +226,7 @@ class Notice
                                             array(
                                                 'number' => isset($frame['line']) ? $frame['line'] : 0,
                                                 'file'   => isset($frame['file']) ? $self->filterTrace($frame['file']) : '<unknown>',
-                                                'method' => $self->filterTrace(self::formatMethod($frame))
+                                                'method' => $self->filterTrace($self->formatMethod($frame))
                                             )
                                         );
                                     }
@@ -323,7 +323,7 @@ class Notice
         if (is_array($this->_options['params_filters'])) {
             foreach ($this->_options['params_filters'] as $pattern) {
                 foreach ($this->_options[$name] as $key => $value) {
-                    
+
                     if (preg_match($pattern, $key)) {
                         $this->_options[$name][$key] = '[FILTERED]';
                     }
