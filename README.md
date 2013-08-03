@@ -1,15 +1,13 @@
 # Errbit & Airbrake Client for PHP
 
+[![Coverage Status](https://coveralls.io/repos/emgiezet/errbit-php/badge.png)](https://coveralls.io/r/emgiezet/errbit-php)
+
+[![Build Status](https://travis-ci.org/emgiezet/errbit-php.png?branch=master)](https://travis-ci.org/emgiezet/errbit-php)
+
 This is a full-featured client to add integration with Errbit (or Airbrake)
 to any PHP >= 5.3 application.
 
-We had a number of issues with the
-[php-airbrake-notifier](https://github.com/geoloqi/php-airbrake-notifier)
-client, so we wrote this, based on the actual airbrake gem.
 
-The php-airbrake-notifier client would regularly try to send invalid XML
-to the Airbrake service and did not work at all with Errbit (the free,
-self-hosted Airbrake-compatible application).
 
 ## Installation
 
@@ -79,11 +77,8 @@ but not for others, pass the list into the `start()` method.
 Errbit::instance()->start(array('error', 'fatal')); // using our own exception handler
 ```
 
-## TODO
-
-Some tests would be nice.
 
 ## License & Copyright
 
-Copyright © Flippa.com Pty. Ltd. Licensed under the MIT license. See the LICENSE
+Copyright © mmx3.pl Licensed under the MIT license. Based on idea of  git clone git://github.com/flippa/errbit-php.git . See the LICENSE
 file for details.
