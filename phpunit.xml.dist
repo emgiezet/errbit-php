@@ -16,13 +16,13 @@
   </logging>
   <testsuites>
     <testsuite name="errbit-php Test Suite">
-      <directory>./src/Tests</directory>
+      <directory>./tests/Errbit/Tests</directory>
     </testsuite>  
   </testsuites>
 
   <filter>
     <whitelist>
-      <directory>./src</directory>
+      <directory suffix=".php">./src</directory>
         <exclude>
           <directory>./Tests</directory>
           <directory>./vendor</directory>
