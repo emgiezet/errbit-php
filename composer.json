@@ -45,7 +45,10 @@
         "satooshi/php-coveralls": "dev-master"
     },
     "autoload": {
-        "psr-0": { "Errbit": "src/" }
+        "psr-0": { 
+            "Errbit\\Tests": "Tests/",
+            "Errbit": "src/"
+         }
     },
     "target-dir": "errbit-php"
 }
