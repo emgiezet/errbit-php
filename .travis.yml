@@ -5,10 +5,7 @@ php:
   - 5.4
   - 5.5
 
-env:
-  - DB=mysql
-
 before_script:
-  - wget http://getcomposer.org/composer.phar
-  - php composer.phar install
-  - phpunit
+  - composer install --dev --prefer-source
+
+script: phpunit --coverage-text

@@ -30,7 +30,6 @@ class ErrorHandlersTest extends \PHPUnit_Framework_TestCase
         $handler = new ErrorHandlers($errbit, array('exception', 'error', array('fatal','lol','doink')));
         
         $handler->onError(E_NOTICE, 'Errbit Test: '.E_NOTICE, __FILE__, 666);
-        //$this->markTestIncomplete('This test has not been implemented yet.');
     }
 
 }
