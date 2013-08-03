@@ -23,7 +23,7 @@ class ErrorHandlersTest extends \PHPUnit_Framework_TestCase
             'api_key'=>'9fa28ccc56ed3aae882d25a9cee5695a',
             'host' => 'errbit.redexperts.net',
             'port' => '80',
-            'secure' => '443',
+            'secure' => false,
 
         );
         $errbit= new Errbit($config);
