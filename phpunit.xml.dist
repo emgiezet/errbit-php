@@ -11,20 +11,22 @@
         syntaxCheck="true"
         bootstrap="./Tests/bootstrap.php"
 >
+  <logging>
+    <log type="coverage-clover" target="build/logs/clover.xml"/>
+  </logging>
+  <testsuites>
+    <testsuite name="errbit-php Test Suite">
+      <directory>./Tests</directory>
+    </testsuite>
+  </testsuites>
 
-   <testsuites>
-       <testsuite name="errbit-php Test Suite">
-           <directory>./Tests</directory>
-       </testsuite>
-   </testsuites>
-
-   <filter>
-       <whitelist>
-           <directory>./</directory>
-           <exclude>
-               <directory>./Tests</directory>
-               <directory>./vendor</directory>
-           </exclude>
-       </whitelist>
+  <filter>
+    <whitelist>
+      <directory>./</directory>
+        <exclude>
+          <directory>./Tests</directory>
+          <directory>./vendor</directory>
+      </exclude>
+    </whitelist>
    </filter>
 </phpunit>
