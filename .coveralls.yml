@@ -5,5 +5,5 @@ service_name: travis-ci
 
 # for php-coveralls
 src_dir: ./
-coverage_clover: build/logs/clover.cov
+coverage_clover: build/logs/clover.xml
 json_path: build/logs/coveralls-upload.json
