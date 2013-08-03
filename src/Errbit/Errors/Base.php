@@ -7,7 +7,6 @@
  */
 namespace Errbit\Errors;
 
-
 /**
  * Converts a native PHP error, notice, or warning into something that
  * sort of resembles an Exception.
@@ -24,7 +23,7 @@ class Base
 
     /**
      * Create a new error wrapping the given error context info.
-     * 
+     *
      * @param string  $message message
      * @param integer $line    line
      * @param string  $file    filename
@@ -39,9 +38,9 @@ class Base
     }
     /**
      * Message getter
-     * 
+     *
      * @return string error message
-     * 
+     *
      */
     public function getMessage()
     {
@@ -49,7 +48,7 @@ class Base
     }
     /**
      * Line getter
-     * 
+     *
      * @return integer the number of line
      */
     public function getLine()
@@ -58,7 +57,7 @@ class Base
     }
     /**
      * File getter
-     * 
+     *
      * @return string name of the file
      */
     public function getFile()

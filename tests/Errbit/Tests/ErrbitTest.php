@@ -13,7 +13,7 @@ class ErrbitTest extends \PHPUnit_Framework_TestCase
 
     public function testBase()
     {
-        
+
         $service = m::mock('service');
         $service->shouldReceive('readTemp')->times(3)->andReturn(10, 12, 14);
 

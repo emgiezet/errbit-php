@@ -7,7 +7,6 @@
  */
 namespace Errbit\Exception;
 
-
 /**
  * Errbit PHP Notifier.
  *

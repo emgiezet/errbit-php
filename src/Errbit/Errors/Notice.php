@@ -7,8 +7,6 @@
  */
 namespace Errbit\Errors;
 
-
-
 class Notice extends Base
 {
 }

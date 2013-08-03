@@ -115,12 +115,12 @@ class XmlBuilder
     }
     /**
      * Util to converts special chars to be valid with xml
-     * 
+     *
      * @param string $string xml string to converte the special chars
-     * 
+     *
      * @return string escaped string
      */
-    static function utf8ForXML($string)
+    public static function utf8ForXML($string)
     {
         return preg_replace ('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $string);
     }

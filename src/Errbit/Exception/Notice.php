@@ -4,7 +4,7 @@
  *
  * Copyright © Flippa.com Pty. Ltd.
  * See the LICENSE file for details.
- * 
+ *
  * @category   Errors
  * @package    ErrbitPHP
  * @subpackage Errbit
@@ -19,7 +19,7 @@ use Errbit\Errbit;
 
 /**
  * Builds a complete payload for the notice sent to Errbit.
- * 
+ *
  * @category   Errors
  * @package    ErrbitPHP
  * @subpackage Errbit
@@ -56,10 +56,10 @@ class Notice
 
     /**
      * Convenience method to instantiate a new notice.
-     * 
+     *
      * @param mixed $exception - Exception
      * @param mixed $options   - array of options
-     * 
+     *
      * @return Notice
      */
     public static function forException($exception, $options = array())
@@ -115,7 +115,7 @@ class Notice
      *
      * @param Errbit\XmlBuilder $builder the builder instance to set the data into
      * @param array             $array   the stack frame entry
-     * 
+     *
      * @return null
      */
     public static function xmlVarsFor($builder, $array)
@@ -150,7 +150,7 @@ class Notice
      */
     public function filterTrace($str)
     {
-        
+
         if (empty($this->_options['backtrace_filters']) || !is_array($this->_options['backtrace_filters'])) {
             return $str;
         }
@@ -294,7 +294,7 @@ class Notice
     // -- Private Methods
     /**
      * Filtering data
-     * 
+     *
      * @return null
     */
     private function _filterData()
@@ -309,9 +309,9 @@ class Notice
     }
     /**
      * Filtering params
-     * 
+     *
      * @param strin $name param name
-     * 
+     *
      * @return null
      */
     private function _filterParams($name)
@@ -334,9 +334,9 @@ class Notice
 
     /**
      * Building request url
-     * 
+     *
      * @return string url
-     * 
+     *
      */
     private function _buildRequestUrl()
     {
@@ -352,7 +352,7 @@ class Notice
     }
     /**
      *  Protocol guesser
-     * 
+     *
      * @return string http or https protocol
      */
     private function _guessProtocol()
@@ -367,7 +367,7 @@ class Notice
     }
     /**
      * Host guesser
-     * 
+     *
      * @return string servername
      */
     private function _guessHost()
@@ -382,9 +382,9 @@ class Notice
     }
     /**
      * Port guesser
-     * 
+     *
      * @return string port
-     * 
+     *
      */
     private function _guessPort()
     {

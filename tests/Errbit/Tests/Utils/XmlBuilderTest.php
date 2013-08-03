@@ -2,7 +2,6 @@
 namespace Errbit\Tests\Utils;
 
 use \Mockery as m;
-use Errbit\Utils\XmlBuilder;
 use Errbit\Exception\Notice;
 
 class XmlBuilderTest extends \PHPUnit_Framework_TestCase

@@ -4,7 +4,7 @@
  *
  * Copyright © Flippa.com Pty. Ltd.
  * See the LICENSE file for details.
- * 
+ *
  * @category   Errors
  * @package    ErrbitPHP
  * @subpackage Errbit
@@ -21,7 +21,6 @@ use Errbit\Errors\Notice;
 use Errbit\Errors\Error;
 use Errbit\Errors\Fatal;
 
-
 /**
  * The default error handlers that delegate to Errbit::notify().
  *
@@ -34,8 +33,8 @@ class ErrorHandlers
      *
      * @param [Errbit] $errbit   the client instance
      * @param [Array]  $handlers an array of handler names, instead of registering all
-     * 
-     * @return self 
+     *
+     * @return self
      */
     public static function register($errbit, $handlers = array('exception', 'error', 'fatal'))
     {
@@ -48,9 +47,9 @@ class ErrorHandlers
      * Instantiate a new handler for the given client.
      *
      * @param Errbit $errbit the client to use
-     * 
+     *
      * @return null
-     * 
+     *
      */
     public function __construct($errbit, $handlers)
     {
@@ -61,7 +60,7 @@ class ErrorHandlers
     // -- Handlers
     /**
      * on Error
-     * 
+     *
      * @param integer $code    error code
      * @param string  $message error message
      * @param string  $file    error file
@@ -90,8 +89,8 @@ class ErrorHandlers
     }
     /**
      * On exception
-     * 
-     * 
+     *
+     *
      */
     public function onException($exception)
     {
@@ -99,8 +98,8 @@ class ErrorHandlers
     }
     /**
      * On shut down
-     * 
-     * 
+     *
+     *
      */
     public function onShutdown()
     {
@@ -112,8 +111,8 @@ class ErrorHandlers
     // -- Private Methods
     /**
      * Installer
-     * 
-     * 
+     *
+     *
      */
     private function _install($handlers)
     {

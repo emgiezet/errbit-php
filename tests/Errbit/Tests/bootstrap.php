@@ -10,6 +10,5 @@ if (!file_exists(dirname(__DIR__) . '/composer.lock')) {
 
 require_once 'PHPUnit/TextUI/TestRunner.php';
 
-
 // Include the composer autoloader
 $autoloader = require dirname(__DIR__) . '/vendor/autoload.php';

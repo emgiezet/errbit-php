@@ -15,7 +15,7 @@ class ErrorHandlersTest extends \PHPUnit_Framework_TestCase
 
     public function testNoticeHandle()
     {
-        
+
         // $service = m::mock('service');
         // $service->shouldReceive('readTemp')->times(3)->andReturn(10, 12, 14);
 
@@ -34,7 +34,7 @@ class ErrorHandlersTest extends \PHPUnit_Framework_TestCase
         try {
             foreach ($errors as $error) {
                 $handler->onError($error, 'Errbit Test: '.$error, __FILE__, 666);
-            }    
+            }
         } catch ( \Exception $e) {
             $catched[] = $e->getMessage();
         }
