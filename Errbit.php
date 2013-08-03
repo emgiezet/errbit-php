@@ -7,6 +7,7 @@ use Errbit\Exception\Notice as ENotice;
 use Errbit\Errors\Notice;
 use Errbit\Errors\Error;
 use Errbit\Errors\Fatal;
+use Errbit\Handlers\ErrorHandlers;
 
 /**
  * The Errbit client.
@@ -41,7 +42,7 @@ class Errbit
     const VERSION       = '0.0.1';
     const API_VERSION   = '2.2';
     const PROJECT_NAME  = 'errbit-php';
-    const PROJECT_URL   = 'https://github.com/flippa/errbit-php';
+    const PROJECT_URL   = 'https://github.com/emgiezet/errbit-php';
     const NOTICES_PATH  = '/notifier_api/v2/notices/';
 
     private $_config;
@@ -122,7 +123,7 @@ class Errbit
     public function start($handlers = array('exception', 'error', 'fatal'))
     {
         $this->_checkConfig();
-        Errbit_ErrorHandlers::register($this, $handlers);
+        ErrorHandlers::register($this, $handlers);
 
         return $this;
     }

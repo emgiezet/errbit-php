@@ -28,8 +28,17 @@ class ErrorHandlersTest extends \PHPUnit_Framework_TestCase
         );
         $errbit= new Errbit($config);
         $handler = new ErrorHandlers($errbit, array('exception', 'error', array('fatal','lol','doink')));
-        
-        $handler->onError(E_NOTICE, 'Errbit Test: '.E_NOTICE, __FILE__, 666);
+
+        $errors = array(E_NOTICE, E_USER_NOTICE, E_WARNING, E_USER_WARNING, E_ERROR, E_USER_ERROR );
+        $catched = array();
+        try {
+            foreach ($errors as $error) {
+                $handler->onError($error, 'Errbit Test: '.$error, __FILE__, 666);
+            }    
+        } catch ( \Exception $e) {
+            $catched[] = $e->getMessage();
+        }
+        $this->assertTrue(count($catched) == 0, 'Exceptions are thrown during errbit notice');
     }
 
 }

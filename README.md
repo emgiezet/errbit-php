@@ -14,7 +14,18 @@ to any PHP >= 5.3 application.
 We haven't put this in PEAR or anything like that (please feel to contribute)
 so you need to install it locally.
 
-    git clone git://github.com/flippa/errbit-php.git
+### Clone Way
+
+    git clone git://github.com/emgiezet/errbit-php.git
+
+### Composer Way
+
+```json
+require: {
+    ...
+    "emgiezet/errbit-php": "dev-master"
+  }
+```
 
 ## Usage
 
