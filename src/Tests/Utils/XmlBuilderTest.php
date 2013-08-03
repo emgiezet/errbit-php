@@ -41,7 +41,7 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
         $dom = new \DOMDocument();
         $dom->loadXML($xml);
 
-        $valid = $dom->schemaValidate(dirname(__FILE__).'/../../Resources/xsd/XSD.xml');
+        $valid = $dom->schemaValidate(dirname(__FILE__).'/../../../Resources/xsd/XSD.xml');
         $this->assertTrue($valid, 'Not Valid XSD');
 
     }
