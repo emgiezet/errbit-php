@@ -4,6 +4,8 @@
 
 [![Build Status](https://travis-ci.org/emgiezet/errbitPHP.png?branch=master)](https://travis-ci.org/emgiezet/errbitPHP)
 
+[![Dependency Status](https://www.versioneye.com/user/projects/5249e725632bac0a4900b2bf/badge.png)](https://www.versioneye.com/user/projects/5249e725632bac0a4900b2bf)
+
 This is a full-featured client to add integration with Errbit (or Airbrake)
 to any PHP >= 5.3 application. 
 
