@@ -1,9 +1,9 @@
 {
-    "name": "emgiezet/errbit-php",
+    "name": "emgiezet/errbitPHP",
     "type": "library",
     "description": "errbit integration with php with phpcs-2",
-    "keywords": ["errbit", "errbit-php", "error tracking"],
-    "homepage": "http://github.com/emgiezet/errbit-php",
+    "keywords": ["errbit", "errbit php", "error tracking"],
+    "homepage": "http://github.com/emgiezet/errbitPHP",
     "license": "MIT",
     "authors": [
         {
@@ -50,5 +50,5 @@
             "Errbit": "src/"
          }
     },
-    "target-dir": "errbit-php"
+    "target-dir": "errbitPHP"
 }
