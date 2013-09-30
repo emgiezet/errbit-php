@@ -38,7 +38,7 @@ class ErrorHandlersTest extends \PHPUnit_Framework_TestCase
         } catch ( \Exception $e) {
             $catched[] = $e->getMessage();
         }
-        $this->assertTrue(count($catched) == 0, 'Exceptions are thrown during errbit notice');
+        $this->assertTrue(count($catched) === 0, 'Exceptions are thrown during errbit notice');
     }
 
 }

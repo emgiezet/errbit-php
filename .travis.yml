@@ -18,4 +18,4 @@ script:
     - phpunit -c phpunit.xml.dist
 
 after_script:
-    - php vendor/bin/coveralls -v -c .coveralls.yml
+    - php vendor/bin/coveralls

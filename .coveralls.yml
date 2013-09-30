@@ -1,6 +1,6 @@
 # .coveralls.yml example configuration
 
-repo_token: 3YEi9TqQ7sM9PgFB4TGEy6R4zuIAm0ZMZ # should be kept secret!
+repo_token: vg1xLDGuonevvOQxdsnUBKIvTRfghDKGH # should be kept secret!
 service_name: travis-ci
 
 # for php-coveralls

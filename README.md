@@ -1,8 +1,8 @@
 # Errbit & Airbrake Client for PHP
 
-[![Coverage Status](https://coveralls.io/repos/emgiezet/errbit-php/badge.png)](https://coveralls.io/r/emgiezet/errbit-php)
+[![Coverage Status](https://coveralls.io/repos/emgiezet/errbitPHP/badge.png)](https://coveralls.io/r/emgiezet/errbitPHP)
 
-[![Build Status](https://travis-ci.org/emgiezet/errbit-php.png?branch=master)](https://travis-ci.org/emgiezet/errbit-php)
+[![Build Status](https://travis-ci.org/emgiezet/errbitPHP.png?branch=master)](https://travis-ci.org/emgiezet/errbitPHP)
 
 This is a full-featured client to add integration with Errbit (or Airbrake)
 to any PHP >= 5.3 application. 
