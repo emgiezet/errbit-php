@@ -50,5 +50,5 @@
             "Errbit": "src/"
          }
     },
-    "target-dir": "errbit-php"
+    "target-dir": ""
 }
