@@ -46,8 +46,8 @@
     },
     "autoload": {
         "psr-0": { 
-            "Errbit\\Tests": "emgiezet/errbit-php/tests/",
-            "Errbit": "emgiezet/errbit-php/src/Errbit/"
+            "Errbit\\Tests": "tests/",
+            "Errbit": "src/"
          }
     },
     "target-dir": "emgiezet/errbit-php"
