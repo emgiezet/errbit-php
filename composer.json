@@ -49,6 +49,5 @@
         "psr-0": { 
             "Errbit": "src/"
          }
-    },
-    "target-dir": "emgiezet/errbit-php"
+    }
 }
