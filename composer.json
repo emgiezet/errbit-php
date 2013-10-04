@@ -47,7 +47,6 @@
     },
     "autoload": {
         "psr-0": { 
-            "Errbit\\Tests": "tests/",
             "Errbit": "src/"
          }
     },
