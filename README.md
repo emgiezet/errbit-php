@@ -97,7 +97,7 @@ Errbit::instance()->start(array('error', 'fatal')); // using our own exception h
 
 ## Symfony2 Integration
 
-## Kochana3 Integration
+## Kohana3 Integration
 
 ## License & Copyright
 
