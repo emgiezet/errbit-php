@@ -19,7 +19,7 @@ so you need to install it locally.
 
 ### Clone Way
 
-    git clone git://github.com/emgiezet/errbit-php.git
+    git clone git://github.com/emgiezet/errbitPHP.git
 
 ### Composer Way
 
@@ -95,6 +95,9 @@ use Errbit\Errbit;
 Errbit::instance()->start(array('error', 'fatal')); // using our own exception handler
 ```
 
+## Symfony2 Integration
+
+## Kochana3 Integration
 
 ## License & Copyright
 
