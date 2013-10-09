@@ -97,9 +97,12 @@ Errbit::instance()->start(array('error', 'fatal')); // using our own exception h
 
 ## Symfony2 Integration
 
+See the [documentation](https://github.com/emgiezet/errbitPHP/blob/master/Resources/doc/symfony2_integration.md) for symfony2 integration.
+
 ## Kohana3 Integration
 
+See the [documentation](https://github.com/emgiezet/errbitPHP/blob/master/Resources/doc/kohana3_integration.md) for symfony2 integration.
 ## License & Copyright
 
-Copyright © mmx3.pl Licensed under the MIT license. Based on idea of git://github.com/flippa/errbit-php.git . See the LICENSE
+Copyright © mmx3.pl Licensed under the MIT license. Based on idea of git://github.com/flippa/errbit-php.git . See the [LICENSE](https://github.com/emgiezet/errbitPHP/blob/master/LICENSE)
 file for details.
