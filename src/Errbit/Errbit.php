@@ -139,24 +139,21 @@ class Errbit
      */
     public function notify($exception, $options = array())
     {
+        $this->_checkConfig();
         $config = array_merge($this->_config, $options);
 
-        $ch = curl_init();
-        curl_setopt_array(
-            $ch,
-            array(
-                CURLOPT_URL            => $this->_buildApiUrl(),
-                CURLOPT_HEADER         => true,
-                CURLOPT_POST           => true,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_POSTFIELDS     => $this->_buildNoticeFor($exception, $config),
-                CURLOPT_HTTPHEADER     => array(
-                    'Content-Type: text/xml',
-                    'Accept: text/xml, application/xml'
-                )
-            )
+        $socket = fsockopen(
+            $this->_buildTcpScheme($config),
+            $config['port'],
+            $errno, $errstr,
+            $config['connect_timeout']
         );
-        curl_exec($ch);
+
+        if ($socket) {
+            stream_set_timeout($socket, $config['write_timeout']);
+            fwrite($socket, $this->_buildHttpPayload($exception, $config));
+            fclose($socket);
+        }
 
         foreach ($this->_observers as $observer) {
             $observer($exception, $config);
@@ -206,10 +203,22 @@ class Errbit
             $this->_config['params_filters'] = array('/password/');
         }
 
+        if (!isset($this->_config['connect_timeout'])) {
+            $this->_config['connect_timeout'] = 3;
+        }
+
+        if (!isset($this->_config['write_timeout'])) {
+            $this->_config['write_timeout'] = 3;
+        }
+
         if (!isset($this->_config['backtrace_filters'])) {
             $this->_config['backtrace_filters'] = array(
                 sprintf('/^%s/', preg_quote($this->_config['project_root'], '/')) => '[PROJECT_ROOT]'
             );
+        }
+
+        if (!isset($this->_config['agent'])) {
+            $this->_config['agent'] = 'errbitPHP';
         }
     }
 
@@ -233,12 +242,73 @@ class Errbit
         );
     }
     /**
-     *  Notice Builder
+     * Notice Builder
      * 
+     * @param mixed $exception Excpetion instance all exceptions that extends \Excpetion()
+     * @param array $options   notice options
+     * 
+     * @return string Xml
      * 
      */
     private function _buildNoticeFor($exception, $options)
     {
         return ENotice::forException($exception, $options)->asXml();
+    }
+    /**
+     * Build schema for Tcp
+     * 
+     * @param array $config config
+     * 
+     * @return string
+     */
+    private function _buildTcpScheme($config)
+    {
+        return sprintf(
+            '%s://%s',
+            $config['secure'] ? 'ssl' : 'tcp',
+            $config['host']
+        );
+    }
+    /**
+     * Build a payload to send by php fsockopen
+     * 
+     * @param mixed $exception Excpetion instance all exceptions that extends \Excpetion()
+     * @param array $config    configuration in array
+     * 
+     * @return string
+     */
+    private function _buildHttpPayload($exception, $config)
+    {
+        return $this->_addHttpHeaders(
+            $this->_buildNoticeFor($exception, $config),
+            $config
+        );
+    }
+    /**
+     * Build http headers for errbit api call
+     * 
+     * @param string $body   requiest body
+     * @param array  $config configuration in array
+     * 
+     * @return string
+     */
+    private function _addHttpHeaders($body, $config)
+    {
+        return sprintf(
+            "%s\r\n\r\n%s",
+            implode(
+                "\r\n",
+                array(
+                    sprintf('POST %s HTTP/1.1', self::NOTICES_PATH),
+                    sprintf('Host: %s', $config['host']),
+                    sprintf('User-Agent: %s', $config['agent']),
+                    sprintf('Content-Type: %s', 'text/xml'),
+                    sprintf('Accept: %s', 'text/xml, application/xml'),
+                    sprintf('Content-Length: %d', strlen($body)),
+                    sprintf('Connection: %s', 'close')
+                )
+            ),
+            $body
+        );
     }
 }

@@ -1,15 +1,14 @@
 # Errbit & Airbrake Client for PHP
 
 [![Coverage Status](https://coveralls.io/repos/emgiezet/errbitPHP/badge.png)](https://coveralls.io/r/emgiezet/errbitPHP)
-
 [![Build Status](https://travis-ci.org/emgiezet/errbitPHP.png?branch=master)](https://travis-ci.org/emgiezet/errbitPHP)
-
 [![Dependency Status](https://www.versioneye.com/user/projects/5249e725632bac0a4900b2bf/badge.png)](https://www.versioneye.com/user/projects/5249e725632bac0a4900b2bf)
 
 This is a full-featured client to add integration with [Errbit](https://github.com/errbit/errbit) (or Airbrake)
 to any PHP >= 5.3 application. 
 
-Original idea and source has no support for php namespaces. Moreover it has a bug and with newest errbit version the xml has not supported chars.
+Original idea and source has no support for php namespaces. 
+Moreover it has a bug and with newest errbit version the xml has not supported chars.
 
 
 ## Installation
@@ -32,9 +31,8 @@ require: {
 
 ## Usage
 
-The intended way to use the notifier is as a singleton, though this is not
-enforced and you may instantiate multiple instances if for some bizarre
-reason you need to, or the word singleton makes you cry unicorn tears.
+To setup an Errbit instance you need to configure it with an array of parameters. 
+Only two of them are mandatory.
 
 ``` php
 use Errbit\Errbit;
@@ -42,21 +40,22 @@ use Errbit\Errbit;
 Errbit::instance()
   ->configure(array(
     'api_key'           => 'YOUR API KEY',
-    'host'              => 'YOUR ERRBIT HOST, OR api.airbrake.io FOR AIRBRAKE',
-    'port'              => 80,                                   // optional
-    'secure'            => false,                                // optional
-    'project_root'      => '/your/project/root',                 // optional
-    'environment_name'  => 'production',                         // optional
-    'params_filters'    => array('/password/', '/card_number/'), // optional
-    'backtrace_filters' => array('#/some/long/path#' => '')      // optional
+    'host'              => 'YOUR ERRBIT HOST, OR api.airbrake.io FOR AIRBRAKE'
   ))
   ->start();
 ```
 
-This will install error handlers that trap your PHP errors (according to
-your `error_reporting` settings) and log them to Errbit.
+This will register error handlers:
 
-If you want to notify an exception manually, you can call `notify()`.
+``` php
+set_error_handler();
+set_exception_handler();
+register_shutdown_function();
+```
+
+And log all the errors intercepted by handlers to your errbit.
+
+If you want to notify an exception manually, you can call `notify()` without calling a `start()`. That way you can avoid registering the handlers.
 
 ``` php
 use Errbit\Errbit;
@@ -83,6 +82,13 @@ use Errbit\Errbit;
 Errbit::instance()->notify($exception);
 ```
 
+With this type of use. Library will not handle the errors collected by:
+
+``` php
+set_error_handler();
+register_shutdown_function();
+```
+
 ## Using only some of the default handlers
 
 There are three error handlers installed by Errbit: exception, error and fatal.
@@ -101,7 +107,10 @@ See the [documentation](https://github.com/emgiezet/errbitPHP/blob/master/Resour
 
 ## Kohana3 Integration
 
+### Work in Progress 
+
 See the [documentation](https://github.com/emgiezet/errbitPHP/blob/master/Resources/doc/kohana3_integration.md) for kohana3 integration.
+
 ## License & Copyright
 
 Copyright © mmx3.pl 2013 Licensed under the MIT license. Based on idea of git://github.com/flippa/errbit-php.git but rewritten in 90%. See the [LICENSE](https://github.com/emgiezet/errbitPHP/blob/master/LICENSE)
