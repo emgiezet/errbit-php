@@ -16,10 +16,8 @@
 
 namespace Errbit\Handlers;
 
-use Errbit\Errors\Warning;
-use Errbit\Errors\Notice;
-use Errbit\Errors\Error;
-use Errbit\Errors\Fatal;
+use Errbit\Errbit;
+use Errbit\Utils\Converter;
 
 /**
  * The default error handlers that delegate to Errbit::notify().
@@ -28,7 +26,16 @@ use Errbit\Errors\Fatal;
  */
 class ErrorHandlers
 {
-    /**
+	/**
+	 * @var Errbit
+	 */
+	private $_errbit;
+
+	/**
+	 * @var Converter
+	 */
+	private $_converter;
+	/**
      * Register all error handlers for the given $errbit client.
      *
      * @param [Errbit] $errbit   the client instance
@@ -40,8 +47,6 @@ class ErrorHandlers
     {
         new self($errbit, $handlers);
     }
-
-    private $_errbit;
 
     /**
      * Instantiate a new handler for the given client.
@@ -55,6 +60,7 @@ class ErrorHandlers
     {
         $this->_errbit = $errbit;
         $this->_install($handlers);
+		$this->_converter = Converter::createDefault();
     }
 
     // -- Handlers
@@ -68,23 +74,7 @@ class ErrorHandlers
      */
     public function onError($code, $message, $file, $line)
     {
-        switch ($code) {
-        case E_NOTICE:
-        case E_USER_NOTICE:
-            $exception = new Notice($message, $file, $line, debug_backtrace());
-            break;
-
-        case E_WARNING:
-        case E_USER_WARNING:
-            $exception = new Warning($message, $file, $line, debug_backtrace());
-            break;
-
-        case E_ERROR:
-        case E_USER_ERROR:
-        default:
-            $exception = new Error($message, $file, $line, debug_backtrace());
-        }
-
+		$exception = $this->_converter->convert($code, $message, $file, $line, debug_backtrace());
         $this->_errbit->notify($exception);
     }
     /**
