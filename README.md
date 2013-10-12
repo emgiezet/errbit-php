@@ -45,6 +45,8 @@ Errbit::instance()
   ->start();
 ```
 
+View the [full configuration](https://github.com/emgiezet/errbitPHP/blob/master/Resources/doc/full_config.md).
+
 This will register error handlers:
 
 ``` php
