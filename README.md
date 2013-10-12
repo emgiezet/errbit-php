@@ -6,7 +6,7 @@
 
 [![Dependency Status](https://www.versioneye.com/user/projects/5249e725632bac0a4900b2bf/badge.png)](https://www.versioneye.com/user/projects/5249e725632bac0a4900b2bf)
 
-This is a full-featured client to add integration with Errbit (or Airbrake)
+This is a full-featured client to add integration with [Errbit](https://github.com/errbit/errbit) (or Airbrake)
 to any PHP >= 5.3 application. 
 
 Original idea and source has no support for php namespaces. Moreover it has a bug and with newest errbit version the xml has not supported chars.
@@ -101,8 +101,16 @@ See the [documentation](https://github.com/emgiezet/errbitPHP/blob/master/Resour
 
 ## Kohana3 Integration
 
-See the [documentation](https://github.com/emgiezet/errbitPHP/blob/master/Resources/doc/kohana3_integration.md) for symfony2 integration.
+See the [documentation](https://github.com/emgiezet/errbitPHP/blob/master/Resources/doc/kohana3_integration.md) for kohana3 integration.
 ## License & Copyright
 
-Copyright © mmx3.pl Licensed under the MIT license. Based on idea of git://github.com/flippa/errbit-php.git . See the [LICENSE](https://github.com/emgiezet/errbitPHP/blob/master/LICENSE)
+Copyright © mmx3.pl 2013 Licensed under the MIT license. Based on idea of git://github.com/flippa/errbit-php.git but rewritten in 90%. See the [LICENSE](https://github.com/emgiezet/errbitPHP/blob/master/LICENSE)
 file for details.
+
+## Contributors
+
+main idea @flippa
+OOP Rework, Tests and packaging @emgiezet
+
+Rest of the contributors:
+[Contributors page](https://github.com/emgiezet/errbitPHP/graphs/contributors)
