@@ -11,3 +11,4 @@ results
 *.orig
 errbit-php.sublime-project
 errbit-php.sublime-workspace
+.idea/*
