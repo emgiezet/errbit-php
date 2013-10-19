@@ -45,6 +45,10 @@
         "mockery/mockery": "dev-master",
         "satooshi/php-coveralls": "dev-master"
     },
+    "replace": {
+        "nodrew/php-airbrake": "dev-master",
+        "flippa-official/errbit-php": "dev-master"
+    },
     "autoload": {
         "psr-0": { 
             "Errbit": "src/"
