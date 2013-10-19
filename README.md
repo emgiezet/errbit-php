@@ -126,3 +126,7 @@ OOP Rework, Tests and packaging @emgiezet
 
 Rest of the contributors:
 [Contributors page](https://github.com/emgiezet/errbitPHP/graphs/contributors)
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/emgiezet/errbitphp/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
