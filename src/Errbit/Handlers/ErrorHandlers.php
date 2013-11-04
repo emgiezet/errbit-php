@@ -17,6 +17,7 @@
 namespace Errbit\Handlers;
 
 use Errbit\Errbit;
+use Errbit\Errors\Fatal;
 use Errbit\Utils\Converter;
 
 /**
