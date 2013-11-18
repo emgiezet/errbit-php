@@ -61,7 +61,7 @@ class XmlBuilder
 
         array_shift($args);
         foreach ($args as $arg) {
-            if (is_callable($arg)) {
+            if ((!is_string($arg) || strpos($arg, "::") === false) && is_callable($arg)) {
                 $callback = $arg;
             } elseif (is_array($arg)) {
                 $attributes = $arg;
