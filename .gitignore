@@ -12,3 +12,4 @@ results
 errbit-php.sublime-project
 errbit-php.sublime-workspace
 .idea/*
+composer.phar
