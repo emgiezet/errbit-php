@@ -36,18 +36,18 @@ class Converter {
 		switch ($code) {
 			case E_NOTICE:
 			case E_USER_NOTICE:
-				$exception = new Notice($message, $file, $line, $backtrace);
+				$exception = new Notice($message, $line, $file, $backtrace);
 				break;
 
 			case E_WARNING:
 			case E_USER_WARNING:
-				$exception = new Warning($message, $file, $line, $backtrace);
+				$exception = new Warning($message, $line, $file, $backtrace);
 				break;
 
 			case E_ERROR:
 			case E_USER_ERROR:
 			default:
-				$exception = new Error($message, $file, $line, $backtrace);
+				$exception = new Error($message, $line, $file, $backtrace);
 		}
 		return $exception;
 	}
