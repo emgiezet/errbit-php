@@ -143,7 +143,7 @@ class Errbit
         $config = array_merge($this->_config, $options);
 
         $socket = fsockopen(
-            $this->_buildTcpScheme($config),
+            $this->_buildConnectionScheme($config),
             $config['port'],
             $errno, $errstr,
             $config['connect_timeout']
@@ -151,7 +151,7 @@ class Errbit
 
         if ($socket) {
             stream_set_timeout($socket, $config['write_timeout']);
-            fwrite($socket, $this->_buildHttpPayload($exception, $config));
+            fwrite($socket, $this->_buildPayload($exception, $config));
             fclose($socket);
         }
 
@@ -221,26 +221,6 @@ class Errbit
             $this->_config['agent'] = 'errbitPHP';
         }
     }
-
-    /**
-     * Api Url Builder
-     * 
-     * @return string api url
-     */
-    private function _buildApiUrl()
-    {
-        $this->_checkConfig();
-
-        return implode(
-            '',
-            array(
-                $this->_config['secure'] ? 'https://' : 'http://',
-                $this->_config['host'],
-                ':' . $this->_config['port'],
-                self::NOTICES_PATH
-            )
-        );
-    }
     /**
      * Notice Builder
      * 
@@ -261,11 +241,20 @@ class Errbit
      * 
      * @return string
      */
-    private function _buildTcpScheme($config)
+    private function _buildConnectionScheme($config)
     {
+		$proto = "";
+		if ($config['async'])
+		{
+			$proto = "udp";
+		} else if ($config['secure']) {
+			 $proto = "ssl";
+		} else {
+			$proto = 'tcp';
+		}
         return sprintf(
             '%s://%s',
-            $config['secure'] ? 'ssl' : 'tcp',
+           	$proto,
             $config['host']
         );
     }
@@ -277,9 +266,9 @@ class Errbit
      * 
      * @return string
      */
-    private function _buildHttpPayload($exception, $config)
+    private function _buildPayload($exception, $config)
     {
-        return $this->_addHttpHeaders(
+        return $this->_addHttpHeadersIfNeeded(
             $this->_buildNoticeFor($exception, $config),
             $config
         );
@@ -292,23 +281,27 @@ class Errbit
      * 
      * @return string
      */
-    private function _addHttpHeaders($body, $config)
+    private function _addHttpHeadersIfNeeded($body, $config)
     {
-        return sprintf(
-            "%s\r\n\r\n%s",
-            implode(
-                "\r\n",
-                array(
-                    sprintf('POST %s HTTP/1.1', self::NOTICES_PATH),
-                    sprintf('Host: %s', $config['host']),
-                    sprintf('User-Agent: %s', $config['agent']),
-                    sprintf('Content-Type: %s', 'text/xml'),
-                    sprintf('Accept: %s', 'text/xml, application/xml'),
-                    sprintf('Content-Length: %d', strlen($body)),
-                    sprintf('Connection: %s', 'close')
-                )
-            ),
-            $body
-        );
+		if($config['async']) {
+			return $body;
+		} else {
+			return sprintf(
+				"%s\r\n\r\n%s",
+				implode(
+					"\r\n",
+					array(
+						sprintf('POST %s HTTP/1.1', self::NOTICES_PATH),
+						sprintf('Host: %s', $config['host']),
+						sprintf('User-Agent: %s', $config['agent']),
+						sprintf('Content-Type: %s', 'text/xml'),
+						sprintf('Accept: %s', 'text/xml, application/xml'),
+						sprintf('Content-Length: %d', strlen($body)),
+						sprintf('Connection: %s', 'close')
+					)
+				),
+				$body
+			);
+		}
     }
 }
