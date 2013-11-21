@@ -114,6 +114,11 @@ See the [documentation](https://github.com/emgiezet/errbitPHP/blob/master/Resour
 
 See the [documentation](https://github.com/emgiezet/errbitPHP/blob/master/Resources/doc/kohana3_integration.md) for kohana3 integration.
 
+## Symfony 1.4 Integration
+
+No namespaces in php 5.2 so this library can't be used. 
+Go to [filipc/sfErrbitPlugin](https://github.com/filipc/sfErrbitPlugin) and monitor your legacy 1.4 applications.
+
 ## License & Copyright
 
 Copyright © mmx3.pl 2013 Licensed under the MIT license. Based on idea of git://github.com/flippa/errbit-php.git but rewritten in 90%. See the [LICENSE](https://github.com/emgiezet/errbitPHP/blob/master/LICENSE)
