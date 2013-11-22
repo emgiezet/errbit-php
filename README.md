@@ -108,11 +108,9 @@ Errbit::instance()->start(array('error', 'fatal')); // using our own exception h
 
 See the [documentation](https://github.com/emgiezet/errbitPHP/blob/master/Resources/doc/symfony2_integration.md) for symfony2 integration.
 
-## Kohana3 Integration
+## Kohana 3.3 Integration
 
-### Work in Progress 
-
-See the [documentation](https://github.com/emgiezet/errbitPHP/blob/master/Resources/doc/kohana3_integration.md) for kohana3 integration.
+check out the [kohana-errbit](https://github.com/kwn/kohana-errbit) for kohana 3.3 integration.
 
 ## Symfony 1.4 Integration
 
