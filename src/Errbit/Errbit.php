@@ -137,22 +137,21 @@ class Errbit
      * @return [Errbit]
      *   the current instance
      */
-    public function notify($exception, $options = array())
-    {
-        $this->_checkConfig();
-        $config = array_merge($this->_config, $options);
+	public function notify($exception, $options = array())
+	{
+		$this->_checkConfig();
+		$config = array_merge($this->_config, $options);
 
-        $socket = fsockopen(
-            $this->_buildConnectionScheme($config),
-            $config['port'],
-            $errno, $errstr,
-            $config['connect_timeout']
-        );
+		$socket = fsockopen(
+			$this->_buildConnectionScheme($config),
+			$config['port'],
+			$errno, $errstr,
+			$config['connect_timeout']
+		);
 
-        if ($socket) {
-            stream_set_timeout($socket, $config['write_timeout']);
+		if ($socket) {
+			stream_set_timeout($socket, $config['write_timeout']);
 			$payLoad = $this->_buildPayload($exception, $config);
-
 			if (strlen($payLoad) > 8192 && $config['async']) {
 				$messageId = uniqid();
 				$chunks = str_split($payLoad, 7000);
@@ -161,7 +160,7 @@ class Errbit
 						"messageid" => $messageId,
 						"data" => $chunk
 					);
-					if($idx == count($chunk)-1) {
+					if($idx == count($chunk)) {
 						$packet['last'] = true;
 					}
 					$fragment = json_encode($packet);
@@ -170,15 +169,15 @@ class Errbit
 			} else {
 				fwrite($socket, $payLoad);
 			}
-            fclose($socket);
-        }
+			fclose($socket);
+		}
 
-        foreach ($this->_observers as $observer) {
-            $observer($exception, $config);
-        }
+		foreach ($this->_observers as $observer) {
+			$observer($exception, $config);
+		}
 
-        return $this;
-    }
+		return $this;
+	}
 
     // -- Private Methods
     /**
