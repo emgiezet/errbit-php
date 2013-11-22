@@ -151,7 +151,25 @@ class Errbit
 
         if ($socket) {
             stream_set_timeout($socket, $config['write_timeout']);
-            fwrite($socket, $this->_buildPayload($exception, $config));
+			$payLoad = $this->_buildPayload($exception, $config);
+
+			if (strlen($payLoad) > 8192 && $config['async']) {
+				$messageId = uniqid();
+				$chunks = str_split($payLoad, 7000);
+				foreach ($chunks as $idx => $chunk) {
+					$packet = array(
+						"messageid" => $messageId,
+						"data" => $chunk
+					);
+					if($idx == count($chunk)-1) {
+						$packet['last'] = true;
+					}
+					$fragment = json_encode($packet);
+					fwrite($socket, $fragment);
+				}
+			} else {
+				fwrite($socket, $payLoad);
+			}
             fclose($socket);
         }
 
