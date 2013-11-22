@@ -237,6 +237,9 @@ class Errbit
         if (!isset($this->_config['agent'])) {
             $this->_config['agent'] = 'errbitPHP';
         }
+        if (!isset($this->_config['async'])) {
+            $this->_config['async'] = false;
+        }
     }
     /**
      * Notice Builder
