@@ -29,5 +29,10 @@
         "psr-0": { 
             "Errbit\\": "src/"
          }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.x-dev"
+        }
     }
 }
