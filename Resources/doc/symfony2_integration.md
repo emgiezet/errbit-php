@@ -84,6 +84,7 @@ parameters:
         host: errbit.yourhosthere.com
         port: 80
         environment_name: production
+        skipped_exceptions: [] # optional list of exceptions FQDN
 ```
 ### parameters.yml(.ini)
 
