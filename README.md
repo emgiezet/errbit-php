@@ -12,6 +12,14 @@ Original idea and source has no support for php namespaces.
 Moreover it has a bug and with newest errbit version the xml has not supported chars.
 
 
+## What is for?
+
+Check the presentation below!
+
+[![Huston whe have an Airbrake](http://image.slidesharecdn.com/hustonwehaveanairbrake-131125152637-phpapp02/95/slide-1-638.jpg?1385415083)](http://www.slideshare.net/MaxMaecki/meetphp-11-huston-we-have-an-airbrake)
+
+
+
 ## Installation
 
 We haven't put this in PEAR or anything like that (please feel to contribute)
