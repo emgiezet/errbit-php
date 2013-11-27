@@ -2,12 +2,12 @@
 namespace Errbit;
 
 use Errbit\Exception\Exception;
-use Errbit\Exception\Notice as ENotice;
 
 use Errbit\Errors\Notice;
 use Errbit\Errors\Error;
 use Errbit\Errors\Fatal;
 use Errbit\Handlers\ErrorHandlers;
+use Errbit\Writer\WriterInterface;
 
 /**
  * The Errbit client.
@@ -22,6 +22,11 @@ use Errbit\Handlers\ErrorHandlers;
 class Errbit
 {
     private static $_instance = null;
+
+    /**
+     * @var WriterInterface
+     */
+    protected $writer;
 
     /**
      * Get a singleton instance of the client.
@@ -43,7 +48,6 @@ class Errbit
     const API_VERSION   = '2.2';
     const PROJECT_NAME  = 'errbit-php';
     const PROJECT_URL   = 'https://github.com/emgiezet/errbit-php';
-    const NOTICES_PATH  = '/notifier_api/v2/notices/';
 
     private $_config;
     private $_observers = array();
@@ -59,6 +63,14 @@ class Errbit
     public function __construct($config = array())
     {
         $this->_config = $config;
+    }
+
+    /**
+     * @param WriterInterface $writer
+     */
+    public function setWriter(WriterInterface $writer)
+    {
+        $this->writer = $writer;
     }
 
     /**
@@ -137,47 +149,46 @@ class Errbit
      * @return [Errbit]
      *   the current instance
      */
-	public function notify($exception, $options = array())
-	{
-		$this->_checkConfig();
-		$config = array_merge($this->_config, $options);
+    public function notify($exception, $options = array())
+    {
+        $this->_checkConfig();
+        $config = array_merge($this->_config, $options);
 
-		$socket = fsockopen(
-			$this->_buildConnectionScheme($config),
-			$config['port'],
-			$errno, $errstr,
-			$config['connect_timeout']
-		);
+        if ($this->shouldNotify($exception, $config['skipped_exceptions'])) {
+            $this->getWriter()->write($exception, $config);
+            $this->notifyObservers($exception, $config);
+        }
 
-		if ($socket) {
-			stream_set_timeout($socket, $config['write_timeout']);
-			$payLoad = $this->_buildPayload($exception, $config);
-			if (strlen($payLoad) > 8192 && $config['async']) {
-				$messageId = uniqid();
-				$chunks = str_split($payLoad, 7000);
-				foreach ($chunks as $idx => $chunk) {
-					$packet = array(
-						"messageid" => $messageId,
-						"data" => $chunk
-					);
-					if($idx == count($chunk)) {
-						$packet['last'] = true;
-					}
-					$fragment = json_encode($packet);
-					fwrite($socket, $fragment);
-				}
-			} else {
-				fwrite($socket, $payLoad);
-			}
-			fclose($socket);
-		}
+        return $this;
+    }
 
-		foreach ($this->_observers as $observer) {
-			$observer($exception, $config);
-		}
+    protected function shouldNotify($exception, array $skippedExceptions)
+    {
+        foreach ($skippedExceptions as $skippedException) {
+            if ($exception instanceof $skippedException) {
+                return false;
+            }
+        }
 
-		return $this;
-	}
+        return true;
+    }
+
+    protected function notifyObservers($exception, $config)
+    {
+        foreach ($this->_observers as $observer) {
+            $observer($exception, $config);
+        }
+    }
+
+    protected function getWriter()
+    {
+        if (empty($this->writer)) {
+            $defaultWriter = new $this->_config['default_writer'];
+            $this->writer = $defaultWriter;
+        }
+
+        return $this->writer;
+    }
 
     // -- Private Methods
     /**
@@ -234,94 +245,19 @@ class Errbit
             );
         }
 
+        if (!isset($this->_config['skipped_exceptions'])) {
+            $this->_config['skipped_exceptions'] = array();
+        }
+
+        if (!isset($this->_config['default_writer'])) {
+            $this->_config['default_writer'] = 'Errbit\Writer\SocketWriter';
+        }
+
         if (!isset($this->_config['agent'])) {
             $this->_config['agent'] = 'errbitPHP';
         }
         if (!isset($this->_config['async'])) {
             $this->_config['async'] = false;
         }
-    }
-    /**
-     * Notice Builder
-     * 
-     * @param mixed $exception Excpetion instance all exceptions that extends \Excpetion()
-     * @param array $options   notice options
-     * 
-     * @return string Xml
-     * 
-     */
-    private function _buildNoticeFor($exception, $options)
-    {
-        return ENotice::forException($exception, $options)->asXml();
-    }
-    /**
-     * Build schema for Tcp
-     * 
-     * @param array $config config
-     * 
-     * @return string
-     */
-    private function _buildConnectionScheme($config)
-    {
-		$proto = "";
-		if ($config['async'])
-		{
-			$proto = "udp";
-		} else if ($config['secure']) {
-			 $proto = "ssl";
-		} else {
-			$proto = 'tcp';
-		}
-        return sprintf(
-            '%s://%s',
-           	$proto,
-            $config['host']
-        );
-    }
-    /**
-     * Build a payload to send by php fsockopen
-     * 
-     * @param mixed $exception Excpetion instance all exceptions that extends \Excpetion()
-     * @param array $config    configuration in array
-     * 
-     * @return string
-     */
-    private function _buildPayload($exception, $config)
-    {
-        return $this->_addHttpHeadersIfNeeded(
-            $this->_buildNoticeFor($exception, $config),
-            $config
-        );
-    }
-    /**
-     * Build http headers for errbit api call
-     * 
-     * @param string $body   requiest body
-     * @param array  $config configuration in array
-     * 
-     * @return string
-     */
-    private function _addHttpHeadersIfNeeded($body, $config)
-    {
-		if($config['async']) {
-			return $body;
-		} else {
-			return sprintf(
-				"%s\r\n\r\n%s",
-				implode(
-					"\r\n",
-					array(
-						sprintf('POST %s HTTP/1.1', self::NOTICES_PATH),
-						sprintf('Host: %s', $config['host']),
-						sprintf('User-Agent: %s', $config['agent']),
-						sprintf('Content-Type: %s', 'text/xml'),
-						sprintf('Accept: %s', 'text/xml, application/xml'),
-						sprintf('Content-Length: %d', strlen($body)),
-						sprintf('Connection: %s', 'close')
-					)
-				),
-				$body
-			);
-		}
     }
 }

@@ -1,24 +1,55 @@
 <?php
+
 namespace Errbit\Tests;
+
 use Errbit\Errbit;
-use \Mockery as m;
+use Mockery;
 
 class ErrbitTest extends \PHPUnit_Framework_TestCase
 {
+    protected $errbit;
+
+    public function setUp()
+    {
+        $config = array(
+            'api_key' => 'test',
+            'host' => 'test',
+            'skipped_exceptions' => array(
+                'BadMethodCallException'
+            )
+        );
+        $this->errbit = new Errbit($config);
+    }
 
     public function tearDown()
     {
-        m::close();
+        Mockery::close();
     }
 
-    public function testBase()
+    /**
+     * @test
+     */
+    public function shouldPassExceptionsToWriter()
     {
+        $exception = Mockery::mock('BadFunctionCallException');
 
-        $service = m::mock('service');
-        $service->shouldReceive('readTemp')->times(3)->andReturn(10, 12, 14);
+        $writer = Mockery::mock('Errbit\Writer\WriterInterface');
+        $writer->shouldReceive('write')->with($exception, Mockery::any());
+        $this->errbit->setWriter($writer);
 
-        // $handler = new ErrorHanlers();
-        $this->markTestIncomplete('This test has not been implemented yet.');
+        $this->errbit->notify($exception);
     }
 
+    /**
+     * @test
+     */
+    public function shouldIgnoreSkippedExceptions()
+    {
+        $exception = Mockery::mock('BadMethodCallException');
+
+        $writer = Mockery::mock('Errbit\Writer\WriterInterface');
+        $this->errbit->setWriter($writer);
+
+        $this->errbit->notify($exception);
+    }
 }

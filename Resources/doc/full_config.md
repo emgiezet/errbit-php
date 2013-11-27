@@ -16,6 +16,7 @@ Errbit::instance()
     'backtrace_filters' => array('#/some/long/path#' => '')      // optional
     'connect_timeout'   => 3                                     // optional 
     'write_timeout'     => 3                                     // optional
+    'skipped_exceptions' => array()                              // optional
   ))
   ->start();
 ```
