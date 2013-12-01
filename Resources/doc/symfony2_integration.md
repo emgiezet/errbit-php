@@ -101,3 +101,7 @@ parameters:
     errbit_enable_log = true
     errbit_api_key = yourApiKeyHere
 ```
+
+## If you have some problems here.
+
+Try the full integration example at: [Symfony2 ErrbitPHP Sandbox](https://github.com/emgiezet/symfony2-errbit)
