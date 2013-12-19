@@ -6,6 +6,11 @@ php:
   - 5.5
   - hhvm
 
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get install -qq libxml
+
+
 before_script:
     - composer install --dev -n
 

@@ -16,6 +16,9 @@
             "name": "karolsojko"
         }
     ],
+    "support": {
+        "issues": "https://github.com/emgiezet/errbitPHP/issues"
+    },
     "require": {
         "php": ">=5.3.2"
     },
