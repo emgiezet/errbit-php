@@ -3,6 +3,7 @@
 namespace Errbit\Writer;
 
 use Errbit\Exception\Notice;
+use Guzzle\Http\Client;
 
 class SocketWriter implements WriterInterface
 {
@@ -13,35 +14,15 @@ class SocketWriter implements WriterInterface
 	 */
 	public function write($exception, array $config)
 	{
-		$socket = fsockopen(
-			$this->buildConnectionScheme($config),
-			$config['port'],
-			$errno, $errstr,
-			$config['connect_timeout']
-		);
+        $headers = array(
+            'Host'=> $config['host'],
+            'Accept'=>'text/xml, application/xml',
+            'Content-Type'=> 'text/xml'
 
-		if ($socket) {
-			stream_set_timeout($socket, $config['write_timeout']);
-			$payLoad = $this->buildPayload($exception, $config);
-			if (strlen($payLoad) > 7000 && $config['async']) {
-				$messageId = uniqid();
-				$chunks = str_split($payLoad, 7000);
-				foreach ($chunks as $idx => $chunk) {
-					$packet = array(
-						"messageid" => $messageId,
-						"data" => $chunk
-					);
-					if($idx == count($chunks) -1 ) {
-						$packet['last'] = true;
-					}
-					$fragment = json_encode($packet);
-					fwrite($socket, $fragment);
-				}
-			} else {
-				fwrite($socket, $payLoad);
-			}
-			fclose($socket);
-		}
+        );
+        $client = new Client($this->buildConnectionScheme($config));
+        $client->setUserAgent($config['agent']);
+        $client->post(self::NOTICES_PATH, $headers, $this->buildPayload($exception, $config), array( 'timeout' => $config['write_timeout'], 'connect_timeout'=>$config['connect_timeout']))->send();
 	}
 
     protected function buildPayload($exception, $config)
