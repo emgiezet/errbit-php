@@ -105,7 +105,7 @@ class Notice
         case 'Fatal':
             return 'Fatal Error';
         default:
-            return $name;
+            return $shortClassname['classname'];
         }
     }
 
