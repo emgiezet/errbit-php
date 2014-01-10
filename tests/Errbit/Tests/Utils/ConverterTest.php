@@ -10,6 +10,7 @@
 namespace Errbit\Tests\Utils;
 
 use Errbit\Errors\Error;
+use Errbit\Errors\Fatal;
 use Errbit\Errors\Notice;
 use Errbit\Errors\Warning;
 use Errbit\Utils\Converter;
@@ -41,12 +42,20 @@ class ConverterTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($notice, $expected);
 	}
 
-	public function testError()
+	public function testFatalError()
 	{
 		$notice = $this->object->convert(E_ERROR, "TestError", "test.php", 8, "");
-		$expected = new Error("TestError", 8, "test.php",  "");
+		$expected = new Fatal("TestError", 8, "test.php");
 		$this->assertEquals($notice, $expected);
 	}
+
+	public function testCatchableFatalError()
+	{
+		$notice = $this->object->convert(E_RECOVERABLE_ERROR, "TestError", "test.php", 8, "");
+		$expected = new Fatal("TestError", 8, "test.php");
+		$this->assertEquals($notice, $expected);
+	}
+
 
 	public function testUserError()
 	{
