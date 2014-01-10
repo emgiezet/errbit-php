@@ -8,6 +8,7 @@
 namespace Errbit\Utils;
 
 use Errbit\Errors\Error;
+use Errbit\Errors\Fatal;
 use Errbit\Errors\Notice;
 use Errbit\Errors\Warning;
 
@@ -44,7 +45,12 @@ class Converter {
 				$exception = new Warning($message, $line, $file, $backtrace);
 				break;
 
+			case E_RECOVERABLE_ERROR:
 			case E_ERROR:
+			case E_CORE_ERROR:
+				$exception = new Fatal($message, $line, $file, $backtrace);
+				break;
+
 			case E_USER_ERROR:
 			default:
 				$exception = new Error($message, $line, $file, $backtrace);

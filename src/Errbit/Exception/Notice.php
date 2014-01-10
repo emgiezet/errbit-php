@@ -94,9 +94,8 @@ class Notice
      */
     public static function className($exception)
     {
-        $name = get_class($exception);
-
-        switch ($name) {
+        $shortClassname = self::parseClassname(get_class($exception));
+        switch ($shortClassname['classname']) {
         case 'Notice':
             return 'Notice';
         case 'Warning':
@@ -106,7 +105,7 @@ class Notice
         case 'Fatal':
             return 'Fatal Error';
         default:
-            return $name;
+            return $shortClassname['classname'];
         }
     }
 
@@ -391,5 +390,18 @@ class Notice
         if (!empty($_SERVER['SERVER_PORT']) && !in_array($_SERVER['SERVER_PORT'], array(80, 443))) {
             return sprintf(':%d', $_SERVER['SERVER_PORT']);
         }
+    }
+    /**
+    * Parses class name to namespace and class name.
+    * @param string $name Name of class
+    * @return array
+    *
+    */
+    private static function parseClassname ($name)
+    {
+        return array(
+            'namespace' => array_slice(explode('\\', $name), 0, -1),
+            'classname' => join('', array_slice(explode('\\', $name), -1)),
+        );
     }
 }
