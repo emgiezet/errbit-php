@@ -117,7 +117,7 @@ class Notice
      *
      * @return null
      */
-    public static function xmlVarsFor($builder, $array)
+    public static function xmlVarsFor(XmlBuilder $builder, $array)
     {
         if (is_array($array)) {
             foreach ($array as $key => $value) {
@@ -176,11 +176,11 @@ class Notice
         return $builder->tag(
             'notice',
             array('version' => Errbit::API_VERSION),
-            function ($notice) use ($exception, $options, $self) {
+            function (XmlBuilder $notice) use ($exception, $options, $self) {
                 $notice->tag('api-key',  $options['api_key']);
                 $notice->tag(
                     'notifier',
-                    function ($notifier) {
+                    function (XmlBuilder $notifier) {
                         $notifier->tag('name',    Errbit::PROJECT_NAME);
                         $notifier->tag('version', Errbit::VERSION);
                         $notifier->tag('url',     Errbit::PROJECT_URL);
@@ -189,13 +189,13 @@ class Notice
 
                 $notice->tag(
                     'error',
-                    function ($error) use ($exception, $self) {
+                    function (XmlBuilder $error) use ($exception, $self) {
                         $class = Notice::className($exception);
                         $error->tag('class',     $self->filterTrace($class));
                         $error->tag('message',   $self->filterTrace(sprintf('%s: %s', $class, $exception->getMessage())));
                         $error->tag(
                             'backtrace',
-                            function ($backtrace) use ($exception, $self) {
+                            function (XmlBuilder $backtrace) use ($exception, $self) {
                                 $trace = $exception->getTrace();
 
                                 $file1 = $exception->getFile();
@@ -244,7 +244,7 @@ class Notice
                 ) {
                     $notice->tag(
                         'request',
-                        function ($request) use ($options) {
+                        function (XmlBuilder $request) use ($options) {
                             $request->tag('url',       !empty($options['url']) ? $options['url'] : '');
                             $request->tag('component', !empty($options['controller']) ? $options['controller'] : '');
                             $request->tag('action',    !empty($options['action']) ? $options['action'] : '');
@@ -280,7 +280,7 @@ class Notice
 
                 $notice->tag(
                     'server-environment',
-                    function ($env) use ($options) {
+                    function (XmlBuilder $env) use ($options) {
                         $env->tag('project-root',     $options['project_root']);
                         $env->tag('environment-name', $options['environment_name']);
                         $env->tag('hostname',         $options['hostname']);
