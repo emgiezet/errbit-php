@@ -1,12 +1,12 @@
 <?php
 namespace Errbit\Utils;
 
-/**
- * Errbit PHP Notifier.
- *
- * Copyright © Flippa.com Pty. Ltd.
- * See the LICENSE file for details.
- */
+    /**
+     * Errbit PHP Notifier.
+     *
+     * Copyright © Flippa.com Pty. Ltd.
+     * See the LICENSE file for details.
+     */
 
 /**
  * Like Nokogiri, but shittier.
@@ -51,26 +51,16 @@ class XmlBuilder
      *
      * @return XmlBuilder a builder for the inserted tag
      */
-    public function tag($name /* , $value, $attributes, $callback */)
+    public function tag($name , $value ='', $attributes = array(), $callback = null )
     {
-        $value      = '';
-        $attributes = array();
-        $callback   = null;
-        $idx        = count($this->_xml->$name);
-        $args       = func_get_args();
 
-        array_shift($args);
-        foreach ($args as $arg) {
-            if ((!is_string($arg) || strpos($arg, "::") === false) && is_callable($arg)) {
-                $callback = $arg;
-            } elseif (is_array($arg)) {
-                $attributes = $arg;
-            } elseif (is_scalar($arg)) {
-                $value = (string) $arg;
-            } elseif (is_object($arg)) {
-                $value = "[" . get_class($arg) . "]";
+        $idx        = count($this->_xml->$name);
+
+            if (is_object($value)) {
+                $value = "[" . get_class($value) . "]";
+            } else {
+                $value = (string) $value;
             }
-        }
 
         $this->_xml->{$name}[$idx] = $value;
 
