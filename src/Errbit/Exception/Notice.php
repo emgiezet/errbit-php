@@ -132,7 +132,8 @@ class Notice
                         array('key' => $key),
                         function ($var) use ($value) {
                             Notice::xmlVarsFor($var, $value);
-                        }
+                        },
+                        true
                     );
                 } else {
                     $builder->tag('var', $value, array('key' => $key));

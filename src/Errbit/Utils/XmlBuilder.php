@@ -1,12 +1,12 @@
 <?php
 namespace Errbit\Utils;
 
-    /**
-     * Errbit PHP Notifier.
-     *
-     * Copyright © Flippa.com Pty. Ltd.
-     * See the LICENSE file for details.
-     */
+/**
+ * Errbit PHP Notifier.
+ *
+ * Copyright © Flippa.com Pty. Ltd.
+ * See the LICENSE file for details.
+ */
 
 /**
  * Like Nokogiri, but shittier.
@@ -51,25 +51,36 @@ class XmlBuilder
      *
      * @return XmlBuilder a builder for the inserted tag
      */
-    public function tag($name , $value ='', $attributes = array(), $callback = null )
+    /**
+     * Insert a tag into the XML.
+     *
+     * @param string   $name       the name of the tag, required.
+     * @param string   $value      the text value of the element, optional
+     * @param array    $attributes an array of attributes for the tag, optional
+     * @param Callable $callback   a callback to receive an XmlBuilder for the new tag, optional
+     *
+     * @return XmlBuilder a builder for the inserted tag
+     */
+    public function tag($name , $value ='', $attributes = array(), $callback = null, $getLastChild = false)
     {
 
-        $idx        = count($this->_xml->$name);
+        $idx = count($this->_xml->$name);
 
-            if (is_object($value)) {
-                $value = "[" . get_class($value) . "]";
-            } else {
+        if (is_object($value)) {
+            $value = "[" . get_class($value) . "]";
+        } else {
                 $value = (string) $value;
-            }
+        }
 
         $this->_xml->{$name}[$idx] = $value;
 
         foreach ($attributes as $attr => $v) {
             $this->_xml->{$name}[$idx][$attr] = $v;
         }
-
-        // FIXME: This isn't the last child, it's the first, it just doesn't happen to matter in this project
         $node = new self($this->_xml->$name);
+        if ($getLastChild) {
+            $node = new self(array_shift($this->_xml->xpath($name."[last()]")));
+        }
 
         if ($callback) {
             $callback($node);
