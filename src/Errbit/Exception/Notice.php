@@ -43,10 +43,10 @@ class Notice
         $this->_exception = $exception;
         $this->_options   = array_merge(
             array(
-            'url'          => $this->_buildRequestUrl(),
-            'parameters'   => !empty($_REQUEST) ? $_REQUEST : array(),
-            'session_data' => !empty($_SESSION) ? $_SESSION : array(),
-            'cgi_data'     => !empty($_SERVER)  ? $_SERVER  : array()
+                'url'          => $this->_buildRequestUrl(),
+                'parameters'   => !empty($_REQUEST) ? $_REQUEST : array(),
+                'session_data' => !empty($_SESSION) ? $_SESSION : array(),
+                'cgi_data'     => !empty($_SERVER)  ? $_SERVER  : array()
             ),
             $options
         );
@@ -96,16 +96,16 @@ class Notice
     {
         $shortClassname = self::parseClassname(get_class($exception));
         switch ($shortClassname['classname']) {
-        case 'Notice':
-            return 'Notice';
-        case 'Warning':
-            return 'Warning';
-        case 'Error':
-            return 'Error';
-        case 'Fatal':
-            return 'Fatal Error';
-        default:
-            return $shortClassname['classname'];
+            case 'Notice':
+                return 'Notice';
+            case 'Warning':
+                return 'Warning';
+            case 'Error':
+                return 'Error';
+            case 'Fatal':
+                return 'Fatal Error';
+            default:
+                return $shortClassname['classname'];
         }
     }
 
@@ -117,7 +117,7 @@ class Notice
      *
      * @return null
      */
-    public static function xmlVarsFor($builder, $array)
+    public static function xmlVarsFor(XmlBuilder $builder, $array)
     {
         if (is_array($array)) {
             foreach ($array as $key => $value) {
@@ -128,10 +128,12 @@ class Notice
                 if (is_array($value)) {
                     $builder->tag(
                         'var',
+                        '',
                         array('key' => $key),
                         function ($var) use ($value) {
-                                Notice::xmlVarsFor($var, $value);
-                        }
+                            Notice::xmlVarsFor($var, $value);
+                        },
+                        true
                     );
                 } else {
                     $builder->tag('var', $value, array('key' => $key));
@@ -175,12 +177,15 @@ class Notice
 
         return $builder->tag(
             'notice',
+            '',
             array('version' => Errbit::API_VERSION),
-            function ($notice) use ($exception, $options, $self) {
+            function (XmlBuilder $notice) use ($exception, $options, $self) {
                 $notice->tag('api-key',  $options['api_key']);
                 $notice->tag(
                     'notifier',
-                    function ($notifier) {
+                    '',
+                    array(),
+                    function (XmlBuilder $notifier) {
                         $notifier->tag('name',    Errbit::PROJECT_NAME);
                         $notifier->tag('version', Errbit::VERSION);
                         $notifier->tag('url',     Errbit::PROJECT_URL);
@@ -189,18 +194,23 @@ class Notice
 
                 $notice->tag(
                     'error',
-                    function ($error) use ($exception, $self) {
+                    '',
+                    array(),
+                    function (XmlBuilder $error) use ($exception, $self) {
                         $class = Notice::className($exception);
                         $error->tag('class',     $self->filterTrace($class));
                         $error->tag('message',   $self->filterTrace(sprintf('%s: %s', $class, $exception->getMessage())));
                         $error->tag(
                             'backtrace',
-                            function ($backtrace) use ($exception, $self) {
+                            '',
+                            array(),
+                            function (XmlBuilder $backtrace) use ($exception, $self) {
                                 $trace = $exception->getTrace();
 
                                 $file1 = $exception->getFile();
                                 $backtrace->tag(
                                     'line',
+                                    '',
                                     array(
                                         'number' => $exception->getLine(),
                                         'file' => !empty($file1) ? $self->filterTrace($file1) : '<unknown>',
@@ -212,16 +222,18 @@ class Notice
                                 if ( empty($trace) ) {
                                     $backtrace->tag(
                                         'line',
+                                        '',
                                         array(
-                                             'number' => '',
-                                             'file' => '',
-                                             'method' => ''
+                                            'number' => '',
+                                            'file' => '',
+                                            'method' => ''
                                         )
                                     );
                                 } else {
                                     foreach ($trace as $frame) {
                                         $backtrace->tag(
                                             'line',
+                                            '',
                                             array(
                                                 'number' => isset($frame['line']) ? $frame['line'] : 0,
                                                 'file'   => isset($frame['file']) ? $self->filterTrace($frame['file']) : '<unknown>',
@@ -244,14 +256,18 @@ class Notice
                 ) {
                     $notice->tag(
                         'request',
-                        function ($request) use ($options) {
+                        '',
+                        array(),
+                        function (XmlBuilder $request) use ($options) {
                             $request->tag('url',       !empty($options['url']) ? $options['url'] : '');
                             $request->tag('component', !empty($options['controller']) ? $options['controller'] : '');
                             $request->tag('action',    !empty($options['action']) ? $options['action'] : '');
                             if (!empty($options['parameters'])) {
                                 $request->tag(
                                     'params',
-                                    function ($params) use ($options) {
+                                    '',
+                                    array(),
+                                    function (XmlBuilder $params) use ($options) {
                                         Notice::xmlVarsFor($params, $options['parameters']);
                                     }
                                 );
@@ -260,7 +276,9 @@ class Notice
                             if (!empty($options['session_data'])) {
                                 $request->tag(
                                     'session',
-                                    function ($session) use ($options) {
+                                    '',
+                                    array(),
+                                    function (XmlBuilder $session) use ($options) {
                                         Notice::xmlVarsFor($session, $options['session_data']);
                                     }
                                 );
@@ -269,7 +287,9 @@ class Notice
                             if (!empty($options['cgi_data'])) {
                                 $request->tag(
                                     'cgi-data',
-                                    function ($cgiData) use ($options) {
+                                    '',
+                                    array(),
+                                    function (XmlBuilder $cgiData) use ($options) {
                                         Notice::xmlVarsFor($cgiData, $options['cgi_data']);
                                     }
                                 );
@@ -280,7 +300,9 @@ class Notice
 
                 $notice->tag(
                     'server-environment',
-                    function ($env) use ($options) {
+                    '',
+                    array(),
+                    function (XmlBuilder $env) use ($options) {
                         $env->tag('project-root',     $options['project_root']);
                         $env->tag('environment-name', $options['environment_name']);
                         $env->tag('hostname',         $options['hostname']);
@@ -295,7 +317,7 @@ class Notice
      * Filtering data
      *
      * @return null
-    */
+     */
     private function _filterData()
     {
         if (empty($this->_options['params_filters'])) {
@@ -392,11 +414,11 @@ class Notice
         }
     }
     /**
-    * Parses class name to namespace and class name.
-    * @param string $name Name of class
-    * @return array
-    *
-    */
+     * Parses class name to namespace and class name.
+     * @param string $name Name of class
+     * @return array
+     *
+     */
     private static function parseClassname ($name)
     {
         return array(
