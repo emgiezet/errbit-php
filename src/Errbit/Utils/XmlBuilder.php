@@ -79,7 +79,8 @@ class XmlBuilder
         }
         $node = new self($this->_xml->$name);
         if ($getLastChild) {
-            $xml = array_shift($this->_xml->xpath($name."[last()]"));
+            $array = $this->_xml->xpath($name."[last()]");
+            $xml = array_shift($array);
             $node = new self($xml);
         }
 
