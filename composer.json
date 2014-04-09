@@ -1,7 +1,7 @@
 {
     "name": "emgiezet/errbit-php",
     "type": "library",
-    "description": "errbit/airbrake integration with php with phpcs-2",
+    "description": "errbit/airbrake integration with php with psr-2",
     "keywords": ["errbit", "errbit php", "error tracking", "airbrake"],
     "homepage": "http://github.com/emgiezet/errbitPHP",
     "license": "MIT",
