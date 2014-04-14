@@ -14,6 +14,7 @@
  * @link       https://github.com/emgiezet/errbit-php Repo
  */
 namespace Errbit\Exception;
+
 use Errbit\Utils\XmlBuilder;
 use Errbit\Errbit;
 
@@ -31,6 +32,8 @@ class Notice
 {
     private $_exception;
     private $_options;
+
+    private static $_hashArray = array();
 
     /**
      * Create a new notice for the given Exception with the given $options.
@@ -122,19 +125,36 @@ class Notice
         if (is_array($array)) {
             foreach ($array as $key => $value) {
                 if (is_object($value)) {
+
+                    $hash = spl_object_hash($value);
+                    $_hashArray[]= $hash;
+
                     $value = (array) $value;
+                } else {
+                    $hash = null;
                 }
 
-                if (is_array($value)) {
-                    $builder->tag(
-                        'var',
-                        '',
-                        array('key' => $key),
-                        function ($var) use ($value) {
-                            Notice::xmlVarsFor($var, $value);
-                        },
-                        true
-                    );
+                if (is_array($value))
+                {
+                    if(null == $hash || !in_array($hash, $_hashArray))
+                    {
+                        $builder->tag(
+                            'var',
+                            '',
+                            array('key' => $key),
+                            function ($var) use ($value) {
+                                Notice::xmlVarsFor($var, $value);
+                            },
+                            true
+                        );
+                    } else {
+                        $builder->tag(
+                                'var',
+                                '*** RECURSION ***',
+                                array('key' => $key)
+                        );
+                    }
+
                 } else {
                     $builder->tag('var', $value, array('key' => $key));
                 }

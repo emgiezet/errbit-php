@@ -12,28 +12,31 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
         m::close();
     }
 
+    public function setUp()
+    {
+        $this->config = array(
+                'api_key'=>'9fa28ccc56ed3aae882d25a9cee5695a',
+                'host' => 'errbit.redexperts.net',
+                'hostname' => 'errbit-php-test.net',
+                'port' => '80',
+                'secure' => '443',
+                'project_root' => 'test',
+                'environment_name' => 'test',
+                'url' => 'test',
+                'controller' => 'test',
+                'action' => 'test',
+                'session_data' => array('test',),
+                'parameters' => array('test', 'doink'),
+                'cgi_data' => array('test',),
+                'params_filters' => array('test'=>'/test/',),
+                'backtrace_filters' => 'test'
+        );
+    }
+
     public function testBase()
     {
-        // WIP
-         $config = array(
-            'api_key'=>'9fa28ccc56ed3aae882d25a9cee5695a',
-            'host' => 'errbit.redexperts.net',
-            'hostname' => 'errbit-php-test.net',
-            'port' => '80',
-            'secure' => '443',
-            'project_root' => 'test',
-            'environment_name' => 'test',
-            'url' => 'test',
-            'controller' => 'test',
-            'action' => 'test',
-            'session_data' => array('test',),
-            'parameters' => array('test', 'doink'),
-            'cgi_data' => array('test',),
-            'params_filters' => array('test'=>'/test/',),
-            'backtrace_filters' => 'test'
 
-        );
-        $notice = new Notice(new \Exception(), $config);
+        $notice = new Notice(new \Exception(), $this->config);
 
         $xml = $notice->asXml();
 
@@ -45,4 +48,25 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    public function testShouldNotFollowRecursion()
+    {
+
+        $foo = new \StdClass;
+        $bar = new \StdClass;
+        $foo->bar = $bar;
+        $bar->foo = $foo;
+        $vars = array('foo' => $foo, 'bar' => $bar);
+
+        $this->config['session_data'] = array($vars);
+
+        $notice = new Notice(new \Exception(), $this->config);
+
+        $xml = $notice->asXml();
+
+        $dom = new \DOMDocument();
+        $dom->loadXML($xml);
+
+        $valid = $dom->schemaValidate(dirname(__FILE__).'/../../../../Resources/xsd/XSD.xml');
+        $this->assertTrue($valid, 'Not Valid XSD');
+    }
 }
