@@ -8,41 +8,42 @@ class SocketWriter implements WriterInterface
 {
     const NOTICES_PATH  = '/notifier_api/v2/notices/';
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function write($exception, array $config)
-	{
-		$socket = fsockopen(
-			$this->buildConnectionScheme($config),
-			$config['port'],
-			$errno, $errstr,
-			$config['connect_timeout']
-		);
+    /**
+     * {@inheritdoc}
+     */
+    public function write($exception, array $config)
+    {
+        $socket = fsockopen(
+            $this->buildConnectionScheme($config),
+            $config['port'],
+            $errno,
+            $errstr,
+            $config['connect_timeout']
+        );
 
-		if ($socket) {
-			stream_set_timeout($socket, $config['write_timeout']);
-			$payLoad = $this->buildPayload($exception, $config);
-			if (strlen($payLoad) > 7000 && $config['async']) {
-				$messageId = uniqid();
-				$chunks = str_split($payLoad, 7000);
-				foreach ($chunks as $idx => $chunk) {
-					$packet = array(
-						"messageid" => $messageId,
-						"data" => $chunk
-					);
-					if($idx == count($chunks) -1 ) {
-						$packet['last'] = true;
-					}
-					$fragment = json_encode($packet);
-					fwrite($socket, $fragment);
-				}
-			} else {
-				fwrite($socket, $payLoad);
-			}
-			fclose($socket);
-		}
-	}
+        if ($socket) {
+            stream_set_timeout($socket, $config['write_timeout']);
+            $payLoad = $this->buildPayload($exception, $config);
+            if (strlen($payLoad) > 7000 && $config['async']) {
+                $messageId = uniqid();
+                $chunks = str_split($payLoad, 7000);
+                foreach ($chunks as $idx => $chunk) {
+                    $packet = array(
+                        "messageid" => $messageId,
+                        "data" => $chunk
+                    );
+                    if ($idx == count($chunks)-1) {
+                        $packet['last'] = true;
+                    }
+                    $fragment = json_encode($packet);
+                    fwrite($socket, $fragment);
+                }
+            } else {
+                fwrite($socket, $payLoad);
+            }
+            fclose($socket);
+        }
+    }
 
     protected function buildPayload($exception, $config)
     {
@@ -55,10 +56,9 @@ class SocketWriter implements WriterInterface
     protected function buildConnectionScheme($config)
     {
         $proto = "";
-        if ($config['async'])
-        {
+        if ($config['async']) {
             $proto = "udp";
-        } else if ($config['secure']) {
+        } elseif ($config['secure']) {
              $proto = "ssl";
         } else {
             $proto = 'tcp';
@@ -69,7 +69,7 @@ class SocketWriter implements WriterInterface
 
     protected function addHttpHeadersIfNeeded($body, $config)
     {
-        if($config['async']) {
+        if ($config['async']) {
             return $body;
         } else {
             return sprintf(

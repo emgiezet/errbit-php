@@ -14,6 +14,7 @@
  * @link       https://github.com/emgiezet/errbit-php Repo
  */
 namespace Errbit\Exception;
+
 use Errbit\Utils\XmlBuilder;
 use Errbit\Errbit;
 
@@ -29,8 +30,10 @@ use Errbit\Errbit;
  */
 class Notice
 {
-    private $_exception;
-    private $_options;
+    private $exception;
+    private $options;
+
+    private static $hashArray = array();
 
     /**
      * Create a new notice for the given Exception with the given $options.
@@ -40,10 +43,10 @@ class Notice
      */
     public function __construct($exception, $options = array())
     {
-        $this->_exception = $exception;
-        $this->_options   = array_merge(
+        $this->exception = $exception;
+        $this->options   = array_merge(
             array(
-                'url'          => $this->_buildRequestUrl(),
+                'url'          => $this->buildRequestUrl(),
                 'parameters'   => !empty($_REQUEST) ? $_REQUEST : array(),
                 'session_data' => !empty($_SESSION) ? $_SESSION : array(),
                 'cgi_data'     => !empty($_SERVER)  ? $_SERVER  : array()
@@ -51,7 +54,7 @@ class Notice
             $options
         );
 
-        $this->_filterData();
+        $this->filterData();
     }
 
     /**
@@ -122,19 +125,36 @@ class Notice
         if (is_array($array)) {
             foreach ($array as $key => $value) {
                 if (is_object($value)) {
+
+                    $hash = spl_object_hash($value);
+                    $hashArray[]= $hash;
+
                     $value = (array) $value;
+                } else {
+                    $hash = null;
                 }
 
                 if (is_array($value)) {
-                    $builder->tag(
-                        'var',
-                        '',
-                        array('key' => $key),
-                        function ($var) use ($value) {
-                            Notice::xmlVarsFor($var, $value);
-                        },
-                        true
-                    );
+                    if (null == $hash || !in_array($hash, $hashArray)) {
+                        $builder->tag(
+                            'var',
+                            '',
+                            array('key' => $key),
+                            function ($var) use ($value) {
+                                Notice::xmlVarsFor($var, $value);
+                            },
+                            true
+                        );
+                    } else {
+                        $builder->tag(
+                            'var',
+                            '*** RECURSION ***',
+                            array(
+                                'key' => $key
+                            )
+                        );
+                    }
+
                 } else {
                     $builder->tag('var', $value, array('key' => $key));
                 }
@@ -152,11 +172,11 @@ class Notice
     public function filterTrace($str)
     {
 
-        if (empty($this->_options['backtrace_filters']) || !is_array($this->_options['backtrace_filters'])) {
+        if (empty($this->options['backtrace_filters']) || !is_array($this->options['backtrace_filters'])) {
             return $str;
         }
 
-        foreach ($this->_options['backtrace_filters'] as $pattern => $replacement) {
+        foreach ($this->options['backtrace_filters'] as $pattern => $replacement) {
             $str = preg_replace($pattern, $replacement, $str);
         }
 
@@ -170,8 +190,8 @@ class Notice
      */
     public function asXml()
     {
-        $exception = $this->_exception;
-        $options   = $this->_options;
+        $exception = $this->exception;
+        $options   = $this->options;
         $builder   = new XmlBuilder();
         $self      = $this;
 
@@ -180,15 +200,15 @@ class Notice
             '',
             array('version' => Errbit::API_VERSION),
             function (XmlBuilder $notice) use ($exception, $options, $self) {
-                $notice->tag('api-key',  $options['api_key']);
+                $notice->tag('api-key', $options['api_key']);
                 $notice->tag(
                     'notifier',
                     '',
                     array(),
                     function (XmlBuilder $notifier) {
-                        $notifier->tag('name',    Errbit::PROJECT_NAME);
+                        $notifier->tag('name', Errbit::PROJECT_NAME);
                         $notifier->tag('version', Errbit::VERSION);
-                        $notifier->tag('url',     Errbit::PROJECT_URL);
+                        $notifier->tag('url', Errbit::PROJECT_URL);
                     }
                 );
 
@@ -198,8 +218,11 @@ class Notice
                     array(),
                     function (XmlBuilder $error) use ($exception, $self) {
                         $class = Notice::className($exception);
-                        $error->tag('class',     $self->filterTrace($class));
-                        $error->tag('message',   $self->filterTrace(sprintf('%s: %s', $class, $exception->getMessage())));
+                        $error->tag('class', $self->filterTrace($class));
+                        $error->tag(
+                            'message',
+                            $self->filterTrace(sprintf('%s: %s', $class, $exception->getMessage()))
+                        );
                         $error->tag(
                             'backtrace',
                             '',
@@ -219,7 +242,7 @@ class Notice
                                 );
 
                                 // if there is no trace we should add an empty element
-                                if ( empty($trace) ) {
+                                if (empty($trace)) {
                                     $backtrace->tag(
                                         'line',
                                         '',
@@ -236,7 +259,8 @@ class Notice
                                             '',
                                             array(
                                                 'number' => isset($frame['line']) ? $frame['line'] : 0,
-                                                'file'   => isset($frame['file']) ? $self->filterTrace($frame['file']) : '<unknown>',
+                                                'file'   => isset($frame['file']) ?
+                                                    $self->filterTrace($frame['file']) : '<unknown>',
                                                 'method' => $self->filterTrace($self->formatMethod($frame))
                                             )
                                         );
@@ -259,9 +283,9 @@ class Notice
                         '',
                         array(),
                         function (XmlBuilder $request) use ($options) {
-                            $request->tag('url',       !empty($options['url']) ? $options['url'] : '');
+                            $request->tag('url', !empty($options['url']) ? $options['url'] : '');
                             $request->tag('component', !empty($options['controller']) ? $options['controller'] : '');
-                            $request->tag('action',    !empty($options['action']) ? $options['action'] : '');
+                            $request->tag('action', !empty($options['action']) ? $options['action'] : '');
                             if (!empty($options['parameters'])) {
                                 $request->tag(
                                     'params',
@@ -303,9 +327,9 @@ class Notice
                     '',
                     array(),
                     function (XmlBuilder $env) use ($options) {
-                        $env->tag('project-root',     $options['project_root']);
+                        $env->tag('project-root', $options['project_root']);
                         $env->tag('environment-name', $options['environment_name']);
-                        $env->tag('hostname',         $options['hostname']);
+                        $env->tag('hostname', $options['hostname']);
                     }
                 );
             }
@@ -318,14 +342,14 @@ class Notice
      *
      * @return null
      */
-    private function _filterData()
+    private function filterData()
     {
-        if (empty($this->_options['params_filters'])) {
+        if (empty($this->options['params_filters'])) {
             return;
         }
 
         foreach (array('parameters', 'session_data', 'cgi_data') as $name) {
-            $this->_filterParams($name);
+            $this->filterParams($name);
         }
     }
     /**
@@ -335,18 +359,18 @@ class Notice
      *
      * @return null
      */
-    private function _filterParams($name)
+    private function filterParams($name)
     {
-        if (empty($this->_options[$name])) {
+        if (empty($this->options[$name])) {
             return;
         }
 
-        if (is_array($this->_options['params_filters'])) {
-            foreach ($this->_options['params_filters'] as $pattern) {
-                foreach ($this->_options[$name] as $key => $value) {
+        if (is_array($this->options['params_filters'])) {
+            foreach ($this->options['params_filters'] as $pattern) {
+                foreach ($this->options[$name] as $key => $value) {
 
                     if (preg_match($pattern, $key)) {
-                        $this->_options[$name][$key] = '[FILTERED]';
+                        $this->options[$name][$key] = '[FILTERED]';
                     }
                 }
             }
@@ -359,14 +383,14 @@ class Notice
      * @return string url
      *
      */
-    private function _buildRequestUrl()
+    private function buildRequestUrl()
     {
         if (!empty($_SERVER['REQUEST_URI'])) {
             return sprintf(
                 '%s://%s%s%s',
-                $this->_guessProtocol(),
-                $this->_guessHost(),
-                $this->_guessPort(),
+                $this->guessProtocol(),
+                $this->guessHost(),
+                $this->guessPort(),
                 $_SERVER['REQUEST_URI']
             );
         }
@@ -376,7 +400,7 @@ class Notice
      *
      * @return string http or https protocol
      */
-    private function _guessProtocol()
+    private function guessProtocol()
     {
         if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
             return $_SERVER['HTTP_X_FORWARDED_PROTO'];
@@ -391,7 +415,7 @@ class Notice
      *
      * @return string servername
      */
-    private function _guessHost()
+    private function guessHost()
     {
         if (!empty($_SERVER['HTTP_HOST'])) {
             return $_SERVER['HTTP_HOST'];
@@ -407,7 +431,7 @@ class Notice
      * @return string port
      *
      */
-    private function _guessPort()
+    private function guessPort()
     {
         if (!empty($_SERVER['SERVER_PORT']) && !in_array($_SERVER['SERVER_PORT'], array(80, 443))) {
             return sprintf(':%d', $_SERVER['SERVER_PORT']);

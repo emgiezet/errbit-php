@@ -36,5 +36,4 @@ class FatalTest extends \PHPUnit_Framework_TestCase
             );
         $this->assertEquals($actualTrace, $trace, 'trace missmatch');
     }
-
 }

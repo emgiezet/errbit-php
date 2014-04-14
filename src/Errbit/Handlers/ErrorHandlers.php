@@ -27,16 +27,17 @@ use Errbit\Utils\Converter;
  */
 class ErrorHandlers
 {
-	/**
-	 * @var Errbit
-	 */
-	private $_errbit;
+    /**
+     * @var Errbit
+     */
+    private $errbit;
 
-	/**
-	 * @var Converter
-	 */
-	private $_converter;
-	/**
+    /**
+     * @var Converter
+     */
+    private $converter;
+
+    /**
      * Register all error handlers for the given $errbit client.
      *
      * @param [Errbit] $errbit   the client instance
@@ -59,9 +60,9 @@ class ErrorHandlers
      */
     public function __construct($errbit, $handlers)
     {
-        $this->_errbit = $errbit;
-        $this->_install($handlers);
-		$this->_converter = Converter::createDefault();
+        $this->errbit = $errbit;
+        $this->install($handlers);
+        $this->converter = Converter::createDefault();
     }
 
     // -- Handlers
@@ -75,8 +76,8 @@ class ErrorHandlers
      */
     public function onError($code, $message, $file, $line)
     {
-		$exception = $this->_converter->convert($code, $message, $file, $line, debug_backtrace());
-        $this->_errbit->notify($exception);
+        $exception = $this->converter->convert($code, $message, $file, $line, debug_backtrace());
+        $this->errbit->notify($exception);
     }
     /**
      * On exception
@@ -85,7 +86,7 @@ class ErrorHandlers
      */
     public function onException($exception)
     {
-        $this->_errbit->notify($exception);
+        $this->errbit->notify($exception);
     }
     /**
      * On shut down
@@ -95,7 +96,7 @@ class ErrorHandlers
     public function onShutdown()
     {
         if (($error = error_get_last()) && $error['type'] & error_reporting()) {
-            $this->_errbit->notify(new Fatal($error['message'], $error['file'], $error['line']));
+            $this->errbit->notify(new Fatal($error['message'], $error['file'], $error['line']));
         }
     }
 
@@ -105,7 +106,7 @@ class ErrorHandlers
      *
      *
      */
-    private function _install($handlers)
+    private function install($handlers)
     {
         if (in_array('error', $handlers)) {
             set_error_handler(array($this, 'onError'), error_reporting());
