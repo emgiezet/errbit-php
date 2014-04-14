@@ -15,21 +15,21 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->config = array(
-                'api_key'=>'9fa28ccc56ed3aae882d25a9cee5695a',
-                'host' => 'errbit.redexperts.net',
-                'hostname' => 'errbit-php-test.net',
-                'port' => '80',
-                'secure' => '443',
-                'project_root' => 'test',
-                'environment_name' => 'test',
-                'url' => 'test',
-                'controller' => 'test',
-                'action' => 'test',
-                'session_data' => array('test',),
-                'parameters' => array('test', 'doink'),
-                'cgi_data' => array('test',),
-                'params_filters' => array('test'=>'/test/',),
-                'backtrace_filters' => 'test'
+            'api_key'=>'9fa28ccc56ed3aae882d25a9cee5695a',
+            'host' => 'errbit.redexperts.net',
+            'hostname' => 'errbit-php-test.net',
+            'port' => '80',
+            'secure' => '443',
+            'project_root' => 'test',
+            'environment_name' => 'test',
+            'url' => 'test',
+            'controller' => 'test',
+            'action' => 'test',
+            'session_data' => array('test',),
+            'parameters' => array('test', 'doink'),
+            'cgi_data' => array('test',),
+            'params_filters' => array('test'=>'/test/',),
+            'backtrace_filters' => 'test'
         );
     }
 

@@ -1,5 +1,6 @@
 <?php
 namespace Errbit\Tests\Handlers;
+
 use Errbit\Handlers\ErrorHandlers;
 use Errbit\Errbit;
 
@@ -40,5 +41,4 @@ class ErrorHandlersTest extends \PHPUnit_Framework_TestCase
         }
         $this->assertTrue(count($catched) === 0, 'Exceptions are thrown during errbit notice');
     }
-
 }

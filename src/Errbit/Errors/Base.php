@@ -16,10 +16,10 @@ namespace Errbit\Errors;
  */
 class Base
 {
-    private $_message;
-    private $_line;
-    private $_file;
-    private $_trace;
+    private $message;
+    private $line;
+    private $file;
+    private $trace;
 
     /**
      * Create a new error wrapping the given error context info.
@@ -31,10 +31,10 @@ class Base
      */
     public function __construct($message, $line, $file, $trace)
     {
-        $this->_message = $message;
-        $this->_line    = $line;
-        $this->_file    = $file;
-        $this->_trace   = $trace;
+        $this->message = $message;
+        $this->line    = $line;
+        $this->file    = $file;
+        $this->trace   = $trace;
     }
     /**
      * Message getter
@@ -44,7 +44,7 @@ class Base
      */
     public function getMessage()
     {
-        return $this->_message;
+        return $this->message;
     }
     /**
      * Line getter
@@ -53,7 +53,7 @@ class Base
      */
     public function getLine()
     {
-        return $this->_line;
+        return $this->line;
     }
     /**
      * File getter
@@ -62,11 +62,11 @@ class Base
      */
     public function getFile()
     {
-        return $this->_file;
+        return $this->file;
     }
 
     public function getTrace()
     {
-        return $this->_trace;
+        return $this->trace;
     }
 }

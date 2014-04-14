@@ -28,5 +28,4 @@ class BaseTest extends \PHPUnit_Framework_TestCase
         $trace = $object->getTrace();
         $this->assertEquals('trace', $trace, 'trace missmatch');
     }
-
 }
