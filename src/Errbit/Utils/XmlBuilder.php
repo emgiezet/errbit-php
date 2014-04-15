@@ -61,7 +61,7 @@ class XmlBuilder
      *
      * @return XmlBuilder a builder for the inserted tag
      */
-    public function tag($name , $value ='', $attributes = array(), $callback = null, $getLastChild = false)
+    public function tag($name, $value = '', $attributes = array(), $callback = null, $getLastChild = false)
     {
 
         $idx = count($this->_xml->$name);
@@ -116,6 +116,7 @@ class XmlBuilder
     {
         return self::utf8ForXML($this->_xml->asXML());
     }
+
     /**
      * Util to converts special chars to be valid with xml
      *
@@ -125,6 +126,6 @@ class XmlBuilder
      */
     public static function utf8ForXML($string)
     {
-        return preg_replace ('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $string);
+        return preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $string);
     }
 }

@@ -17,11 +17,11 @@ use Errbit\Writer\WriterInterface;
  *
  * @example Notify an Exception manually
  *    Errbit::instance()->notify($exception);
- * 
+ *
  */
 class Errbit
 {
-    private static $_instance = null;
+    private static $instance = null;
 
     /**
      * @var WriterInterface
@@ -37,11 +37,11 @@ class Errbit
      */
     public static function instance()
     {
-        if (!isset(self::$_instance)) {
-            self::$_instance = new self();
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
         }
 
-        return self::$_instance;
+        return self::$instance;
     }
 
     const VERSION       = '0.0.1';
@@ -49,8 +49,8 @@ class Errbit
     const PROJECT_NAME  = 'errbit-php';
     const PROJECT_URL   = 'https://github.com/emgiezet/errbit-php';
 
-    private $_config;
-    private $_observers = array();
+    private $config;
+    private $observers = array();
 
     /**
      * Initialize a new client with the given config.
@@ -62,7 +62,7 @@ class Errbit
      */
     public function __construct($config = array())
     {
-        $this->_config = $config;
+        $this->config = $config;
     }
 
     /**
@@ -86,7 +86,7 @@ class Errbit
             throw new Exception('Notify callback must be callable');
         }
 
-        $this->_observers[] = $callback;
+        $this->observers[] = $callback;
 
         return $this;
     }
@@ -118,8 +118,8 @@ class Errbit
      */
     public function configure($config = array())
     {
-        $this->_config = array_merge($this->_config, $config);
-        $this->_checkConfig();
+        $this->config = array_merge($this->config, $config);
+        $this->checkConfig();
 
         return $this;
     }
@@ -134,7 +134,7 @@ class Errbit
      */
     public function start($handlers = array('exception', 'error', 'fatal'))
     {
-        $this->_checkConfig();
+        $this->checkConfig();
         ErrorHandlers::register($this, $handlers);
 
         return $this;
@@ -151,8 +151,8 @@ class Errbit
      */
     public function notify($exception, $options = array())
     {
-        $this->_checkConfig();
-        $config = array_merge($this->_config, $options);
+        $this->checkConfig();
+        $config = array_merge($this->config, $options);
 
         if ($this->shouldNotify($exception, $config['skipped_exceptions'])) {
             $this->getWriter()->write($exception, $config);
@@ -175,7 +175,7 @@ class Errbit
 
     protected function notifyObservers($exception, $config)
     {
-        foreach ($this->_observers as $observer) {
+        foreach ($this->observers as $observer) {
             $observer($exception, $config);
         }
     }
@@ -183,7 +183,7 @@ class Errbit
     protected function getWriter()
     {
         if (empty($this->writer)) {
-            $defaultWriter = new $this->_config['default_writer'];
+            $defaultWriter = new $this->config['default_writer'];
             $this->writer = $defaultWriter;
         }
 
@@ -193,71 +193,71 @@ class Errbit
     // -- Private Methods
     /**
      * Config checker
-     * 
+     *
      * @throws Exception
      * @return null
      */
-    private function _checkConfig()
+    private function checkConfig()
     {
-        if (empty($this->_config['api_key'])) {
+        if (empty($this->config['api_key'])) {
             throw new Exception("`api_key' must be configured");
         }
 
-        if (empty($this->_config['host'])) {
+        if (empty($this->config['host'])) {
             throw new Exception("`host' must be configured");
         }
 
-        if (empty($this->_config['port'])) {
-            $this->_config['port'] = !empty($this->_config['secure']) ? 443 : 80;
+        if (empty($this->config['port'])) {
+            $this->config['port'] = !empty($this->config['secure']) ? 443 : 80;
         }
 
-        if (!isset($this->_config['secure'])) {
-            $this->_config['secure'] = ($this->_config['port'] == 443);
+        if (!isset($this->config['secure'])) {
+            $this->config['secure'] = ($this->config['port'] == 443);
         }
 
-        if (empty($this->_config['hostname'])) {
-            $this->_config['hostname'] = gethostname() ? gethostname() : '<unknown>';
+        if (empty($this->config['hostname'])) {
+            $this->config['hostname'] = gethostname() ? gethostname() : '<unknown>';
         }
 
-        if (empty($this->_config['project_root'])) {
-            $this->_config['project_root'] = dirname(__FILE__);
+        if (empty($this->config['project_root'])) {
+            $this->config['project_root'] = dirname(__FILE__);
         }
 
-        if (empty($this->_config['environment_name'])) {
-            $this->_config['environment_name'] = 'development';
+        if (empty($this->config['environment_name'])) {
+            $this->config['environment_name'] = 'development';
         }
 
-        if (!isset($this->_config['params_filters'])) {
-            $this->_config['params_filters'] = array('/password/');
+        if (!isset($this->config['params_filters'])) {
+            $this->config['params_filters'] = array('/password/');
         }
 
-        if (!isset($this->_config['connect_timeout'])) {
-            $this->_config['connect_timeout'] = 3;
+        if (!isset($this->config['connect_timeout'])) {
+            $this->config['connect_timeout'] = 3;
         }
 
-        if (!isset($this->_config['write_timeout'])) {
-            $this->_config['write_timeout'] = 3;
+        if (!isset($this->config['write_timeout'])) {
+            $this->config['write_timeout'] = 3;
         }
 
-        if (!isset($this->_config['backtrace_filters'])) {
-            $this->_config['backtrace_filters'] = array(
-                sprintf('/^%s/', preg_quote($this->_config['project_root'], '/')) => '[PROJECT_ROOT]'
+        if (!isset($this->config['backtrace_filters'])) {
+            $this->config['backtrace_filters'] = array(
+                sprintf('/^%s/', preg_quote($this->config['project_root'], '/')) => '[PROJECT_ROOT]'
             );
         }
 
-        if (!isset($this->_config['skipped_exceptions'])) {
-            $this->_config['skipped_exceptions'] = array();
+        if (!isset($this->config['skipped_exceptions'])) {
+            $this->config['skipped_exceptions'] = array();
         }
 
-        if (!isset($this->_config['default_writer'])) {
-            $this->_config['default_writer'] = 'Errbit\Writer\SocketWriter';
+        if (!isset($this->config['default_writer'])) {
+            $this->config['default_writer'] = 'Errbit\Writer\SocketWriter';
         }
 
-        if (!isset($this->_config['agent'])) {
-            $this->_config['agent'] = 'errbitPHP';
+        if (!isset($this->config['agent'])) {
+            $this->config['agent'] = 'errbitPHP';
         }
-        if (!isset($this->_config['async'])) {
-            $this->_config['async'] = false;
+        if (!isset($this->config['async'])) {
+            $this->config['async'] = false;
         }
     }
 }
