@@ -69,4 +69,25 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
         $valid = $dom->schemaValidate(dirname(__FILE__).'/../../../../Resources/xsd/XSD.xml');
         $this->assertTrue($valid, 'Not Valid XSD');
     }
+
+    public function testSimpleObjectInXml()
+    {
+        $foo = new \StdClass;
+
+        $foo->first = "First";
+        $foo->second = "Second";
+        $foo->third = array("1","2");
+
+        $this->config['session_data'] = array($foo);
+
+        $notice = new Notice(new \Exception(), $this->config);
+
+        $xml = $notice->asXml();
+
+        $dom = new \DOMDocument();
+        $dom->loadXML($xml);
+
+        $valid = $dom->schemaValidate(dirname(__FILE__).'/../../../../Resources/xsd/XSD.xml');
+        $this->assertTrue($valid, 'Not Valid XSD');
+    }
 }

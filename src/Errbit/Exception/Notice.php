@@ -127,7 +127,6 @@ class Notice
                 if (is_object($value)) {
 
                     $hash = spl_object_hash($value);
-                    $hashArray[]= $hash;
 
                     $value = (array) $value;
                 } else {
@@ -135,7 +134,8 @@ class Notice
                 }
 
                 if (is_array($value)) {
-                    if (null == $hash || !in_array($hash, $hashArray)) {
+                    if (null == $hash || !in_array($hash, self::$hashArray)) {
+                        self::$hashArray[]= $hash;
                         $builder->tag(
                             'var',
                             '',
