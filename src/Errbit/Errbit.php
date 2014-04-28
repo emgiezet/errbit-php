@@ -77,6 +77,7 @@ class Errbit
      * Add a handler to be invoked after a notification occurs.
      *
      * @param [Callback] $callback any callable function
+     * @throws [Exception]
      *
      * @return [Errbit] the current instance
      */
@@ -146,8 +147,7 @@ class Errbit
      * @param [Exception] $exception the Exception to notify (errors must first be converted)
      * @param [Array]     $options   an array of options, which override the client configuration
      *
-     * @return [Errbit]
-     *   the current instance
+     * @return [Errbit] the current instance
      */
     public function notify($exception, $options = array())
     {
