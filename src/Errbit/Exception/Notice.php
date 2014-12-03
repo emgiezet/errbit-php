@@ -321,6 +321,17 @@ class Notice
                         }
                     );
                 }
+                
+                if (!empty($options['user'])) {
+                    $notice->tag(
+                        'user-attributes',
+                        '',
+                        array(),
+                        function (XmlBuilder $user) use ($options) {
+                            Notice::xmlVarsFor($user, $options['user']);
+                        }
+                    );
+                }
 
                 $notice->tag(
                     'server-environment',
