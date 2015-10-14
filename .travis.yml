@@ -11,9 +11,8 @@ php:
 
 matrix:
   allow_failures:
-    - php:
-      - hhvm
-      - 7.0
+    - php: hhvm
+
 
 before_install:
     - sudo apt-get update -qq

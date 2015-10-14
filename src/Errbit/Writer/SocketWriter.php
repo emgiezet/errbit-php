@@ -78,7 +78,7 @@ class SocketWriter implements WriterInterface
                     "\r\n",
                     array(
                         sprintf('POST %s HTTP/1.1', self::NOTICES_PATH),
-                        sprintf('Host: %s', $config['host']),
+                        sprintf('Host: %s', x$config['host']),
                         sprintf('User-Agent: %s', $config['agent']),
                         sprintf('Content-Type: %s', 'text/xml'),
                         sprintf('Accept: %s', 'text/xml, application/xml'),
