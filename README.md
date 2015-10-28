@@ -4,6 +4,7 @@
 [![Build Status](https://travis-ci.org/emgiezet/errbitPHP.png?branch=master)](https://travis-ci.org/emgiezet/errbitPHP)
 [![Dependency Status](https://www.versioneye.com/user/projects/5249e725632bac0a4900b2bf/badge.png)](https://www.versioneye.com/user/projects/5249e725632bac0a4900b2bf)
 [![Latest Stable Version](https://poser.pugx.org/emgiezet/errbit-php/v/stable.png)](https://packagist.org/packages/emgiezet/errbit-php)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/c545743f-7b3c-4742-8194-d1f00b533275/mini.png)](https://insight.sensiolabs.com/projects/c545743f-7b3c-4742-8194-d1f00b533275)
 
 This is a full-featured client to add integration with [Errbit](https://github.com/errbit/errbit) (or Airbrake)
 to any PHP >= 5.3 application. 
