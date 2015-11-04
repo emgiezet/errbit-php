@@ -340,7 +340,7 @@ class Notice
                     function (XmlBuilder $env) use ($options) {
                         $env->tag('project-root', $options['project_root']);
                         $env->tag('environment-name', $options['environment_name']);
-                        $env->tag('hostname', $options['hostname']);
+//                        $env->tag('hostname', $options['hostname']);
                     }
                 );
             }
