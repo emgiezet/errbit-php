@@ -6,6 +6,9 @@ use Errbit\Exception\Notice;
 
 class SocketWriter implements WriterInterface
 {
+    /**
+     * Hoptoad Notifier Route
+     */
     const NOTICES_PATH  = '/notifier_api/v2/notices/';
 
     /**
@@ -52,6 +55,8 @@ class SocketWriter implements WriterInterface
             $config
         );
     }
+
+
 
     protected function buildConnectionScheme($config)
     {

@@ -44,7 +44,7 @@ class Errbit
         return self::$instance;
     }
 
-    const VERSION       = '0.0.1';
+    const VERSION       = '1.0.5';
     const API_VERSION   = '2.2';
     const PROJECT_NAME  = 'errbit-php';
     const PROJECT_URL   = 'https://github.com/emgiezet/errbit-php';

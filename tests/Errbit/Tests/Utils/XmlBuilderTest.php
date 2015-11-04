@@ -17,7 +17,6 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
         $this->config = array(
             'api_key'=>'9fa28ccc56ed3aae882d25a9cee5695a',
             'host' => 'errbit.redexperts.net',
-            'hostname' => 'errbit-php-test.net',
             'port' => '80',
             'secure' => '443',
             'project_root' => 'test',
@@ -43,7 +42,7 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
         $dom = new \DOMDocument();
         $dom->loadXML($xml);
 
-        $valid = $dom->schemaValidate(dirname(__FILE__).'/../../../../Resources/xsd/XSD.xml');
+        $valid = $dom->schemaValidate(dirname(__FILE__).'/../../../../Resources/xsd/hoptoad_2_0.xsd');
         $this->assertTrue($valid, 'Not Valid XSD');
 
     }
