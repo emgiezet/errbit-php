@@ -1,5 +1,7 @@
 # Errbit & Airbrake Client for PHP
 
+[![Join the chat at https://gitter.im/emgiezet/errbitPHP](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/emgiezet/errbitPHP?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Coverage Status](https://coveralls.io/repos/emgiezet/errbitPHP/badge.png)](https://coveralls.io/r/emgiezet/errbitPHP)
 [![Build Status](https://travis-ci.org/emgiezet/errbitPHP.png?branch=master)](https://travis-ci.org/emgiezet/errbitPHP)
 [![Dependency Status](https://www.versioneye.com/user/projects/5249e725632bac0a4900b2bf/badge.png)](https://www.versioneye.com/user/projects/5249e725632bac0a4900b2bf)
