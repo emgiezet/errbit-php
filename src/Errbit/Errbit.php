@@ -169,6 +169,11 @@ class Errbit
                 return false;
             }
         }
+        foreach ($this->config['ignore_user_agent'] as $ua) {
+            if (strpos($_SERVER['HTTP_USER_AGENT']) !== false) {
+                return false;
+            }
+        }
 
         return true;
     }
@@ -258,6 +263,9 @@ class Errbit
         }
         if (!isset($this->config['async'])) {
             $this->config['async'] = false;
+        }
+        if (!isset($this->config['ignore_user_agent'])) {
+            $this->config['ignore_user_agent'] = array();
         }
     }
 }
