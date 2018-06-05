@@ -42,7 +42,7 @@ require: {
 ## Usage
 
 To setup an Errbit instance you need to configure it with an array of parameters. 
-Only two of them are mandatory.
+Only `api_key` and `host` are mandatory.
 
 ``` php
 use Errbit\Errbit;
@@ -50,7 +50,8 @@ use Errbit\Errbit;
 Errbit::instance()
   ->configure(array(
     'api_key'           => 'YOUR API KEY',
-    'host'              => 'YOUR ERRBIT HOST, OR api.airbrake.io FOR AIRBRAKE'
+    'host'              => 'YOUR ERRBIT HOST, OR api.airbrake.io FOR AIRBRAKE',
+    'path'              => '/path/to/errbit', // if your instance is off the root of the domain
   ))
   ->start();
 ```
