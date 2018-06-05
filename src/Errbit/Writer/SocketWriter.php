@@ -82,7 +82,7 @@ class SocketWriter implements WriterInterface
                 implode(
                     "\r\n",
                     array(
-                        sprintf('POST %s HTTP/1.1', self::NOTICES_PATH),
+                        sprintf('POST %s HTTP/1.1', $config['path'] . self::NOTICES_PATH),
                         sprintf('Host: %s', $config['host']),
                         sprintf('User-Agent: %s', $config['agent']),
                         sprintf('Content-Type: %s', 'text/xml'),
