@@ -102,6 +102,7 @@ class Errbit
      *   - host
      *   - port
      *   - secure
+     *   - path
      *   - project_root
      *   - environment_name
      *   - url
