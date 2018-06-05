@@ -220,6 +220,10 @@ class Errbit
         if (!isset($this->config['secure'])) {
             $this->config['secure'] = ($this->config['port'] == 443);
         }
+        
+        if (!isset($this->config['path'])) {
+            $this->config['path'] = '';
+        }
 
         if (empty($this->config['hostname'])) {
             $this->config['hostname'] = gethostname() ? gethostname() : '<unknown>';
