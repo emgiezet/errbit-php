@@ -12,6 +12,11 @@ class SocketWriter implements WriterInterface
     const NOTICES_PATH  = '/notifier_api/v2/notices/';
 
     /**
+     * @var false|int How many characters to read after request has been made
+     */
+    public $charactersToRead = false;
+
+    /**
      * {@inheritdoc}
      */
     public function write($exception, array $config)
@@ -32,8 +37,8 @@ class SocketWriter implements WriterInterface
                 $chunks = str_split($payLoad, 7000);
                 foreach ($chunks as $idx => $chunk) {
                     $packet = array(
-                        "messageid" => $messageId,
-                        "data" => $chunk
+                        'messageid' => $messageId,
+                        'data' => $chunk
                     );
                     if ($idx == count($chunks)-1) {
                         $packet['last'] = true;
@@ -43,7 +48,22 @@ class SocketWriter implements WriterInterface
                 }
             } else {
                 fwrite($socket, $payLoad);
+
+                /**
+                 * If errbit is behind a proxy, then we need read characters to make sure
+                 * that request got to errbit successfully.
+                 *
+                 * Proxies usually do not make request to endpoints if client quits connection before
+                 * proxy even gets the chance to create connection to endpoint
+                 */
+                if ($this->charactersToRead !== false) {
+                    while (!feof($socket)) {
+                        $character = fread($socket, $this->charactersToRead);
+                        break;
+                    }
+                }
             }
+
             fclose($socket);
         }
     }
