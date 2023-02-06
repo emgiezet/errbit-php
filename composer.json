@@ -2,7 +2,12 @@
     "name": "emgiezet/errbit-php",
     "type": "library",
     "description": "errbit/airbrake integration with php with psr-2",
-    "keywords": ["errbit", "errbit php", "error tracking", "airbrake"],
+    "keywords": [
+        "errbit",
+        "errbit php",
+        "error tracking",
+        "airbrake"
+    ],
     "homepage": "https://github.com/emgiezet/errbitPHP",
     "license": "MIT",
     "authors": [
@@ -44,7 +49,7 @@
             "Errbit\\": "src/",
             "Unit\\Errbit\\": "tests/Unit",
             "Integration\\Errbit\\": "tests/Integration"
-         }
+        }
     },
     "config": {
         "bin-dir": "bin"
@@ -53,5 +58,8 @@
         "branch-alias": {
             "dev-master": "1.0.x-dev"
         }
+    },
+    "scripts": {
+        "test": "bin/phpunit --testsuite UnitTests"
     }
 }
