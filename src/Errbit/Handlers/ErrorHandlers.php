@@ -12,17 +12,16 @@ class ErrorHandlers
     /**
      * @var Converter
      */
-    private $converter;
-
+    private Converter $converter;
+    
+    
     /**
-     * Register all error handlers for the given $errbit client.
+     * @param \Errbit\Errbit $errbit
+     * @param array $handlers
      *
-     * @param [Errbit] $errbit   the client instance
-     * @param [Array]  $handlers an array of handler names, instead of registering all
-     *
-     * @return self
+     * @return void
      */
-    public static function register($errbit, $handlers = ['exception', 'error', 'fatal'])
+    public static function register(Errbit $errbit, array $handlers = ['exception', 'error', 'fatal']): void
     {
         new self($errbit, $handlers);
     }
@@ -32,44 +31,49 @@ class ErrorHandlers
      *
      * @param Errbit $errbit the client to use
      *
-     * @return null
      *
      */
-    public function __construct(private $errbit, $handlers)
+    public function __construct(private readonly Errbit $errbit, $handlers)
     {
         $this->install($handlers);
         $this->converter = Converter::createDefault();
     }
 
     // -- Handlers
+    
     /**
      * on Error
      *
-     * @param integer $code    error code
-     * @param string  $message error message
-     * @param string  $file    error file
-     * @param string  $line    line of error
+     * @param integer $code error code
+     * @param string $message error message
+     * @param string $file error file
+     * @param int $line
+     *
+     * @throws \Errbit\Exception\Exception
      */
-    public function onError(int $code, string $message, string $file, int $line)
+    public function onError(int $code, string $message, string $file, int $line): void
     {
-        $exception = $this->converter->convert($code, $message, $file, (int)$line, debug_backtrace());
+        $exception = $this->converter->convert($code, $message, $file,
+            $line, debug_backtrace());
         $this->errbit->notify($exception);
     }
+    
     /**
      * On exception
      *
-     *
+     * @throws \Errbit\Exception\Exception
      */
-    public function onException($exception)
+    public function onException($exception): void
     {
         $this->errbit->notify($exception);
     }
+    
     /**
      * On shut down
      *
-     *
+     * @throws \Errbit\Exception\Exception
      */
-    public function onShutdown()
+    public function onShutdown(): void
     {
         if (($error = error_get_last()) && $error['type'] & error_reporting()) {
             $this->errbit->notify(new Fatal($error['message'], $error['file'], $error['line']));
@@ -79,20 +83,18 @@ class ErrorHandlers
     // -- Private Methods
     /**
      * Installer
-     *
-     *
      */
-    private function install($handlers)
+    private function install($handlers): void
     {
-        if (in_array('error', $handlers)) {
+        if (in_array('error', $handlers, true)) {
             set_error_handler($this->onError(...), error_reporting());
         }
 
-        if (in_array('exception', $handlers)) {
+        if (in_array('exception', $handlers, true)) {
             set_exception_handler($this->onException(...));
         }
 
-        if (in_array('fatal', $handlers)) {
+        if (in_array('fatal', $handlers, true)) {
             register_shutdown_function([$this, 'onShutdown']);
         }
     }

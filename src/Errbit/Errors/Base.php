@@ -2,6 +2,9 @@
 declare(strict_types=1);
 namespace Errbit\Errors;
 
+/**
+ *
+ */
 class Base
 {
     /**
@@ -10,7 +13,7 @@ class Base
      * @param string  $message message
      * @param integer $line    line
      * @param string  $file    filename
-     * @param string  $trace   stacktrace
+     * @param array $trace
      */
     public function __construct(private string $message, private int $line, private string $file, private array $trace)
     {
@@ -21,7 +24,7 @@ class Base
      * @return string error message
      *
      */
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
@@ -30,7 +33,7 @@ class Base
      *
      * @return integer the number of line
      */
-    public function getLine()
+    public function getLine(): int
     {
         return $this->line;
     }
@@ -39,12 +42,15 @@ class Base
      *
      * @return string name of the file
      */
-    public function getFile()
+    public function getFile(): string
     {
         return $this->file;
     }
-
-    public function getTrace()
+    
+    /**
+     * @return array
+     */
+    public function getTrace(): array
     {
         return $this->trace;
     }

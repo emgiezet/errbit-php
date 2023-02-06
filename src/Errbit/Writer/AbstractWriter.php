@@ -10,7 +10,10 @@ abstract class AbstractWriter
      * Hoptoad Notifier Route
      */
     final const NOTICES_PATH  = '/notifier_api/v2/notices/';
-    protected function buildConnectionScheme($config)
+    /**
+     * @return string
+     */
+    protected function buildConnectionScheme(array $config)
     {
         $proto = "";
         if ($config['async']) {

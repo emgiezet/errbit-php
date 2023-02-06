@@ -3,6 +3,8 @@
 namespace Unit\Errbit\Tests;
 
 use Errbit\Errbit;
+use Errbit\Errors\Error;
+use Errbit\Errors\Notice;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +24,7 @@ class ErrbitTest extends TestCase
      */
     public function shouldPassExceptionsToWriter()
     {
-        $exception = Mockery::mock('BadFunctionCallException');
+        $exception = Mockery::mock(Error::class);
 
         $writer = Mockery::mock(\Errbit\Writer\WriterInterface::class);
         $writer->shouldReceive('write')->with($exception, Mockery::any());
@@ -37,10 +39,12 @@ class ErrbitTest extends TestCase
      */
     public function shouldIgnoreSkippedExceptions()
     {
-        $exception = Mockery::mock('BadMethodCallException');
-        $writer = Mockery::mock(\Errbit\Writer\WriterInterface::class);
+        $this->errbit->configure(['skipped_exceptions'=>[Notice::class]]);
+        $exception = new Notice('Notice test', 123,'test.php', ['test']);
+        //don't write because this Notice should be ignored
+        $writer = Mockery::mock(\Errbit\Writer\WriterInterface::class)->shouldNotReceive('write')->getMock();
         $this->errbit->setWriter($writer);
-        $return = $this->errbit->notify($exception);
+        $return = $this->errbit->notify($exception, []);
         $this->assertIsObject($return);
     }
 }

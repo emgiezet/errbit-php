@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Errbit;
 
 use Errbit\Exception\Exception;
@@ -26,7 +27,7 @@ class Errbit
     /**
      * @var WriterInterface
      */
-    protected $writer;
+    protected WriterInterface $writer;
 
     /**
      * Get a singleton instance of the client.
@@ -62,7 +63,7 @@ class Errbit
     {
     }
 
-    public function setWriter(WriterInterface $writer)
+    public function setWriter(WriterInterface $writer): void
     {
         $this->writer = $writer;
     }
@@ -71,11 +72,12 @@ class Errbit
      * Add a handler to be invoked after a notification occurs.
      *
      * @param [Callback] $callback any callable function
+     *
      * @throws [Exception]
      *
-     * @return [Errbit] the current instance
+     * @return static the current instance
      */
-    public function onNotify($callback)
+    public function onNotify($callback): static
     {
         if (!is_callable($callback)) {
             throw new Exception('Notify callback must be callable');
@@ -109,9 +111,9 @@ class Errbit
      *
      * @param [Array] $config the full configuration
      *
-     * @return [Errbit] the current instance of the client
+     * @return static the current instance of the client
      */
-    public function configure($config = [])
+    public function configure($config = []): static
     {
         $this->config = array_merge($this->config, $config);
         $this->checkConfig();
@@ -124,10 +126,9 @@ class Errbit
      *
      * @param [Array] $handlers an array of handler names (one or all of 'exception', 'error', 'fatal')
      *
-     * @return [Errbit]
-     *   the current instance
+     * @return static the current instance
      */
-    public function start($handlers = ['exception', 'error', 'fatal'])
+    public function start($handlers = ['exception', 'error', 'fatal']): static
     {
         $this->checkConfig();
         ErrorHandlers::register($this, $handlers);
@@ -138,13 +139,14 @@ class Errbit
     /**
      * Notify an individual exception manually.
      *
-     * @param [Exception] $exception the Exception to notify (errors must first be converted)
+     * @param Error|Errors\Warning|Fatal|Notice $exception
      * @param array $options
      *
-     * @return \Errbit\Errbit [Errbit] the current instance
+     * @return static [Errbit] the current instance
+     *
      * @throws \Errbit\Exception\Exception
      */
-    public function notify($exception, $options = []): static
+    public function notify(Fatal|Errors\Warning|Notice|Error $exception, $options = []): static
     {
         $this->checkConfig();
         $config = array_merge($this->config, $options);
@@ -157,7 +159,7 @@ class Errbit
         return $this;
     }
 
-    protected function shouldNotify($exception, array $skippedExceptions)
+    protected function shouldNotify($exception, array $skippedExceptions): bool
     {
         foreach ($skippedExceptions as $skippedException) {
             if ($exception instanceof $skippedException) {
@@ -173,14 +175,14 @@ class Errbit
         return true;
     }
 
-    protected function notifyObservers($exception, $config)
+    protected function notifyObservers($exception, array $config): void
     {
         foreach ($this->observers as $observer) {
             $observer($exception, $config);
         }
     }
 
-    protected function getWriter()
+    protected function getWriter(): object
     {
         if (empty($this->writer)) {
             $defaultWriter = new $this->config['default_writer'];
@@ -195,9 +197,9 @@ class Errbit
      * Config checker
      *
      * @throws Exception
-     * @return null
+     * @return void
      */
-    private function checkConfig()
+    private function checkConfig(): void
     {
         if (empty($this->config['api_key'])) {
             throw new Exception("`api_key' must be configured");

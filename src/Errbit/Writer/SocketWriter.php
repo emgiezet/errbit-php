@@ -15,6 +15,8 @@ class SocketWriter extends AbstractWriter implements WriterInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function write($exception, array $config)
     {
@@ -30,7 +32,7 @@ class SocketWriter extends AbstractWriter implements WriterInterface
             stream_set_timeout($socket, $config['write_timeout']);
             $payLoad = $this->buildPayload($exception, $config);
             if (strlen((string) $payLoad) > 7000 && $config['async']) {
-                $messageId = uniqid();
+                $messageId = uniqid('', true);
                 $chunks = str_split((string) $payLoad, 7000);
                 foreach ($chunks as $idx => $chunk) {
                     $packet = ['messageid' => $messageId, 'data' => $chunk];
@@ -62,7 +64,7 @@ class SocketWriter extends AbstractWriter implements WriterInterface
         }
     }
 
-    protected function buildPayload($exception, $config)
+    protected function buildPayload($exception, array $config)
     {
         return $this->addHttpHeadersIfNeeded(
             $this->buildNoticeFor($exception, $config),
@@ -70,7 +72,7 @@ class SocketWriter extends AbstractWriter implements WriterInterface
         );
     }
     
-    protected function addHttpHeadersIfNeeded($body, $config)
+    protected function addHttpHeadersIfNeeded(string $body, $config)
     {
         if ($config['async']) {
             return $body;
