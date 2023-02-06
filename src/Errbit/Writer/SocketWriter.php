@@ -1,15 +1,12 @@
 <?php
-
+declare(strict_types=1);
 namespace Errbit\Writer;
 
 use Errbit\Exception\Notice;
 
-class SocketWriter implements WriterInterface
+class SocketWriter extends AbstractWriter implements WriterInterface
 {
-    /**
-     * Hoptoad Notifier Route
-     */
-    const NOTICES_PATH  = '/notifier_api/v2/notices/';
+  
 
     /**
      * @var false|int How many characters to read after request has been made
@@ -23,7 +20,7 @@ class SocketWriter implements WriterInterface
     {
         $socket = fsockopen(
             $this->buildConnectionScheme($config),
-            $config['port'],
+            (integer) $config['port'],
             $errno,
             $errstr,
             $config['connect_timeout']
@@ -32,22 +29,19 @@ class SocketWriter implements WriterInterface
         if ($socket) {
             stream_set_timeout($socket, $config['write_timeout']);
             $payLoad = $this->buildPayload($exception, $config);
-            if (strlen($payLoad) > 7000 && $config['async']) {
+            if (strlen((string) $payLoad) > 7000 && $config['async']) {
                 $messageId = uniqid();
-                $chunks = str_split($payLoad, 7000);
+                $chunks = str_split((string) $payLoad, 7000);
                 foreach ($chunks as $idx => $chunk) {
-                    $packet = array(
-                        'messageid' => $messageId,
-                        'data' => $chunk
-                    );
+                    $packet = ['messageid' => $messageId, 'data' => $chunk];
                     if ($idx == count($chunks)-1) {
                         $packet['last'] = true;
                     }
-                    $fragment = json_encode($packet);
+                    $fragment = json_encode($packet, JSON_THROW_ON_ERROR);
                     fwrite($socket, $fragment);
                 }
             } else {
-                fwrite($socket, $payLoad);
+                fwrite($socket, (string) $payLoad);
 
                 /**
                  * If errbit is behind a proxy, then we need read characters to make sure
@@ -75,23 +69,7 @@ class SocketWriter implements WriterInterface
             $config
         );
     }
-
-
-
-    protected function buildConnectionScheme($config)
-    {
-        $proto = "";
-        if ($config['async']) {
-            $proto = "udp";
-        } elseif ($config['secure']) {
-             $proto = "ssl";
-        } else {
-            $proto = 'tcp';
-        }
-
-        return sprintf('%s://%s', $proto, $config['host']);
-    }
-
+    
     protected function addHttpHeadersIfNeeded($body, $config)
     {
         if ($config['async']) {
@@ -101,23 +79,11 @@ class SocketWriter implements WriterInterface
                 "%s\r\n\r\n%s",
                 implode(
                     "\r\n",
-                    array(
-                        sprintf('POST %s HTTP/1.1', self::NOTICES_PATH),
-                        sprintf('Host: %s', $config['host']),
-                        sprintf('User-Agent: %s', $config['agent']),
-                        sprintf('Content-Type: %s', 'text/xml'),
-                        sprintf('Accept: %s', 'text/xml, application/xml'),
-                        sprintf('Content-Length: %d', strlen($body)),
-                        sprintf('Connection: %s', 'close')
-                    )
+                    [sprintf('POST %s HTTP/1.1', self::NOTICES_PATH), sprintf('Host: %s', $config['host']), sprintf('User-Agent: %s', $config['agent']), sprintf('Content-Type: %s', 'text/xml'), sprintf('Accept: %s', 'text/xml, application/xml'), sprintf('Content-Length: %d', strlen((string) $body)), sprintf('Connection: %s', 'close')]
                 ),
                 $body
             );
         }
     }
-
-    protected function buildNoticeFor($exception, $options)
-    {
-        return Notice::forException($exception, $options)->asXml();
-    }
+    
 }

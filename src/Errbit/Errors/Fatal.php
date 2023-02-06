@@ -1,12 +1,6 @@
 <?php
+declare(strict_types=1);
 namespace Errbit\Errors;
-
-/**
- * Errbit PHP Notifier.
- *
- * Copyright © Flippa.com Pty. Ltd.
- * See the LICENSE file for details.
- */
 
 class Fatal extends Base
 {
@@ -19,13 +13,7 @@ class Fatal extends Base
             $message,
             $line,
             $file,
-            array(
-                array(
-                    'line'     => $line,
-                    'file'     => $file,
-                    'function' => '<unknown>'
-                )
-            )
+            [['line'     => $line, 'file'     => $file, 'function' => '<unknown>']]
         );
     }
 }

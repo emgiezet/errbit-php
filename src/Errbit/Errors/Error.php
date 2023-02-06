@@ -1,12 +1,7 @@
 <?php
+declare(strict_types=1);
 namespace Errbit\Errors;
 
-/**
- * Errbit PHP Notifier.
- *
- * Copyright © Flippa.com Pty. Ltd.
- * See the LICENSE file for details.
- */
 class Error extends Base
 {
 }

@@ -1,32 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit backupGlobals="false"
-        backupStaticAttributes="false"
-        colors="true"
-        convertErrorsToExceptions="true"
-        convertNoticesToExceptions="true"
-        convertWarningsToExceptions="true"
-        processIsolation="false"
-        stopOnFailure="true"
-        syntaxCheck="true"
-        bootstrap="./vendor/autoload.php"
->
-  <logging>
-    <log type="coverage-clover" target="build/logs/clover.xml"/>
-  </logging>
-  <testsuites>
-    <testsuite name="errbit-php Test Suite">
-      <directory>./tests/Errbit/Tests</directory>
-    </testsuite>  
-  </testsuites>
-
-  <filter>
-    <whitelist>
-      <directory suffix=".php">./src</directory>
-        <exclude>
-          <directory>./Tests</directory>
-          <directory>./vendor</directory>
-      </exclude>
-    </whitelist>
-   </filter>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" backupStaticAttributes="false" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false" stopOnFailure="false" bootstrap="vendor/autoload.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+<coverage>
+  <include>
+    <directory>./src</directory>
+  </include>
+</coverage>
+<testsuites>
+  <testsuite name="UnitTests">
+    <directory>./tests/Unit</directory>
+  </testsuite>
+  <testsuite name="IntegrationTests">
+    <directory>./tests/Integration/</directory>
+  </testsuite>
+</testsuites>
+<logging>
+  <testdoxText outputFile="php://stdout"/>
+  <log type="coverage-clover" target="build/logs/clover.xml"/>
+</logging>
+<listeners>
+  <listener class="\Mockery\Adapter\Phpunit\TestListener"/>
+</listeners>
 </phpunit>

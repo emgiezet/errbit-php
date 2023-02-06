@@ -38,7 +38,7 @@ class XmlBuilder
      */
     public function __construct($xml = null)
     {
-        $this->_xml = $xml ? $xml : new \SimpleXMLElement('<__ErrbitXMLBuilder__/>');
+        $this->_xml = $xml ?: new \SimpleXMLElement('<__ErrbitXMLBuilder__/>');
     }
 
     /**
@@ -61,13 +61,13 @@ class XmlBuilder
      *
      * @return XmlBuilder a builder for the inserted tag
      */
-    public function tag($name, $value = '', $attributes = array(), $callback = null, $getLastChild = false)
+    public function tag($name, $value = '', $attributes = [], $callback = null, $getLastChild = false)
     {
 
-        $idx = count($this->_xml->$name);
+        $idx = is_countable($this->_xml->$name) ? count($this->_xml->$name) : 0;
 
         if (is_object($value)) {
-            $value = "[" . get_class($value) . "]";
+            $value = "[" . $value::class . "]";
         } else {
                 $value = (string) $value;
         }

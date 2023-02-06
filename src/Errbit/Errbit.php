@@ -21,7 +21,7 @@ use Errbit\Writer\WriterInterface;
  */
 class Errbit
 {
-    private static $instance = null;
+    private static ?\Errbit\Errbit $instance = null;
 
     /**
      * @var WriterInterface
@@ -44,13 +44,11 @@ class Errbit
         return self::$instance;
     }
 
-    const VERSION       = '1.0.5';
-    const API_VERSION   = '2.2';
-    const PROJECT_NAME  = 'errbit-php';
-    const PROJECT_URL   = 'https://github.com/emgiezet/errbit-php';
-
-    private $config;
-    private $observers = array();
+    final const VERSION       = '1.0.5';
+    final const API_VERSION   = '2.2';
+    final const PROJECT_NAME  = 'errbit-php';
+    final const PROJECT_URL   = 'https://github.com/emgiezet/errbit-php';
+    private array $observers = [];
 
     /**
      * Initialize a new client with the given config.
@@ -60,14 +58,10 @@ class Errbit
      *
      * @param array $config the configuration for the API
      */
-    public function __construct($config = array())
+    public function __construct(private $config = [])
     {
-        $this->config = $config;
     }
 
-    /**
-     * @param WriterInterface $writer
-     */
     public function setWriter(WriterInterface $writer)
     {
         $this->writer = $writer;
@@ -117,7 +111,7 @@ class Errbit
      *
      * @return [Errbit] the current instance of the client
      */
-    public function configure($config = array())
+    public function configure($config = [])
     {
         $this->config = array_merge($this->config, $config);
         $this->checkConfig();
@@ -133,23 +127,24 @@ class Errbit
      * @return [Errbit]
      *   the current instance
      */
-    public function start($handlers = array('exception', 'error', 'fatal'))
+    public function start($handlers = ['exception', 'error', 'fatal'])
     {
         $this->checkConfig();
         ErrorHandlers::register($this, $handlers);
 
         return $this;
     }
-
+    
     /**
      * Notify an individual exception manually.
      *
      * @param [Exception] $exception the Exception to notify (errors must first be converted)
-     * @param [Array]     $options   an array of options, which override the client configuration
+     * @param array $options
      *
-     * @return [Errbit] the current instance
+     * @return \Errbit\Errbit [Errbit] the current instance
+     * @throws \Errbit\Exception\Exception
      */
-    public function notify($exception, $options = array())
+    public function notify($exception, $options = []): static
     {
         $this->checkConfig();
         $config = array_merge($this->config, $options);
@@ -170,7 +165,7 @@ class Errbit
             }
         }
         foreach ($this->config['ignore_user_agent'] as $ua) {
-            if (strpos($_SERVER['HTTP_USER_AGENT']) !== false) {
+            if (str_contains((string) $_SERVER['HTTP_USER_AGENT'])) {
                 return false;
             }
         }
@@ -221,11 +216,11 @@ class Errbit
         }
 
         if (empty($this->config['hostname'])) {
-            $this->config['hostname'] = gethostname() ? gethostname() : '<unknown>';
+            $this->config['hostname'] = gethostname() ?: '<unknown>';
         }
 
         if (empty($this->config['project_root'])) {
-            $this->config['project_root'] = dirname(__FILE__);
+            $this->config['project_root'] = __DIR__;
         }
 
         if (empty($this->config['environment_name'])) {
@@ -233,7 +228,7 @@ class Errbit
         }
 
         if (!isset($this->config['params_filters'])) {
-            $this->config['params_filters'] = array('/password/');
+            $this->config['params_filters'] = ['/password/'];
         }
 
         if (!isset($this->config['connect_timeout'])) {
@@ -245,17 +240,15 @@ class Errbit
         }
 
         if (!isset($this->config['backtrace_filters'])) {
-            $this->config['backtrace_filters'] = array(
-                sprintf('/^%s/', preg_quote($this->config['project_root'], '/')) => '[PROJECT_ROOT]'
-            );
+            $this->config['backtrace_filters'] = [sprintf('/^%s/', preg_quote((string) $this->config['project_root'], '/')) => '[PROJECT_ROOT]'];
         }
 
         if (!isset($this->config['skipped_exceptions'])) {
-            $this->config['skipped_exceptions'] = array();
+            $this->config['skipped_exceptions'] = [];
         }
 
         if (!isset($this->config['default_writer'])) {
-            $this->config['default_writer'] = 'Errbit\Writer\SocketWriter';
+            $this->config['default_writer'] = \Errbit\Writer\SocketWriter::class;
         }
 
         if (!isset($this->config['agent'])) {
@@ -265,7 +258,7 @@ class Errbit
             $this->config['async'] = false;
         }
         if (!isset($this->config['ignore_user_agent'])) {
-            $this->config['ignore_user_agent'] = array();
+            $this->config['ignore_user_agent'] = [];
         }
     }
 }

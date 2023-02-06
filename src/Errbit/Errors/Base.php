@@ -1,26 +1,9 @@
 <?php
-/**
- * Errbit PHP Notifier.
- *
- * Copyright © Flippa.com Pty. Ltd.
- * See the LICENSE file for details.
- */
+declare(strict_types=1);
 namespace Errbit\Errors;
 
-/**
- * Converts a native PHP error, notice, or warning into something that
- * sort of resembles an Exception.
- *
- * If PHP's Exception class wasn't so f***ing stupid and didn't make
- * everything final, this would inherit from it, but alas...
- */
 class Base
 {
-    private $message;
-    private $line;
-    private $file;
-    private $trace;
-
     /**
      * Create a new error wrapping the given error context info.
      *
@@ -29,12 +12,8 @@ class Base
      * @param string  $file    filename
      * @param string  $trace   stacktrace
      */
-    public function __construct($message, $line, $file, $trace)
+    public function __construct(private string $message, private int $line, private string $file, private array $trace)
     {
-        $this->message = $message;
-        $this->line    = $line;
-        $this->file    = $file;
-        $this->trace   = $trace;
     }
     /**
      * Message getter
