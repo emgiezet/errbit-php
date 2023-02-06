@@ -14,7 +14,7 @@ use SimpleXMLElement;
  *
  * @example
  *
- *   $builder = new Errbit_XmlBuilder();
+ *   $builder = new ErrbitxmlBuilder();
  *   $builder->tag('product', function($product) {
  *     $product->tag('name', 'Plush Puppy Toy');
  *     $product->tag('price', '$8', array('currency' => 'USD'));
@@ -27,14 +27,16 @@ use SimpleXMLElement;
  */
 class XmlBuilder
 {
+    private $xml;
+    
     /**
      * Instantiate a new XmlBuilder.
      *
-     * @param SimpleXMLElement $xml the parent node (only used internally)
+     * @param \SimpleXMLElement|null $xml the parent node (only used internally)
      */
-    public function __construct($xml = null)
+    public function __construct(private ?\SimpleXMLElement $xml = null)
     {
-        $this->_xml = $xml ?: new \SimpleXMLElement('<__ErrbitXMLBuilder__/>');
+        $this->$xml = $xml ?: new \SimpleXMLElement('<__ErrbitXMLBuilder__/>');
     }
 
     /**
@@ -57,10 +59,10 @@ class XmlBuilder
      *
      * @return XmlBuilder a builder for the inserted tag
      */
-    public function tag($name, $value = '', $attributes = [], $callback = null, bool $getLastChild = false)
+    public function tag($name, $value = '', $attributes = [], $callback = null, bool $getLastChild = false): XmlBuilder
     {
 
-        $idx = is_countable($this->_xml->$name) ? count($this->_xml->$name) : 0;
+        $idx = is_countable($this->xml->$name) ? count($this->xml->$name) : 0;
 
         if (is_object($value)) {
             $value = "[" . $value::class . "]";
@@ -68,14 +70,14 @@ class XmlBuilder
                 $value = (string) $value;
         }
 
-        $this->_xml->{$name}[$idx] = $value;
+        $this->xml->{$name}[$idx] = $value;
 
         foreach ($attributes as $attr => $v) {
-            $this->_xml->{$name}[$idx][$attr] = $v;
+            $this->xml->{$name}[$idx][$attr] = $v;
         }
-        $node = new self($this->_xml->$name);
+        $node = new self($this->xml->$name);
         if ($getLastChild) {
-            $array = $this->_xml->xpath($name."[last()]");
+            $array = $this->xml->xpath($name."[last()]");
             $xml = array_shift($array);
             $node = new self($xml);
         }
@@ -97,7 +99,7 @@ class XmlBuilder
      */
     public function attribute($name, $value): static
     {
-        $this->_xml[$name] = $value;
+        $this->xml[$name] = $value;
 
         return $this;
     }
@@ -109,7 +111,7 @@ class XmlBuilder
      */
     public function asXml(): string
     {
-        return self::utf8ForXML($this->_xml->asXML());
+        return self::utf8ForXML($this->xml->asXML());
     }
 
     /**

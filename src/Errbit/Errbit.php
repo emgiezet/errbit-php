@@ -167,7 +167,7 @@ class Errbit
             }
         }
         foreach ($this->config['ignore_user_agent'] as $ua) {
-            if (str_contains((string) $_SERVER['HTTP_USER_AGENT'])) {
+            if (str_contains((string) $_SERVER['HTTP_USER_AGENT'],$ua) ) {
                 return false;
             }
         }

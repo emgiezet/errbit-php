@@ -5,15 +5,29 @@ use Errbit\Exception\Notice;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
+/**
+ *
+ */
 class XmlBuilderTest extends TestCase
 {
     
+    /**
+     * @var array
+     */
+    private array $config;
     use MockeryPHPUnitIntegration;
+    
+    /**
+     * @return void
+     */
     public function setUp():void
     {
         $this->config = ['api_key'=>'9fa28ccc56ed3aae882d25a9cee5695a', 'host' => 'errbit.redexperts.net', 'port' => '80', 'secure' => '443', 'project_root' => 'test', 'environment_name' => 'test', 'url' => 'test', 'controller' => 'test', 'action' => 'test', 'session_data' => ['test'], 'parameters' => ['test', 'doink'], 'cgi_data' => ['test'], 'params_filters' => ['test'=>'/test/'], 'backtrace_filters' => 'test'];
     }
-
+    
+    /**
+     * @return void
+     */
     public function testBase()
     {
 
@@ -28,7 +42,10 @@ class XmlBuilderTest extends TestCase
         $this->assertTrue($valid, 'Not Valid XSD');
 
     }
-
+    
+    /**
+     * @return void
+     */
     public function testShouldNotFollowRecursion()
     {
 
@@ -50,7 +67,10 @@ class XmlBuilderTest extends TestCase
         $valid = $dom->schemaValidate(__DIR__.'/../../../../../Resources/xsd/XSD.xml');
         $this->assertTrue($valid, 'Not Valid XSD');
     }
-
+    
+    /**
+     * @return void
+     */
     public function testSimpleObjectInXml()
     {
         $foo = new \StdClass;
