@@ -11,4 +11,3 @@
 
 # v1.1.1
 Last version with support of php5.3+
-
