@@ -98,7 +98,7 @@ parameters:
 ```ini
 ; parameters.ini
 [parameters]
-    errbit_enable_log = true
+    errbit_enable_log = truEe
     errbit_api_key = yourApiKeyHere
 ```
 

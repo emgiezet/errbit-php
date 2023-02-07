@@ -67,15 +67,11 @@ class Errbit
     {
         $this->writer = $writer;
     }
-
+    
     /**
-     * Add a handler to be invoked after a notification occurs.
-     *
-     * @param [Callback] $callback any callable function
-     *
-     * @throws [Exception]
-     *
-     * @return static the current instance
+     * @param $callback
+     * @return $this
+     * @throws \Errbit\Exception\Exception
      */
     public function onNotify($callback): static
     {
@@ -113,7 +109,7 @@ class Errbit
      *
      * @return static the current instance of the client
      */
-    public function configure($config = []): static
+    public function configure(array $config = []): static
     {
         $this->config = array_merge($this->config, $config);
         $this->checkConfig();
