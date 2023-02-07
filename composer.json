@@ -60,6 +60,6 @@
         }
     },
     "scripts": {
-        "test": "bin/phpunit --testsuite UnitTests"
+        "test": "bin/phpunit --testsuite UnitTests --coverage-xml build/logs/clover.xml"
     }
 }
