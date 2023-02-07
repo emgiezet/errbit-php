@@ -60,7 +60,7 @@
         }
     },
     "scripts": {
-        "test": "bin/phpunit --testsuite UnitTests --coverage-xml build/logs/clover.xml",
-        "coveralls": "bin/php-coveralls --coverage_clover=build/logs/clover.xml -v"
+        "test": "bin/phpunit --testsuite UnitTests --coverage-xml ./build/logs/clover.xml",
+        "coveralls": "bin/php-coveralls --coverage_clover=./build/logs/clover.xml -v"
     }
 }
