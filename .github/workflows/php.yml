@@ -43,4 +43,8 @@ jobs:
     - name: Upload coverage results to Coveralls
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: code-coverage-report
+        path: build/logs/clover.xml
+        retention-days: 1
       run: composer run-script coveralls
