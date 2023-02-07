@@ -34,12 +34,12 @@ jobs:
     # Docs: https://getcomposer.org/doc/articles/scripts.md
     - name: Run test suite
       run: composer run-script test
-    - name: Archive code coverage results
       uses: actions/upload-artifact@v3
       with:
         name: code-coverage-report
         path: build/logs/clover.xml
         retention-days: 1
+
     - name: Upload coverage results to Coveralls
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
