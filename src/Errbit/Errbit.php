@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace Errbit;
 
+use Errbit\Errors\Warning;
 use Errbit\Exception\Exception;
 
 use Errbit\Errors\Notice;
@@ -116,15 +117,14 @@ class Errbit
 
         return $this;
     }
-
+    
     /**
-     * Register all error handlers around this instance.
+     * @param array $handlers
      *
-     * @param [Array] $handlers an array of handler names (one or all of 'exception', 'error', 'fatal')
-     *
-     * @return static the current instance
+     * @return $this
+     * @throws \Errbit\Exception\Exception
      */
-    public function start($handlers = ['exception', 'error', 'fatal']): static
+    public function start(array $handlers = ['exception', 'error', 'fatal']): static
     {
         $this->checkConfig();
         ErrorHandlers::register($this, $handlers);
@@ -140,7 +140,7 @@ class Errbit
      * @return static [Errbit] the current instance
      * @throws \Errbit\Exception\Exception
      */
-    public function notify(Fatal|Errors\Warning|Notice|Error $exception, $options = []): static
+    public function notify(Fatal|Warning|Notice|Error $exception, $options = []): static
     {
         $this->checkConfig();
         $config = array_merge($this->config, $options);
@@ -161,7 +161,7 @@ class Errbit
             }
         }
         foreach ($this->config['ignore_user_agent'] as $ua) {
-            if (str_contains((string) $_SERVER['HTTP_USER_AGENT'],$ua) ) {
+            if (str_contains($_SERVER['HTTP_USER_AGENT'],$ua) ) {
                 return false;
             }
         }
