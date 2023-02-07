@@ -33,7 +33,7 @@ class ErrorHandlers
      *
      *
      */
-    public function __construct(private readonly Errbit $errbit, $handlers)
+    public function __construct(private Errbit $errbit, $handlers)
     {
         $this->install($handlers);
         $this->converter = Converter::createDefault();
@@ -87,11 +87,11 @@ class ErrorHandlers
     private function install($handlers): void
     {
         if (in_array('error', $handlers, true)) {
-            set_error_handler($this->onError(...), error_reporting());
+            set_error_handler([$this, 'onError'], error_reporting());
         }
 
         if (in_array('exception', $handlers, true)) {
-            set_exception_handler($this->onException(...));
+            set_exception_handler([$this, 'onException']);
         }
 
         if (in_array('fatal', $handlers, true)) {

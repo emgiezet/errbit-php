@@ -20,10 +20,7 @@ use PHPUnit\Framework\TestCase;
 class ConverterTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
-    /**
-     * @var Converter
-     */
-    private $object;
+    private \Errbit\Utils\Converter $object;
 
     public function setUp():void
     {

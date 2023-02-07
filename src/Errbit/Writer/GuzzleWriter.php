@@ -19,9 +19,8 @@ class GuzzleWriter extends AbstractWriter implements WriterInterface
     
     /**
      * @param $config
-     *
-     * @return string
-     */protected function buildConnectionScheme($config): string
+     */
+    protected function buildConnectionScheme($config): string
     {
        if ($config['secure']) {
             $proto = "https";
@@ -31,24 +30,13 @@ class GuzzleWriter extends AbstractWriter implements WriterInterface
        return sprintf('%s://%s%s', $proto, $config['host'], (isset($config['port'])?':'.$config['port']:''));
     }
     
-    /**
-     * @var \GuzzleHttp\ClientInterface
-     */
-    private ClientInterface $client;
-    
-    /**
-     * @param \GuzzleHttp\ClientInterface $client
-     */
-    public function __construct(ClientInterface $client)
+    public function __construct(private ClientInterface $client)
     {
-        $this->client = $client;
     }
     
     /**
      * @param \Exception $exception
-     * @param array $config
      *
-     * @return \Psr\Http\Message\ResponseInterface|\GuzzleHttp\Promise\PromiseInterface
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function write(Fatal|Warning|Notice|Error $exception, array $config): ResponseInterface|PromiseInterface
@@ -61,10 +49,7 @@ class GuzzleWriter extends AbstractWriter implements WriterInterface
     }
     
     /**
-     * @param \Errbit\Errors\Fatal|\Errbit\Errors\Warning|\Errbit\Errors\Notice|\Errbit\Errors\Error $exception
-     * @param array $config
      *
-     * @return \Psr\Http\Message\ResponseInterface
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function synchronousWrite(Fatal|Warning|Notice|Error  $exception, array $config): ResponseInterface
@@ -85,12 +70,6 @@ class GuzzleWriter extends AbstractWriter implements WriterInterface
         );
     }
     
-    /**
-     * @param \Errbit\Errors\Fatal|\Errbit\Errors\Warning|\Errbit\Errors\Notice|\Errbit\Errors\Error $exception
-     * @param array $config
-     *
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
     public function asyncWrite(Fatal|Warning|Notice|Error    $exception, array $config): PromiseInterface
     {
         $uri = $this->buildConnectionScheme($config);

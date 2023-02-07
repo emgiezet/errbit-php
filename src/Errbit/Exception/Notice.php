@@ -26,7 +26,7 @@ class Notice
      * @param array $options - full configuration + options
      */
     public function __construct(
-        private readonly mixed $exception,
+        private  mixed $exception,
         array $options = []
     ) {
         $this->options = array_merge(

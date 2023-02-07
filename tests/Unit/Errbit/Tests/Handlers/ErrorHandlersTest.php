@@ -24,7 +24,7 @@ class ErrorHandlersTest extends TestCase
         $writerMock = \Mockery::mock(SocketWriter::class);
         $writerMock->shouldReceive('write');
         $errbit->setWriter($writerMock);
-        $handler = new ErrorHandlers($errbit, ['exception', 'error', ['fatal', 'lol', 'doink']]);
+        $handler = new ErrorHandlers($errbit, ['exception', 'error', 'fatal', 'lol', 'doink']);
 
         $errors = [E_NOTICE, E_USER_NOTICE, E_WARNING, E_USER_WARNING, E_ERROR, E_USER_ERROR];
         $catched = [];
