@@ -1,16 +1,13 @@
 <?php
-namespace Errbit\Tests\Errors;
+namespace Unit\Errbit\Tests\Errors;
 
 use Errbit\Errors\Fatal;
-use \Mockery as m;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use PHPUnit\Framework\TestCase;
 
-class FatalTest extends \PHPUnit_Framework_TestCase
+class FatalTest extends TestCase
 {
-
-    public function tearDown()
-    {
-        m::close();
-    }
+    use MockeryPHPUnitIntegration;
 
     public function testFatal()
     {
@@ -27,13 +24,7 @@ class FatalTest extends \PHPUnit_Framework_TestCase
 
         $trace = $object->getTrace();
 
-        $actualTrace = array(
-            array(
-                'line'     => 12,
-                'file'     => __FILE__,
-                'function' => '<unknown>'
-                )
-            );
+        $actualTrace = [['line'     => 12, 'file'     => __FILE__, 'function' => '<unknown>']];
         $this->assertEquals($actualTrace, $trace, 'trace missmatch');
     }
 }

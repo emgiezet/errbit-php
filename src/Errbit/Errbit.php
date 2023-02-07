@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Errbit;
 
 use Errbit\Exception\Exception;
@@ -21,12 +22,12 @@ use Errbit\Writer\WriterInterface;
  */
 class Errbit
 {
-    private static $instance = null;
+    private static ?\Errbit\Errbit $instance = null;
 
     /**
      * @var WriterInterface
      */
-    protected $writer;
+    protected WriterInterface $writer;
 
     /**
      * Get a singleton instance of the client.
@@ -44,13 +45,11 @@ class Errbit
         return self::$instance;
     }
 
-    const VERSION       = '1.0.5';
-    const API_VERSION   = '2.2';
-    const PROJECT_NAME  = 'errbit-php';
-    const PROJECT_URL   = 'https://github.com/emgiezet/errbit-php';
-
-    private $config;
-    private $observers = array();
+    final const VERSION       = '1.0.5';
+    final const API_VERSION   = '2.2';
+    final const PROJECT_NAME  = 'errbit-php';
+    final const PROJECT_URL   = 'https://github.com/emgiezet/errbit-php';
+    private array $observers = [];
 
     /**
      * Initialize a new client with the given config.
@@ -60,15 +59,11 @@ class Errbit
      *
      * @param array $config the configuration for the API
      */
-    public function __construct($config = array())
+    public function __construct(private $config = [])
     {
-        $this->config = $config;
     }
 
-    /**
-     * @param WriterInterface $writer
-     */
-    public function setWriter(WriterInterface $writer)
+    public function setWriter(WriterInterface $writer): void
     {
         $this->writer = $writer;
     }
@@ -77,11 +72,12 @@ class Errbit
      * Add a handler to be invoked after a notification occurs.
      *
      * @param [Callback] $callback any callable function
+     *
      * @throws [Exception]
      *
-     * @return [Errbit] the current instance
+     * @return static the current instance
      */
-    public function onNotify($callback)
+    public function onNotify($callback): static
     {
         if (!is_callable($callback)) {
             throw new Exception('Notify callback must be callable');
@@ -115,9 +111,9 @@ class Errbit
      *
      * @param [Array] $config the full configuration
      *
-     * @return [Errbit] the current instance of the client
+     * @return static the current instance of the client
      */
-    public function configure($config = array())
+    public function configure($config = []): static
     {
         $this->config = array_merge($this->config, $config);
         $this->checkConfig();
@@ -130,26 +126,27 @@ class Errbit
      *
      * @param [Array] $handlers an array of handler names (one or all of 'exception', 'error', 'fatal')
      *
-     * @return [Errbit]
-     *   the current instance
+     * @return static the current instance
      */
-    public function start($handlers = array('exception', 'error', 'fatal'))
+    public function start($handlers = ['exception', 'error', 'fatal']): static
     {
         $this->checkConfig();
         ErrorHandlers::register($this, $handlers);
 
         return $this;
     }
-
+    
     /**
      * Notify an individual exception manually.
      *
-     * @param [Exception] $exception the Exception to notify (errors must first be converted)
-     * @param [Array]     $options   an array of options, which override the client configuration
+     * @param Error|Errors\Warning|Fatal|Notice $exception
+     * @param array $options
      *
-     * @return [Errbit] the current instance
+     * @return static [Errbit] the current instance
+     *
+     * @throws \Errbit\Exception\Exception
      */
-    public function notify($exception, $options = array())
+    public function notify(Fatal|Errors\Warning|Notice|Error $exception, $options = []): static
     {
         $this->checkConfig();
         $config = array_merge($this->config, $options);
@@ -162,7 +159,7 @@ class Errbit
         return $this;
     }
 
-    protected function shouldNotify($exception, array $skippedExceptions)
+    protected function shouldNotify($exception, array $skippedExceptions): bool
     {
         foreach ($skippedExceptions as $skippedException) {
             if ($exception instanceof $skippedException) {
@@ -170,7 +167,7 @@ class Errbit
             }
         }
         foreach ($this->config['ignore_user_agent'] as $ua) {
-            if (strpos($_SERVER['HTTP_USER_AGENT']) !== false) {
+            if (str_contains((string) $_SERVER['HTTP_USER_AGENT'],$ua) ) {
                 return false;
             }
         }
@@ -178,14 +175,14 @@ class Errbit
         return true;
     }
 
-    protected function notifyObservers($exception, $config)
+    protected function notifyObservers($exception, array $config): void
     {
         foreach ($this->observers as $observer) {
             $observer($exception, $config);
         }
     }
 
-    protected function getWriter()
+    protected function getWriter(): object
     {
         if (empty($this->writer)) {
             $defaultWriter = new $this->config['default_writer'];
@@ -200,9 +197,9 @@ class Errbit
      * Config checker
      *
      * @throws Exception
-     * @return null
+     * @return void
      */
-    private function checkConfig()
+    private function checkConfig(): void
     {
         if (empty($this->config['api_key'])) {
             throw new Exception("`api_key' must be configured");
@@ -221,11 +218,11 @@ class Errbit
         }
 
         if (empty($this->config['hostname'])) {
-            $this->config['hostname'] = gethostname() ? gethostname() : '<unknown>';
+            $this->config['hostname'] = gethostname() ?: '<unknown>';
         }
 
         if (empty($this->config['project_root'])) {
-            $this->config['project_root'] = dirname(__FILE__);
+            $this->config['project_root'] = __DIR__;
         }
 
         if (empty($this->config['environment_name'])) {
@@ -233,7 +230,7 @@ class Errbit
         }
 
         if (!isset($this->config['params_filters'])) {
-            $this->config['params_filters'] = array('/password/');
+            $this->config['params_filters'] = ['/password/'];
         }
 
         if (!isset($this->config['connect_timeout'])) {
@@ -245,17 +242,15 @@ class Errbit
         }
 
         if (!isset($this->config['backtrace_filters'])) {
-            $this->config['backtrace_filters'] = array(
-                sprintf('/^%s/', preg_quote($this->config['project_root'], '/')) => '[PROJECT_ROOT]'
-            );
+            $this->config['backtrace_filters'] = [sprintf('/^%s/', preg_quote((string) $this->config['project_root'], '/')) => '[PROJECT_ROOT]'];
         }
 
         if (!isset($this->config['skipped_exceptions'])) {
-            $this->config['skipped_exceptions'] = array();
+            $this->config['skipped_exceptions'] = [];
         }
 
         if (!isset($this->config['default_writer'])) {
-            $this->config['default_writer'] = 'Errbit\Writer\SocketWriter';
+            $this->config['default_writer'] = \Errbit\Writer\SocketWriter::class;
         }
 
         if (!isset($this->config['agent'])) {
@@ -265,7 +260,7 @@ class Errbit
             $this->config['async'] = false;
         }
         if (!isset($this->config['ignore_user_agent'])) {
-            $this->config['ignore_user_agent'] = array();
+            $this->config['ignore_user_agent'] = [];
         }
     }
 }

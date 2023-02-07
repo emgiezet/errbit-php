@@ -1,20 +1,18 @@
 <?php
-namespace Errbit\Tests\Errors;
+namespace Unit\Errbit\Tests\Errors;
 
 use Errbit\Errors\Base;
-use \Mockery as m;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use PHPUnit\Framework\TestCase;
 
-class BaseTest extends \PHPUnit_Framework_TestCase
+class BaseTest extends TestCase
 {
 
-    public function tearDown()
-    {
-        m::close();
-    }
+   use MockeryPHPUnitIntegration;
 
     public function testBase()
     {
-        $object = new Base('test', 12, __FILE__, 'trace');
+        $object = new Base('test', 12, __FILE__, ['trace']);
 
         $msg = $object->getMessage();
         $this->assertEquals('test', $msg, 'Message of base error missmatch');
@@ -26,6 +24,6 @@ class BaseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(__FILE__, $file, 'File missmatch');
 
         $trace = $object->getTrace();
-        $this->assertEquals('trace', $trace, 'trace missmatch');
+        $this->assertEquals(['trace'], $trace, 'trace missmatch');
     }
 }

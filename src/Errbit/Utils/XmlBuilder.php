@@ -1,12 +1,8 @@
 <?php
+declare(strict_types=1);
 namespace Errbit\Utils;
 
-/**
- * Errbit PHP Notifier.
- *
- * Copyright © Flippa.com Pty. Ltd.
- * See the LICENSE file for details.
- */
+use SimpleXMLElement;
 
 /**
  * Like Nokogiri, but shittier.
@@ -31,14 +27,15 @@ namespace Errbit\Utils;
  */
 class XmlBuilder
 {
+    private \SimpleXMLElement $_xml;
     /**
      * Instantiate a new XmlBuilder.
      *
      * @param SimpleXMLElement $xml the parent node (only used internally)
      */
-    public function __construct($xml = null)
+    public function __construct(?\SimpleXMLElement $xml = null)
     {
-        $this->_xml = $xml ? $xml : new \SimpleXMLElement('<__ErrbitXMLBuilder__/>');
+        $this->_xml = $xml ?: new \SimpleXMLElement('<__ErrbitXMLBuilder__/>');
     }
 
     /**
@@ -61,13 +58,13 @@ class XmlBuilder
      *
      * @return XmlBuilder a builder for the inserted tag
      */
-    public function tag($name, $value = '', $attributes = array(), $callback = null, $getLastChild = false)
+    public function tag($name, $value = '', $attributes = [], $callback = null, bool $getLastChild = false)
     {
 
-        $idx = count($this->_xml->$name);
+        $idx = is_countable($this->_xml->$name) ? count($this->_xml->$name) : 0;
 
         if (is_object($value)) {
-            $value = "[" . get_class($value) . "]";
+            $value = "[" . $value::class . "]";
         } else {
                 $value = (string) $value;
         }
@@ -97,9 +94,9 @@ class XmlBuilder
      * @param String $name  the name of the attribute
      * @param String $value the value of the attribute
      *
-     * @return XmlBuilder the current builder
+     * @return static the current builder
      */
-    public function attribute($name, $value)
+    public function attribute($name, $value): static
     {
         $this->_xml[$name] = $value;
 
@@ -109,10 +106,9 @@ class XmlBuilder
     /**
      * Return this XmlBuilder as a string of XML.
      *
-     * @return [String]
-     *   the XML of the document
+     * @return string the XML of the document
      */
-    public function asXml()
+    public function asXml(): string
     {
         return self::utf8ForXML($this->_xml->asXML());
     }

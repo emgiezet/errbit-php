@@ -2,8 +2,13 @@
     "name": "emgiezet/errbit-php",
     "type": "library",
     "description": "errbit/airbrake integration with php with psr-2",
-    "keywords": ["errbit", "errbit php", "error tracking", "airbrake"],
-    "homepage": "http://github.com/emgiezet/errbitPHP",
+    "keywords": [
+        "errbit",
+        "errbit php",
+        "error tracking",
+        "airbrake"
+    ],
+    "homepage": "https://github.com/emgiezet/errbitPHP",
     "license": "MIT",
     "authors": [
         {
@@ -23,13 +28,17 @@
         "issues": "https://github.com/emgiezet/errbitPHP/issues"
     },
     "require": {
-        "php": ">=5.3.2"
+        "php": "^8.1",
+        "guzzlehttp/guzzle": "^7.5.0",
+        "ext-simplexml": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "4.*",
-        "phpunit/phpcov": "2.0.*@dev",
-        "mockery/mockery": "0.9.4",
-        "satooshi/php-coveralls": "dev-master"
+        "rector/rector": "^0.15.10",
+        "mockery/mockery": "1.5.1",
+        "phpunit/phpunit": "9.4.4",
+        "php-coveralls/php-coveralls": "^2.5",
+        "vimeo/psalm": "^5.6",
+        "phpstan/phpstan": "^1.9"
     },
     "replace": {
         "nodrew/php-airbrake": "dev-master",
@@ -37,8 +46,10 @@
     },
     "autoload": {
         "psr-0": {
-            "Errbit\\": "src/"
-         }
+            "Errbit\\": "src/",
+            "Unit\\Errbit\\": "tests/Unit",
+            "Integration\\Errbit\\": "tests/Integration"
+        }
     },
     "config": {
         "bin-dir": "bin"
@@ -47,5 +58,8 @@
         "branch-alias": {
             "dev-master": "1.0.x-dev"
         }
+    },
+    "scripts": {
+        "test": "bin/phpunit --testsuite UnitTests"
     }
 }

@@ -1,10 +1,5 @@
 <?php
-/**
- * Converts any PHP Error to ErrbitException
- * Extracted from the Errbit Error Handler, in case you want to use your own errorhandler,
- * and convert errors to Exceptions.
- * @author deathowl <csergo.balint@ustream.tv>
- */
+declare(strict_types=1);
 
 namespace Errbit\Utils;
 
@@ -20,40 +15,27 @@ use Errbit\Errors\Warning;
 class Converter
 {
 
-    public static function createDefault()
+    public static function createDefault(): Converter
     {
         return new self();
     }
-
+    
     /**
      * @param int $code
      * @param string $message
      * @param string $file
      * @param int $line
-     * @param string $backtrace
+     * @param array $backtrace
      *
-     * @return Error|Notice|Warning
+     * @return \Errbit\Errors\Error|\Errbit\Errors\Notice|\Errbit\Errors\Warning|\Errbit\Errors\Fatal
      */
-    public function convert($code, $message, $file, $line, $backtrace)
+    public function convert(int $code, string $message, string $file, int $line, array $backtrace): Error|Notice|Warning|Fatal
     {
-        switch ($code) {
-            case E_NOTICE:
-            case E_USER_NOTICE:
-                $exception = new Notice($message, $line, $file, $backtrace);
-                break;
-            case E_WARNING:
-            case E_USER_WARNING:
-                $exception = new Warning($message, $line, $file, $backtrace);
-                break;
-            case E_RECOVERABLE_ERROR:
-            case E_ERROR:
-            case E_CORE_ERROR:
-                $exception = new Fatal($message, $line, $file, $backtrace);
-                break;
-            case E_USER_ERROR:
-            default:
-                $exception = new Error($message, $line, $file, $backtrace);
-        }
-        return $exception;
+        return match ($code) {
+            E_NOTICE, E_USER_NOTICE => new Notice($message, $line, $file, $backtrace),
+            E_WARNING, E_USER_WARNING => new Warning($message, $line, $file, $backtrace),
+            E_RECOVERABLE_ERROR, E_ERROR, E_CORE_ERROR => new Fatal($message, $line, $file),
+            default => new Error($message, $line, $file, $backtrace),
+        };
     }
 }
