@@ -9,7 +9,7 @@ abstract class AbstractWriter
     /**
      * Hoptoad Notifier Route
      */
-    final const NOTICES_PATH  = '/notifier_api/v2/notices/';
+    public const NOTICES_PATH  = '/notifier_api/v2/notices/';
     /**
      * @return string
      */

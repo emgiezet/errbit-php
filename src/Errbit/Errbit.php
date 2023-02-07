@@ -45,10 +45,10 @@ class Errbit
         return self::$instance;
     }
 
-    final const VERSION       = '1.0.5';
-    final const API_VERSION   = '2.2';
-    final const PROJECT_NAME  = 'errbit-php';
-    final const PROJECT_URL   = 'https://github.com/emgiezet/errbit-php';
+    public const VERSION       = '1.0.5';
+    public const API_VERSION   = '2.2';
+    public const PROJECT_NAME  = 'errbit-php';
+    public const PROJECT_URL   = 'https://github.com/emgiezet/errbit-php';
     private array $observers = [];
 
     /**
@@ -139,11 +139,9 @@ class Errbit
     /**
      * Notify an individual exception manually.
      *
-     * @param Error|Errors\Warning|Fatal|Notice $exception
      * @param array $options
      *
      * @return static [Errbit] the current instance
-     *
      * @throws \Errbit\Exception\Exception
      */
     public function notify(Fatal|Errors\Warning|Notice|Error $exception, $options = []): static
@@ -197,7 +195,6 @@ class Errbit
      * Config checker
      *
      * @throws Exception
-     * @return void
      */
     private function checkConfig(): void
     {

@@ -20,15 +20,6 @@ class Converter
         return new self();
     }
     
-    /**
-     * @param int $code
-     * @param string $message
-     * @param string $file
-     * @param int $line
-     * @param array $backtrace
-     *
-     * @return \Errbit\Errors\Error|\Errbit\Errors\Notice|\Errbit\Errors\Warning|\Errbit\Errors\Fatal
-     */
     public function convert(int $code, string $message, string $file, int $line, array $backtrace): Error|Notice|Warning|Fatal
     {
         return match ($code) {

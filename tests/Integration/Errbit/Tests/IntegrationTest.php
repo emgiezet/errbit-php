@@ -38,7 +38,6 @@ class IntegrationTest extends TestCase
     
     /**
      * @dataProvider dataProviderErrorTypes
-     * @param int $error
      *
      * @return void
      */
@@ -67,7 +66,6 @@ class IntegrationTest extends TestCase
     
     /**
      * @dataProvider dataProviderErrorTypes
-     * @param int $error
      *
      * @return void
      */

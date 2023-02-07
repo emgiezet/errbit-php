@@ -16,9 +16,7 @@ class GuzzleWriterTest extends TestCase
     
     /**
      * @dataProvider dataProviderTestWrite
-     * @param string $error
      *
-     * @return void
      */
     public function testWrite( int $error ): void
     {
