@@ -3,6 +3,6 @@ declare(strict_types=1);
 namespace Errbit\Errors;
 
 
-class Warning extends Base
+class Warning extends BaseError implements ErrorInterface
 {
 }

@@ -2,7 +2,9 @@
 declare(strict_types=1);
 namespace Errbit;
 
+use Errbit\Errors\ErrorInterface;
 use Errbit\Errors\Warning;
+use Errbit\Exception\ConfigurationException;
 use Errbit\Exception\Exception;
 
 use Errbit\Errors\Notice;
@@ -46,7 +48,7 @@ class Errbit
         return self::$instance;
     }
 
-    public const VERSION       = '1.0.5';
+    public const VERSION       = '2.0.1';
     public const API_VERSION   = '2.2';
     public const PROJECT_NAME  = 'errbit-php';
     public const PROJECT_URL   = 'https://github.com/emgiezet/errbit-php';
@@ -60,7 +62,7 @@ class Errbit
      *
      * @param array $config the configuration for the API
      */
-    public function __construct(private $config = [])
+    public function __construct(private array $config = [])
     {
     }
 
@@ -84,7 +86,7 @@ class Errbit
 
         return $this;
     }
-
+    
     /**
      * Set the full configuration for the client.
      *
@@ -106,9 +108,10 @@ class Errbit
      *   - params_filters
      *   - backtrace_filters
      *
-     * @param [Array] $config the full configuration
+     * @param array $config
      *
      * @return static the current instance of the client
+     * @throws \Errbit\Exception\ConfigurationException
      */
     public function configure(array $config = []): static
     {
@@ -135,12 +138,13 @@ class Errbit
     /**
      * Notify an individual exception manually.
      *
+     * @param \Errbit\Errors\ErrorInterface $exception
      * @param array $options
      *
      * @return static [Errbit] the current instance
-     * @throws \Errbit\Exception\Exception
+     * @throws \Errbit\Exception\ConfigurationException
      */
-    public function notify(Fatal|Warning|Notice|Error $exception, $options = []): static
+    public function notify(ErrorInterface $exception, array $options = []): static
     {
         $this->checkConfig();
         $config = array_merge($this->config, $options);
@@ -152,8 +156,14 @@ class Errbit
 
         return $this;
     }
-
-    protected function shouldNotify($exception, array $skippedExceptions): bool
+    
+    /**
+     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param array $skippedExceptions
+     *
+     * @return bool
+     */
+    protected function shouldNotify(ErrorInterface $exception, array $skippedExceptions): bool
     {
         foreach ($skippedExceptions as $skippedException) {
             if ($exception instanceof $skippedException) {
@@ -168,15 +178,24 @@ class Errbit
 
         return true;
     }
-
-    protected function notifyObservers($exception, array $config): void
+    
+    /**
+     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param array $config
+     *
+     * @return void
+     */
+    protected function notifyObservers(ErrorInterface $exception, array $config): void
     {
         foreach ($this->observers as $observer) {
             $observer($exception, $config);
         }
     }
-
-    protected function getWriter(): object
+    
+    /**
+     * @return \Errbit\Writer\WriterInterface
+     */
+    protected function getWriter(): WriterInterface
     {
         if (empty($this->writer)) {
             $defaultWriter = new $this->config['default_writer'];
@@ -186,20 +205,20 @@ class Errbit
         return $this->writer;
     }
 
-    // -- Private Methods
     /**
      * Config checker
      *
-     * @throws Exception
+     * @throws ConfigurationException
+     * @return void
      */
     private function checkConfig(): void
     {
         if (empty($this->config['api_key'])) {
-            throw new Exception("`api_key' must be configured");
+            throw new ConfigurationException("`api_key' must be configured");
         }
 
         if (empty($this->config['host'])) {
-            throw new Exception("`host' must be configured");
+            throw new ConfigurationException("`host' must be configured");
         }
 
         if (empty($this->config['port'])) {

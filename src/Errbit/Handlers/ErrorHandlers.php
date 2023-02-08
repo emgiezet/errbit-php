@@ -5,8 +5,12 @@ namespace Errbit\Handlers;
 
 use Errbit\Errbit;
 use Errbit\Errors\Fatal;
+use Errbit\Exception\Exception;
 use Errbit\Utils\Converter;
 
+/**
+ *
+ */
 class ErrorHandlers
 {
     /**
@@ -25,15 +29,12 @@ class ErrorHandlers
     {
         new self($errbit, $handlers);
     }
-
+    
     /**
-     * Instantiate a new handler for the given client.
-     *
-     * @param Errbit $errbit the client to use
-     *
-     *
+     * @param \Errbit\Errbit $errbit
+     * @param array $handlers
      */
-    public function __construct(private Errbit $errbit, $handlers)
+    public function __construct(private Errbit $errbit, array $handlers=[])
     {
         $this->install($handlers);
         $this->converter = Converter::createDefault();
@@ -61,11 +62,13 @@ class ErrorHandlers
     /**
      * On exception
      *
-     * @throws \Errbit\Exception\Exception
+     * @throws \Exception
      */
-    public function onException($exception): void
+    public function onException(\Exception $exception): void
     {
-        $this->errbit->notify($exception);
+        $error = $this->converter->convert($exception->getCode(), $exception->getMessage(), $exception->getFile(),
+            $exception->getLine(), debug_backtrace());
+        $this->errbit->notify($error);
     }
     
     /**

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace Errbit\Writer;
 
+use Errbit\Errors\ErrorInterface;
 use Errbit\Exception\Notice;
 
 class SocketWriter extends AbstractWriter implements WriterInterface
@@ -12,13 +13,17 @@ class SocketWriter extends AbstractWriter implements WriterInterface
      * @var false|int How many characters to read after request has been made
      */
     public $charactersToRead = false;
-
+    
     /**
      * {@inheritdoc}
      *
+     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param array $config
+     *
      * @return void
+     * @throws \JsonException
      */
-    public function write($exception, array $config)
+    public function write(ErrorInterface $exception, array $config)
     {
         $socket = fsockopen(
             $this->buildConnectionScheme($config),
@@ -63,8 +68,14 @@ class SocketWriter extends AbstractWriter implements WriterInterface
             fclose($socket);
         }
     }
-
-    protected function buildPayload($exception, array $config)
+    
+    /**
+     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param array $config
+     *
+     * @return string
+     */
+    protected function buildPayload(ErrorInterface $exception, array $config): string
     {
         return $this->addHttpHeadersIfNeeded(
             $this->buildNoticeFor($exception, $config),
@@ -72,9 +83,15 @@ class SocketWriter extends AbstractWriter implements WriterInterface
         );
     }
     
-    protected function addHttpHeadersIfNeeded(string $body, $config)
+    /**
+     * @param string $body
+     * @param array $config
+     *
+     * @return string
+     */
+    protected function addHttpHeadersIfNeeded(string $body, array $config): string
     {
-        if ($config['async']) {
+        if ($config['async'] ?? false) {
             return $body;
         } else {
             return sprintf(
