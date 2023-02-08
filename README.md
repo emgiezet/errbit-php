@@ -1,43 +1,47 @@
 # Errbit & Airbrake Client for PHP
 
-[![Join the chat at https://gitter.im/emgiezet/errbitPHP](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/emgiezet/errbitPHP?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Coverage Status](https://coveralls.io/repos/emgiezet/errbitPHP/badge.png)](https://coveralls.io/r/emgiezet/errbitPHP)
 [![Build Status](https://travis-ci.org/emgiezet/errbitPHP.png?branch=master)](https://travis-ci.org/emgiezet/errbitPHP)
 [![Dependency Status](https://www.versioneye.com/user/projects/5249e725632bac0a4900b2bf/badge.png)](https://www.versioneye.com/user/projects/5249e725632bac0a4900b2bf)
 [![Latest Stable Version](https://poser.pugx.org/emgiezet/errbit-php/v/stable.png)](https://packagist.org/packages/emgiezet/errbit-php)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/c545743f-7b3c-4742-8194-d1f00b533275/mini.png)](https://insight.sensiolabs.com/projects/c545743f-7b3c-4742-8194-d1f00b533275)
+[![SymfonyInsight](https://insight.symfony.com/projects/a0c405fb-8ee9-40e9-acf1-eee084fc35a6/mini.svg)](https://insight.symfony.com/projects/a0c405fb-8ee9-40e9-acf1-eee084fc35a6)
+[![Join the chat at https://gitter.im/emgiezet/errbitPHP](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/emgiezet/errbitPHP?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This is a full-featured client to add integration with [Errbit](https://github.com/errbit/errbit) (or Airbrake)
-to any PHP >= 5.3 application. 
+to any PHP 8.0 and 8.1 application. 
 
 Original idea and source has no support for php namespaces. 
 Moreover it has a bug and with newest errbit version the xml has not supported chars.
 
 
 ## What is for?
-Handling your errors and passing them to the Error Retention tool called 
+Handling your errors and passing them to the Error Retention tool called [Errbit](https://github.com/errbit/errbit). It's a free alternative of sentry.io or airbrake.io.
 Check the presentation below!
 
 [![Huston whe have an Airbrake](http://image.slidesharecdn.com/hustonwehaveanairbrake-131125152637-phpapp02/95/slide-1-638.jpg?1385415083)](http://www.slideshare.net/MaxMaecki/meetphp-11-huston-we-have-an-airbrake)
 
+## ChangeLog
+Check the:
 
+[![Full change log here](Resources/doc/changlelog.md)]
+[![Releases](https://github.com/emgiezet/errbitPHP/releases)]
 
 ## Installation
 
-We haven't put this in PEAR or anything like that (please feel to contribute)
-so you need to install it locally.
-
-### Clone Way
-
-    git clone git://github.com/emgiezet/errbitPHP.git
-
 ### Composer Way
-
+For php 5.3
 ```json
 require: {
     ...
-    "emgiezet/errbit-php": "dev-master"
+    "emgiezet/errbit-php": "1.*"
+  }
+```
+For php 8.0+
+```json
+require: {
+    ...
+    "emgiezet/errbit-php": "2.*"
   }
 ```
 
@@ -128,19 +132,16 @@ check out the [kohana-errbit](https://github.com/kwn/kohana-errbit) for kohana 3
 No namespaces in php 5.2 so this library can't be used. 
 Go to [filipc/sfErrbitPlugin](https://github.com/filipc/sfErrbitPlugin) and monitor your legacy 1.4 applications.
 
+
+
 ## License & Copyright
 
-Copyright © mmx3.pl 2013 Licensed under the MIT license. Based on idea of git://github.com/flippa/errbit-php.git but rewritten in 90%. See the [LICENSE](https://github.com/emgiezet/errbitPHP/blob/master/LICENSE)
-file for details.
+Copyright © mmx3.pl 2013 Licensed under the MIT license. Based on idea of git://github.com/flippa/errbit-php.git but rewritten in 90%.
 
 ## Contributors
 
-main idea @flippa
-OOP Rework, Tests and packaging @emgiezet
+https://github.com/emgiezet/errbitPHP/graphs/contributors
 
 Rest of the contributors:
+Author: [emgiezet](https://github.com/emgiezet/) 
 [Contributors page](https://github.com/emgiezet/errbitPHP/graphs/contributors)
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/emgiezet/errbitphp/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-

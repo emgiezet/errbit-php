@@ -5,7 +5,7 @@ namespace Errbit\Errors;
 /**
  *
  */
-class Base
+abstract class BaseError
 {
     /**
      * Create a new error wrapping the given error context info.

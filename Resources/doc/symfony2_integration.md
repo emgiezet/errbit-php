@@ -98,8 +98,8 @@ parameters:
 ```ini
 ; parameters.ini
 [parameters]
-    errbit_enable_log = true
-    errbit_api_key = yourApiKeyHere
+    errbit_enable_log=true
+    errbit_api_key=yourApiKeyHere
 ```
 
 ## If you have some problems here.

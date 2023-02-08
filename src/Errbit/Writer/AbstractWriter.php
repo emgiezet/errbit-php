@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace Errbit\Writer;
 
+use Errbit\Errors\ErrorInterface;
 use Errbit\Exception\Notice;
 
 abstract class AbstractWriter
@@ -13,7 +14,7 @@ abstract class AbstractWriter
     /**
      * @return string
      */
-    protected function buildConnectionScheme(array $config)
+    protected function buildConnectionScheme(array $config): string
     {
         $proto = "";
         if ($config['async']) {
@@ -28,12 +29,12 @@ abstract class AbstractWriter
     }
     
     /**
-     * @param $exception
-     * @param $options
+     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param array $options
      *
      * @return string
      */
-    protected function buildNoticeFor($exception, $options)
+    protected function buildNoticeFor(ErrorInterface $exception, array $options): string
     {
         return Notice::forException($exception, $options)->asXml();
     }
