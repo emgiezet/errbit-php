@@ -84,10 +84,13 @@ class ErrorHandlers
     }
 
     // -- Private Methods
+    
     /**
      * Installer
+     *
+     * @param array $handlers
      */
-    private function install($handlers): void
+    private function install(array $handlers): void
     {
         if (in_array('error', $handlers, true)) {
             set_error_handler([$this, 'onError'], error_reporting());
