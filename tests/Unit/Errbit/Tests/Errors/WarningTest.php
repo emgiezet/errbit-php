@@ -1,6 +1,7 @@
 <?php
 namespace Unit\Errbit\Tests\Errors;
 
+use Errbit\Errors\Warning;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
@@ -8,11 +9,33 @@ class WarningTest extends TestCase
 {
     
     use MockeryPHPUnitIntegration;
-    public function testBase()
+    /**
+     * @dataProvider dataproviderBase
+     * @param string $msg
+     * @param int $line
+     * @param string $file
+     * @param array $trace
+     *
+     * @return void
+     */
+    public function testBase(string $msg, int $line, string $file, array $trace): void
     {
-        // WIP
-        $service = \Mockery::mock('service');
-        $service->shouldReceive('readTemp')->times(3)->andReturn(10, 12, 14);
-        $this->markTestIncomplete('This test has not been implemented yet.');
+        $instance = new Warning($msg, $line, $file, $trace);
+        $this->assertEquals($msg, $instance->getMessage());
+        $this->assertEquals($line, $instance->getLine());
+        $this->assertEquals($file, $instance->getFile());
+        $this->assertEquals($trace, $instance->getTrace());
+    }
+    
+    public function dataproviderBase() : array
+    {
+        return [
+            [
+                'msg'=> 'test',
+                'line'=> 123,
+                'file'=>'test.php',
+                'trace'=> [1=>'test.php']
+            ]
+        ];
     }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace Unit\Errbit\Tests\Exception;
 
+use Errbit\Exception\Notice;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
@@ -8,8 +9,17 @@ class NoticeTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
-    public function testBase()
+    public function testBase(): void
     {
-        $this->markTestIncomplete('This test has not been implemented yet.');
+        $options = [
+            'api_key'=>'test',
+            'project_root'=>'test',
+            'environment_name'=>'test'
+        ];
+        $exception = \Mockery::mock('\Exception');
+        $instance = new Notice($exception, $options);
+        
+        $result = $instance->asXml();
+        $this->assertStringContainsString('Exception', $result);
     }
 }

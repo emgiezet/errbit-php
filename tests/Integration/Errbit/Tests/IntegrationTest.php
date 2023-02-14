@@ -3,7 +3,9 @@ declare(strict_types=1);
 namespace Integration\Errbit\Tests;
 
 use Errbit\Errbit;
+use Errbit\Handlers\ErrorHandlers;
 use Errbit\Writer\GuzzleWriter;
+use Exception;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +18,7 @@ class IntegrationTest extends TestCase
      *
      * @return void
      */
-    public function testIntegration($error)
+    public function testIntegration($error): void
     {
         $config = [
             'host'=>'127.0.0.1',
@@ -25,11 +27,11 @@ class IntegrationTest extends TestCase
             'api_key'=>'fa7619c7bfe2b9725992a495eea61f0f'
         ];
         $errbit= new Errbit($config);
-        $handler = new \Errbit\Handlers\ErrorHandlers($errbit, ['exception', 'error', ['fatal', 'lol', 'doink']]);
+        $handler = new ErrorHandlers($errbit, ['exception', 'error', ['fatal', 'lol', 'doink']]);
         $caught = [];
         try {
             $handler->onError($error, 'Errbit Test: '.$error, __FILE__, 666);
-        } catch ( \Exception $e) {
+        } catch ( Exception $e) {
             $caught[] = $e->getMessage();
         }
         $this->assertEmpty($caught, 'Exceptions are thrown during errbit notice: '.print_r($caught,true));
@@ -39,9 +41,11 @@ class IntegrationTest extends TestCase
     /**
      * @dataProvider dataProviderErrorTypes
      *
+     * @param int $error
+     *
      * @return void
      */
-    public function testGuzzleWriterIntegrationTest(int $error)
+    public function testGuzzleWriterIntegrationTest(int $error): void
     {
         $config = [
             'host'=>'127.0.0.1',
@@ -53,11 +57,11 @@ class IntegrationTest extends TestCase
         $client = new Client(['base_uri'=>$config['host']]);
         $writer = new GuzzleWriter($client);
         $errbit->setWriter($writer);
-        $handler = new \Errbit\Handlers\ErrorHandlers($errbit, ['exception', 'error', ['fatal', 'lol', 'doink']]);
+        $handler = new ErrorHandlers($errbit, ['exception', 'error', ['fatal', 'lol', 'doink']]);
         $caught = [];
         try {
             $handler->onError($error, 'Errbit Test: '.$error, __FILE__, 666);
-        } catch ( \Exception $e) {
+        } catch ( Exception $e) {
             $caught[] = $e->getMessage();
         }
         $this->assertEmpty($caught, 'Exceptions are thrown during errbit notice: '.print_r($caught,true));
@@ -67,9 +71,11 @@ class IntegrationTest extends TestCase
     /**
      * @dataProvider dataProviderErrorTypes
      *
+     * @param int $error
+     *
      * @return void
      */
-    public function testGuzzleWriterAsyncIntegrationTest(int $error)
+    public function testGuzzleWriterAsyncIntegrationTest(int $error): void
     {
         $config = [
             'host'=>'127.0.0.1',
@@ -82,11 +88,11 @@ class IntegrationTest extends TestCase
         $client = new Client(['base_uri'=>$config['host']]);
         $writer = new GuzzleWriter($client);
         $errbit->setWriter($writer);
-        $handler = new \Errbit\Handlers\ErrorHandlers($errbit, ['exception', 'error', ['fatal', 'lol', 'doink']]);
+        $handler = new ErrorHandlers($errbit, ['exception', 'error', ['fatal', 'lol', 'doink']]);
         $caught = [];
         try {
             $handler->onError($error, 'Errbit Test: '.$error, __FILE__, 666);
-        } catch ( \Exception $e) {
+        } catch ( Exception $e) {
             $caught[] = $e->getMessage();
         }
         $this->assertEmpty($caught, 'Exceptions are thrown during errbit notice: '.print_r($caught,true));

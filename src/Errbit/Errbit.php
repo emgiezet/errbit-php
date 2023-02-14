@@ -3,14 +3,11 @@ declare(strict_types=1);
 namespace Errbit;
 
 use Errbit\Errors\ErrorInterface;
-use Errbit\Errors\Warning;
 use Errbit\Exception\ConfigurationException;
 use Errbit\Exception\Exception;
 
-use Errbit\Errors\Notice;
-use Errbit\Errors\Error;
-use Errbit\Errors\Fatal;
 use Errbit\Handlers\ErrorHandlers;
+use Errbit\Writer\SocketWriter;
 use Errbit\Writer\WriterInterface;
 
 /**
@@ -31,15 +28,15 @@ class Errbit
      * @var WriterInterface
      */
     protected WriterInterface $writer;
-
+    
     /**
      * Get a singleton instance of the client.
      *
      * This is the intended way to access the Errbit client.
      *
-     * @return Errbit a singleton
+     * @return \Errbit\Errbit|null a singleton
      */
-    public static function instance()
+    public static function instance(): ?Errbit
     {
         if (!isset(self::$instance)) {
             self::$instance = new self();
@@ -226,7 +223,7 @@ class Errbit
         }
 
         if (!isset($this->config['secure'])) {
-            $this->config['secure'] = ($this->config['port'] == 443);
+            $this->config['secure'] = ($this->config['port'] === 443);
         }
 
         if (empty($this->config['hostname'])) {
@@ -262,7 +259,7 @@ class Errbit
         }
 
         if (!isset($this->config['default_writer'])) {
-            $this->config['default_writer'] = \Errbit\Writer\SocketWriter::class;
+            $this->config['default_writer'] = SocketWriter::class;
         }
 
         if (!isset($this->config['agent'])) {

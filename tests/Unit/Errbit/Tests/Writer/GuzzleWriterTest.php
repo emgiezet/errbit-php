@@ -3,10 +3,11 @@
 namespace Unit\Errbit\Tests\Writer;
 
 use Errbit\Errbit;
+use Errbit\Handlers\ErrorHandlers;
 use Errbit\Writer\GuzzleWriter;
+use Exception;
 use GuzzleHttp\Client;
-use GuzzleHttp\Promise\Promise;
-use GuzzleHttp\Promise\PromiseInterface;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
@@ -27,18 +28,18 @@ class GuzzleWriterTest extends TestCase
             'api_key'=>'fa7619c7bfe2b9725992a495eea61f0f'
         ];
         $errbit= new Errbit($config);
-        $clientMock = \Mockery::mock(Client::class);
+        $clientMock = Mockery::mock(Client::class);
         $clientMock->shouldReceive('post')->once();
         $writer = new GuzzleWriter($clientMock);
         $errbit->setWriter($writer);
-        $handler = new \Errbit\Handlers\ErrorHandlers($errbit, ['exception', 'error', ['fatal', 'lol', 'doink']]);
-        $catched = [];
+        $handler = new ErrorHandlers($errbit, ['exception', 'error', ['fatal', 'lol', 'doink']]);
+        $caught = [];
         try {
             $handler->onError($error, 'Errbit Test: '.$error, __FILE__, 666);
-        } catch ( \Exception $e) {
-            $catched[] = $e->getMessage();
+        } catch ( Exception $e) {
+            $caught[] = $e->getMessage();
         }
-        $this->assertEmpty($catched, 'Exceptions are thrown during errbit notice: '.print_r($catched,1));
+        $this->assertEmpty($caught, 'Exceptions are thrown during errbit notice: '.print_r($caught,1));
     
     }
     

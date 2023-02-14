@@ -2,12 +2,7 @@
 declare(strict_types=1);
 namespace Errbit\Writer;
 
-use Errbit\Errors\Error;
 use Errbit\Errors\ErrorInterface;
-use Errbit\Errors\Fatal;
-use Errbit\Errors\Notice;
-use Errbit\Errors\Warning;
-use Exception;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -38,11 +33,13 @@ class GuzzleWriter extends AbstractWriter implements WriterInterface
     }
     
     /**
-     * @param \Exception $exception
+     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param array $config
      *
+     * @return \Psr\Http\Message\ResponseInterface|\GuzzleHttp\Promise\PromiseInterface|null
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function write(ErrorInterface $exception, array $config): ResponseInterface|PromiseInterface
+    public function write(ErrorInterface $exception, array $config): null|ResponseInterface|PromiseInterface
     {
         if($config['async']) {
             return $this->asyncWrite($exception, $config);
@@ -76,7 +73,8 @@ class GuzzleWriter extends AbstractWriter implements WriterInterface
     public function asyncWrite(ErrorInterface $exception, array $config): PromiseInterface
     {
         $uri = $this->buildConnectionScheme($config);
-        $promise = $this->client->postAsync(
+    
+        return $this->client->postAsync(
             $uri.self::NOTICES_PATH,
             [
                 'body' =>$this->buildNoticeFor($exception, $config),
@@ -87,6 +85,5 @@ class GuzzleWriter extends AbstractWriter implements WriterInterface
                 ]
             ]
         );
-        return $promise;
     }
 }

@@ -45,8 +45,7 @@ class Notice
     /**
      * Building request url
      *
-     * @return string url
-     *
+     * @return string|null url
      */
     private function buildRequestUrl(): ?string
     {
@@ -72,11 +71,13 @@ class Notice
     {
         if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
             return $_SERVER['HTTP_X_FORWARDED_PROTO'];
-        } elseif (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) {
-            return 'https';
-        } else {
-            return 'http';
         }
+    
+        if (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] === 443) {
+            return 'https';
+        }
+    
+        return 'http';
     }
     
     /**
@@ -88,11 +89,13 @@ class Notice
     {
         if (!empty($_SERVER['HTTP_HOST'])) {
             return $_SERVER['HTTP_HOST'];
-        } elseif (!empty($_SERVER['SERVER_NAME'])) {
-            return $_SERVER['SERVER_NAME'];
-        } else {
-            return '127.0.0.1';
         }
+    
+        if (!empty($_SERVER['SERVER_NAME'])) {
+            return $_SERVER['SERVER_NAME'];
+        }
+    
+        return '127.0.0.1';
     }
     
     /**
@@ -180,13 +183,12 @@ class Notice
         $exception = $this->exception;
         $options = $this->options;
         $builder = new XmlBuilder();
-        $self = $this;
-        
+    
         return $builder->tag(
             'notice',
             '',
             ['version' => Errbit::API_VERSION],
-            function (XmlBuilder $notice) use ($exception, $options, $self) {
+            function (XmlBuilder $notice) use ($exception, $options) {
                 $notice->tag('api-key', $options['api_key']);
                 $notice->tag(
                     'notifier',
@@ -203,7 +205,8 @@ class Notice
                     'error',
                     '',
                     [],
-                    function (XmlBuilder $error) use ($exception, $self) {
+                    function (XmlBuilder $error) use ($exception) {
+                        $self = $this;
                         $class = Notice::className($exception);
                         $error->tag('class', $self->filterTrace($class));
                         $error->tag(
@@ -373,7 +376,7 @@ class Notice
     }
     
     /**
-     * Get a human readable class name for the Exception.
+     * Get a human-readable class name for the Exception.
      *
      * Native PHP errors are named accordingly.
      *
@@ -384,18 +387,14 @@ class Notice
     public static function className(object $exception): string
     {
         $shortClassname = self::parseClassname($exception::class);
-        switch ($shortClassname['classname']) {
-            case 'Notice':
-                return 'Notice';
-            case 'Warning':
-                return 'Warning';
-            case 'Error':
-                return 'Error';
-            case 'Fatal':
-                return 'Fatal Error';
-            default:
-                return $shortClassname['classname'];
-        }
+    
+        return match ($shortClassname['classname']) {
+            'Notice' => 'Notice',
+            'Warning' => 'Warning',
+            'Error' => 'Error',
+            'Fatal' => 'Fatal Error',
+            default => $shortClassname['classname'],
+        };
     }
     
     /**
@@ -454,16 +453,16 @@ class Notice
                 $frame['type'],
                 $frame['function']
             );
-        } else {
-            return sprintf(
-                '%s()',
-                !empty($frame['function']) ? $frame['function'] : '<unknown>'
-            );
         }
+    
+        return sprintf(
+            '%s()',
+            !empty($frame['function']) ? $frame['function'] : '<unknown>'
+        );
     }
     
     /**
-     * Recursively build an list of the all the vars in the given array.
+     * Recursively build a list of the all the vars in the given array.
      *
      * @param \Errbit\Utils\XmlBuilder $builder the builder instance to set the
      *     data into
@@ -485,7 +484,7 @@ class Notice
             }
             
             if (is_array($value)) {
-                if (null === $hash || !in_array($hash, self::$hashArray)) {
+                if (null === $hash || !in_array($hash, self::$hashArray, true)) {
                     self::$hashArray[] = $hash;
                     $builder->tag(
                         'var',
@@ -505,7 +504,7 @@ class Notice
                 }
                 
             } else {
-                $builder->tag('var', $value, ['key' => $key]);
+                $builder->tag('var', (string) $value, ['key' => $key]);
             }
         }
     }

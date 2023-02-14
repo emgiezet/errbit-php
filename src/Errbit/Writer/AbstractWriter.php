@@ -11,12 +11,14 @@ abstract class AbstractWriter
      * Hoptoad Notifier Route
      */
     public const NOTICES_PATH  = '/notifier_api/v2/notices/';
+    
     /**
+     * @param array $config
+     *
      * @return string
      */
     protected function buildConnectionScheme(array $config): string
     {
-        $proto = "";
         if ($config['async']) {
             $proto = "udp";
         } elseif ($config['secure']) {

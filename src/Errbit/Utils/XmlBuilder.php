@@ -28,10 +28,11 @@ use SimpleXMLElement;
 class XmlBuilder
 {
     private \SimpleXMLElement $_xml;
+    
     /**
      * Instantiate a new XmlBuilder.
      *
-     * @param SimpleXMLElement $xml the parent node (only used internally)
+     * @param \SimpleXMLElement|null $xml the parent node (only used internally)
      */
     public function __construct(?\SimpleXMLElement $xml = null)
     {
@@ -51,22 +52,20 @@ class XmlBuilder
     /**
      * Insert a tag into the XML.
      *
-     * @param string   $name       the name of the tag, required.
-     * @param string   $value      the text value of the element, optional
-     * @param array    $attributes an array of attributes for the tag, optional
-     * @param Callable $callback   a callback to receive an XmlBuilder for the new tag, optional
+     * @param string $name       the name of the tag, required.
+     * @param string $value      the text value of the element, optional
+     * @param array $attributes an array of attributes for the tag, optional
+     * @param Callable|null $callback   a callback to receive an XmlBuilder for the new tag, optional
      *
      * @return XmlBuilder a builder for the inserted tag
      */
-    public function tag($name, $value = '', $attributes = [], $callback = null, bool $getLastChild = false)
+    public function tag(string $name, string $value = '', array $attributes = [], callable $callback = null, bool $getLastChild = false): XmlBuilder
     {
 
         $idx = is_countable($this->_xml->$name) ? count($this->_xml->$name) : 0;
 
         if (is_object($value)) {
             $value = "[" . $value::class . "]";
-        } else {
-                $value = (string) $value;
         }
 
         $this->_xml->{$name}[$idx] = $value;
@@ -96,7 +95,7 @@ class XmlBuilder
      *
      * @return static the current builder
      */
-    public function attribute($name, $value): static
+    public function attribute(string $name, string $value): static
     {
         $this->_xml[$name] = $value;
 
@@ -116,11 +115,11 @@ class XmlBuilder
     /**
      * Util to converts special chars to be valid with xml
      *
-     * @param string $string xml string to converte the special chars
+     * @param string $string xml string to convert the special chars
      *
      * @return string escaped string
      */
-    public static function utf8ForXML($string)
+    public static function utf8ForXML(string $string): string
     {
         return preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $string);
     }

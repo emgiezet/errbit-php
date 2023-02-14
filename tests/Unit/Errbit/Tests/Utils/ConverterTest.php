@@ -27,14 +27,14 @@ class ConverterTest extends TestCase
         $this->object = Converter::createDefault();
     }
 
-    public function testNotice()
+    public function testNotice(): void
     {
         $notice = $this->object->convert(E_NOTICE, "TestNotice", "test.php", 8, [""]);
         $expected = new Notice("TestNotice", 8, "test.php", [""]);
         $this->assertEquals($notice, $expected);
     }
 
-    public function testUserNotice()
+    public function testUserNotice(): void
     {
 
         $notice = $this->object->convert(E_USER_NOTICE, "TestNotice", "test.php", 8, [""]);
@@ -42,14 +42,14 @@ class ConverterTest extends TestCase
         $this->assertEquals($notice, $expected);
     }
 
-    public function testFatalError()
+    public function testFatalError(): void
     {
         $fatal = $this->object->convert(E_ERROR, "TestError", "test.php", 8, [""]);
         $expected = new Fatal("TestError", 8, "test.php");
         $this->assertEquals($fatal, $expected);
     }
 
-    public function testCatchableFatalError()
+    public function testCatchableFatalError(): void
     {
         $notice = $this->object->convert(E_RECOVERABLE_ERROR, "TestError", "test.php", 8, [""]);
         $expected = new Fatal("TestError", 8, "test.php");
@@ -57,21 +57,21 @@ class ConverterTest extends TestCase
     }
 
 
-    public function testUserError()
+    public function testUserError(): void
     {
         $notice = $this->object->convert(E_USER_ERROR, "TestError", "test.php", 8, [""]);
         $expected = new Error("TestError", 8, "test.php", [""]);
         $this->assertEquals($notice, $expected);
     }
 
-    public function testWarning()
+    public function testWarning(): void
     {
         $notice = $this->object->convert(E_WARNING, "TestWarning", "test.php", 8, [""]);
         $expected = new Warning("TestWarning", 8, "test.php", [""]);
         $this->assertEquals($notice, $expected);
     }
 
-    public function testUserWarning()
+    public function testUserWarning(): void
     {
         $notice = $this->object->convert(E_USER_WARNING, "TestWarning", "test.php", 8, [""]);
         $expected = new Warning("TestWarning", 8, "test.php", [""]);
