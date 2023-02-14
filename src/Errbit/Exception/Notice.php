@@ -366,7 +366,6 @@ class Notice
                             'environment-name',
                             $options['environment_name']
                         );
-                        //                        $env->tag('hostname', $options['hostname']);
                     }
                 );
             }
@@ -486,7 +485,7 @@ class Notice
             }
             
             if (is_array($value)) {
-                if (null == $hash || !in_array($hash, self::$hashArray)) {
+                if (null === $hash || !in_array($hash, self::$hashArray)) {
                     self::$hashArray[] = $hash;
                     $builder->tag(
                         'var',
