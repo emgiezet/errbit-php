@@ -1,9 +1,12 @@
 <?php
 namespace Unit\Errbit\Tests\Utils;
 
+use DOMDocument;
 use Errbit\Exception\Notice;
+use Exception;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
+use StdClass;
 
 /**
  *
@@ -28,14 +31,14 @@ class XmlBuilderTest extends TestCase
     /**
      * @return void
      */
-    public function testBase()
+    public function testBase(): void
     {
 
-        $notice = new Notice(new \Exception(), $this->config);
+        $notice = new Notice(new Exception(), $this->config);
 
         $xml = $notice->asXml();
 
-        $dom = new \DOMDocument();
+        $dom = new DOMDocument();
         $dom->loadXML($xml);
 
         $valid = $dom->schemaValidate(__DIR__.'/../../../../../Resources/xsd/hoptoad_2_0.xsd');
@@ -46,22 +49,22 @@ class XmlBuilderTest extends TestCase
     /**
      * @return void
      */
-    public function testShouldNotFollowRecursion()
+    public function testShouldNotFollowRecursion(): void
     {
 
-        $foo = new \StdClass;
-        $bar = new \StdClass;
+        $foo = new StdClass;
+        $bar = new StdClass;
         $foo->bar = $bar;
         $bar->foo = $foo;
         $vars = ['foo' => $foo, 'bar' => $bar];
 
         $this->config['session_data'] = [$vars];
 
-        $notice = new Notice(new \Exception(), $this->config);
+        $notice = new Notice(new Exception(), $this->config);
 
         $xml = $notice->asXml();
 
-        $dom = new \DOMDocument();
+        $dom = new DOMDocument();
         $dom->loadXML($xml);
 
         $valid = $dom->schemaValidate(__DIR__.'/../../../../../Resources/xsd/XSD.xml');
@@ -71,9 +74,9 @@ class XmlBuilderTest extends TestCase
     /**
      * @return void
      */
-    public function testSimpleObjectInXml()
+    public function testSimpleObjectInXml(): void
     {
-        $foo = new \StdClass;
+        $foo = new StdClass;
 
         $foo->first = "First";
         $foo->second = "Second";
@@ -81,11 +84,11 @@ class XmlBuilderTest extends TestCase
 
         $this->config['session_data'] = [$foo];
 
-        $notice = new Notice(new \Exception(), $this->config);
+        $notice = new Notice(new Exception(), $this->config);
 
         $xml = $notice->asXml();
 
-        $dom = new \DOMDocument();
+        $dom = new DOMDocument();
         $dom->loadXML($xml);
 
         $valid = $dom->schemaValidate(__DIR__.'/../../../../../Resources/xsd/XSD.xml');

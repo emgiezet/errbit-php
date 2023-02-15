@@ -30,7 +30,8 @@
     "require": {
         "php": "^8.0||^8.1",
         "guzzlehttp/guzzle": "^7.5.0",
-        "ext-simplexml": "*"
+        "ext-simplexml": "*",
+      "ext-dom": "*"
     },
     "require-dev": {
         "rector/rector": "^0.15.10",

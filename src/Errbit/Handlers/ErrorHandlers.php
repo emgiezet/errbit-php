@@ -5,8 +5,8 @@ namespace Errbit\Handlers;
 
 use Errbit\Errbit;
 use Errbit\Errors\Fatal;
-use Errbit\Exception\Exception;
 use Errbit\Utils\Converter;
+use Exception;
 
 /**
  *
@@ -64,7 +64,7 @@ class ErrorHandlers
      *
      * @throws \Exception
      */
-    public function onException(\Exception $exception): void
+    public function onException(Exception $exception): void
     {
         $error = $this->converter->convert($exception->getCode(), $exception->getMessage(), $exception->getFile(),
             $exception->getLine(), debug_backtrace());
