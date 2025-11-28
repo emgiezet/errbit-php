@@ -4,12 +4,12 @@ namespace Integration\Errbit\Tests;
 
 use Errbit\Errbit;
 use Errbit\Writer\GuzzleWriter;
+use Exception;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 
 class IntegrationTest extends TestCase
 {
-    
     /**
      * @dataProvider dataProviderErrorTypes
      * @param $error
@@ -19,7 +19,7 @@ class IntegrationTest extends TestCase
     public function testIntegration($error)
     {
         $config = [
-            'host'=>'127.0.0.1',
+            'host'=>'errbit',
             'port'=>'8080',
             'secure'=>false,
             'api_key'=>'fa7619c7bfe2b9725992a495eea61f0f'
@@ -33,9 +33,8 @@ class IntegrationTest extends TestCase
             $caught[] = $e->getMessage();
         }
         $this->assertEmpty($caught, 'Exceptions are thrown during errbit notice: '.print_r($caught,true));
-        
     }
-    
+
     /**
      * @dataProvider dataProviderErrorTypes
      *
@@ -44,7 +43,7 @@ class IntegrationTest extends TestCase
     public function testGuzzleWriterIntegrationTest(int $error)
     {
         $config = [
-            'host'=>'127.0.0.1',
+            'host'=>'errbit',
             'port'=>'8080',
             'secure'=>false,
             'api_key'=>'fa7619c7bfe2b9725992a495eea61f0f'
@@ -61,9 +60,8 @@ class IntegrationTest extends TestCase
             $caught[] = $e->getMessage();
         }
         $this->assertEmpty($caught, 'Exceptions are thrown during errbit notice: '.print_r($caught,true));
-    
     }
-    
+
     /**
      * @dataProvider dataProviderErrorTypes
      *
@@ -72,7 +70,7 @@ class IntegrationTest extends TestCase
     public function testGuzzleWriterAsyncIntegrationTest(int $error)
     {
         $config = [
-            'host'=>'127.0.0.1',
+            'host'=>'errbit',
             'port'=>'8080',
             'secure'=>false,
             'api_key'=>'fa7619c7bfe2b9725992a495eea61f0f',
@@ -90,9 +88,49 @@ class IntegrationTest extends TestCase
             $caught[] = $e->getMessage();
         }
         $this->assertEmpty($caught, 'Exceptions are thrown during errbit notice: '.print_r($caught,true));
-        
     }
-    
+
+    public function testIntegrationWithThrowable()
+    {
+        $config = [
+            'host'=>'errbit',
+            'port'=>'8080',
+            'secure'=>false,
+            'api_key'=>'fa7619c7bfe2b9725992a495eea61f0f'
+        ];
+        $errbit= new Errbit($config);
+        $handler = new \Errbit\Handlers\ErrorHandlers($errbit, ['exception', 'error', ['fatal', 'lol', 'doink']]);
+        $caught = [];
+        try {
+            $handler->onException(new Exception('Test Exception', 255));
+        } catch ( \Exception $e) {
+            $caught[] = $e->getMessage();
+        }
+        $this->assertEmpty($caught, 'Exceptions are thrown during errbit notice: '.print_r($caught,true));
+    }
+
+    public function testGuzzleWriterIntegrationWithThrowable()
+    {
+        $config = [
+            'host'=>'errbit',
+            'port'=>'8080',
+            'secure'=>true,
+            'api_key'=>'fa7619c7bfe2b9725992a495eea61f0f'
+        ];
+        $errbit= new Errbit($config);
+        $client = new Client(['base_uri'=>$config['host']]);
+        $writer = new GuzzleWriter($client);
+        $errbit->setWriter($writer);
+        $handler = new \Errbit\Handlers\ErrorHandlers($errbit, ['exception', 'error', ['fatal', 'lol', 'doink']]);
+        $caught = [];
+        try {
+           $handler->onException(new Exception('Test Exception', 255));
+        } catch ( \Exception $e) {
+            $caught[] = $e->getMessage();
+        }
+        $this->assertEmpty($caught, 'Exceptions are thrown during errbit notice: '.print_r($caught,true));
+    }
+
     public function dataProviderErrorTypes(): array
     {
         return [
@@ -104,5 +142,4 @@ class IntegrationTest extends TestCase
             [E_USER_ERROR]
         ];
     }
-    
 }

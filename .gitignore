@@ -3,6 +3,7 @@ bin
 .buildpath
 .settings
 .project
+.phpunit.result.cache
 test_result
 build
 results

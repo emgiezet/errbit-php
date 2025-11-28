@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Errbit\Utils;
@@ -8,6 +9,7 @@ use Errbit\Errors\ErrorInterface;
 use Errbit\Errors\Fatal;
 use Errbit\Errors\Notice;
 use Errbit\Errors\Warning;
+use Throwable;
 
 /**
  * Class Converter
@@ -15,13 +17,12 @@ use Errbit\Errors\Warning;
  */
 class Converter
 {
-
     public static function createDefault(): Converter
     {
         return new self();
     }
-    
-    public function convert(int $code, string $message, string $file, int $line, array $backtrace): ErrorInterface
+
+    public function convert(int $code, string $message, string $file, int $line, array $backtrace): Throwable|ErrorInterface
     {
         return match ($code) {
             E_NOTICE, E_USER_NOTICE => new Notice($message, $line, $file, $backtrace),

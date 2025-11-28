@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace Errbit\Exception;
 
 use Errbit\Errbit;
+use Errbit\Errors\ErrorInterface;
 use Errbit\Utils\XmlBuilder;
+use Throwable;
 
 class Notice
 {
@@ -22,11 +24,11 @@ class Notice
     /**
      * Create a new notice for the given Exception with the given $options.
      *
-     * @param mixed $exception - the exception that occurred
+     * @param Throwable $exception - the exception that occurred
      * @param array $options - full configuration + options
      */
     public function __construct(
-        private  mixed $exception,
+        private Throwable|ErrorInterface $exception,
         array $options = []
     ) {
         $this->options = array_merge(

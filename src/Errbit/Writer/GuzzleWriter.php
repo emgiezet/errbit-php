@@ -1,23 +1,19 @@
 <?php
+
 declare(strict_types=1);
 namespace Errbit\Writer;
 
-use Errbit\Errors\Error;
 use Errbit\Errors\ErrorInterface;
-use Errbit\Errors\Fatal;
-use Errbit\Errors\Notice;
-use Errbit\Errors\Warning;
-use Exception;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 /**
  *
  */
 class GuzzleWriter extends AbstractWriter implements WriterInterface
 {
-    
     /**
      * @param array $config
      *
@@ -32,17 +28,22 @@ class GuzzleWriter extends AbstractWriter implements WriterInterface
         }
        return sprintf('%s://%s%s', $proto, $config['host'], (isset($config['port'])?':'.$config['port']:''));
     }
-    
-    public function __construct(private ClientInterface $client)
-    {
-    }
-    
+
     /**
-     * @param \Exception $exception
+     * @var ClientInterface
+     */
+    private $_client;
+    public function __construct(ClientInterface $client)
+    {
+        $this->_client = $client;
+    }
+
+    /**
+     * @param Throwable $exception
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function write(ErrorInterface $exception, array $config): ResponseInterface|PromiseInterface
+    public function write(Throwable|ErrorInterface $exception, array $config): ResponseInterface|PromiseInterface
     {
         if($config['async']) {
             return $this->asyncWrite($exception, $config);
@@ -50,19 +51,20 @@ class GuzzleWriter extends AbstractWriter implements WriterInterface
         return $this->synchronousWrite($exception, $config);
     
     }
-    
+
     /**
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function synchronousWrite(ErrorInterface  $exception, array $config): ResponseInterface
+    public function synchronousWrite(Throwable|ErrorInterface  $exception, array $config): ResponseInterface
     {
         $uri = $this->buildConnectionScheme($config);
         $body = $this->buildNoticeFor($exception, $config);
-    
-        return $this->client->post(
-            uri: $uri.self::NOTICES_PATH,
-            options: [
+
+        return $this->_client->request(
+            'POST',
+            $uri . self::NOTICES_PATH,
+            [
                 'body' =>$body,
                 'connect_timout' => $config['connect_timeout'],
                 'headers'=>[
@@ -72,14 +74,15 @@ class GuzzleWriter extends AbstractWriter implements WriterInterface
             ]
         );
     }
-    
-    public function asyncWrite(ErrorInterface $exception, array $config): PromiseInterface
+
+    public function asyncWrite(Throwable|ErrorInterface $exception, array $config): PromiseInterface
     {
         $uri = $this->buildConnectionScheme($config);
-        $promise = $this->client->postAsync(
-            $uri.self::NOTICES_PATH,
+        $promise = $this->_client->requestAsync(
+            'POST',
+            $uri . self::NOTICES_PATH,
             [
-                'body' =>$this->buildNoticeFor($exception, $config),
+                'body' => $this->buildNoticeFor($exception, $config),
                 'connect_timout' => $config['connect_timeout'],
                 'headers'=>[
                     'Content-Type'=>'text/xml',

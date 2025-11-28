@@ -3,12 +3,10 @@ declare(strict_types=1);
 namespace Errbit\Writer;
 
 use Errbit\Errors\ErrorInterface;
-use Errbit\Exception\Notice;
+use Throwable;
 
 class SocketWriter extends AbstractWriter implements WriterInterface
 {
-  
-
     /**
      * @var false|int How many characters to read after request has been made
      */
@@ -17,13 +15,13 @@ class SocketWriter extends AbstractWriter implements WriterInterface
     /**
      * {@inheritdoc}
      *
-     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param Throwable $exception
      * @param array $config
      *
      * @return void
      * @throws \JsonException
      */
-    public function write(ErrorInterface $exception, array $config)
+    public function write(Throwable|ErrorInterface $exception, array $config)
     {
         $socket = fsockopen(
             $this->buildConnectionScheme($config),
@@ -70,12 +68,12 @@ class SocketWriter extends AbstractWriter implements WriterInterface
     }
     
     /**
-     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param Throwable $exception
      * @param array $config
      *
      * @return string
      */
-    protected function buildPayload(ErrorInterface $exception, array $config): string
+    protected function buildPayload(Throwable|ErrorInterface $exception, array $config): string
     {
         return $this->addHttpHeadersIfNeeded(
             $this->buildNoticeFor($exception, $config),

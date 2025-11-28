@@ -7,6 +7,7 @@ use Errbit\Errbit;
 use Errbit\Errors\Fatal;
 use Errbit\Exception\Exception;
 use Errbit\Utils\Converter;
+use Throwable;
 
 /**
  *
@@ -50,7 +51,7 @@ class ErrorHandlers
      * @param string $file error file
      * @param int $line
      *
-     * @throws \Errbit\Exception\Exception
+     * @throws Throwable
      */
     public function onError(int $code, string $message, string $file, int $line): void
     {
@@ -62,19 +63,17 @@ class ErrorHandlers
     /**
      * On exception
      *
-     * @throws \Exception
+     * @throws Throwable
      */
-    public function onException(\Exception $exception): void
+    public function onException(Throwable $exception): void
     {
-        $error = $this->converter->convert($exception->getCode(), $exception->getMessage(), $exception->getFile(),
-            $exception->getLine(), debug_backtrace());
-        $this->errbit->notify($error);
+        $this->errbit->notify($exception);
     }
     
     /**
      * On shut down
      *
-     * @throws \Errbit\Exception\Exception
+     * @throws Throwable
      */
     public function onShutdown(): void
     {

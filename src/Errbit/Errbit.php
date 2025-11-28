@@ -3,15 +3,11 @@ declare(strict_types=1);
 namespace Errbit;
 
 use Errbit\Errors\ErrorInterface;
-use Errbit\Errors\Warning;
 use Errbit\Exception\ConfigurationException;
 use Errbit\Exception\Exception;
-
-use Errbit\Errors\Notice;
-use Errbit\Errors\Error;
-use Errbit\Errors\Fatal;
 use Errbit\Handlers\ErrorHandlers;
 use Errbit\Writer\WriterInterface;
+use Throwable;
 
 /**
  * The Errbit client.
@@ -138,13 +134,13 @@ class Errbit
     /**
      * Notify an individual exception manually.
      *
-     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param Throwable $exception
      * @param array $options
      *
      * @return static [Errbit] the current instance
      * @throws \Errbit\Exception\ConfigurationException
      */
-    public function notify(ErrorInterface $exception, array $options = []): static
+    public function notify(Throwable|ErrorInterface $exception, array $options = []): static
     {
         $this->checkConfig();
         $config = array_merge($this->config, $options);
@@ -158,12 +154,12 @@ class Errbit
     }
     
     /**
-     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param Throwable $exception
      * @param array $skippedExceptions
      *
      * @return bool
      */
-    protected function shouldNotify(ErrorInterface $exception, array $skippedExceptions): bool
+    protected function shouldNotify(Throwable|ErrorInterface $exception, array $skippedExceptions): bool
     {
         foreach ($skippedExceptions as $skippedException) {
             if ($exception instanceof $skippedException) {
@@ -180,12 +176,12 @@ class Errbit
     }
     
     /**
-     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param Throwable $exception
      * @param array $config
      *
      * @return void
      */
-    protected function notifyObservers(ErrorInterface $exception, array $config): void
+    protected function notifyObservers(Throwable|ErrorInterface $exception, array $config): void
     {
         foreach ($this->observers as $observer) {
             $observer($exception, $config);

@@ -1,26 +1,25 @@
-version: '2'
 services:
   errbit:
-    image: errbit/errbit:latest
+    image: errbit/errbit:v0.9.0
     ports:
       - "8080:8080"
     depends_on:
       - mongo
     environment:
       - PORT=8080
-      - RACK_ENV=production
       - MONGO_URL=mongodb://mongo:27017/errbit
       - ERRBIT_ADMIN_EMAIL=errbit-php@errbit.php
       - ERRBIT_ADMIN_PASSWORD=errbit-php
       - ERRBIT_ADMIN_USER=errbit-php
   mongo:
-    image: mongo:4.1
+    image: mongo:7
     ports:
       - "27017"
   errbit.php.service:
     container_name: "errbit.php.service"
     build:
       context: .
+    depends_on:
+      - errbit 
     volumes:
       - ./:/app
-    entrypoint:  ["/bin/sh", "/app/Entrypoint.sh"]
