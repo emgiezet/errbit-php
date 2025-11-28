@@ -8,7 +8,7 @@ use Throwable;
 interface WriterInterface
 {
     /**
-     * @param Throwable $exception
+     * @param Throwable|ErrorInterface $exception
      * @param array $config
      *
      * @return mixed

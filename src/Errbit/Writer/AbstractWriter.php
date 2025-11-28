@@ -30,7 +30,7 @@ abstract class AbstractWriter
     }
     
     /**
-     * @param Throwable $exception
+     * @param Throwable|ErrorInterface $exception
      * @param array $options
      *
      * @return string

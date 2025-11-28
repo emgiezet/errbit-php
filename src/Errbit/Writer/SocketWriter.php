@@ -15,7 +15,7 @@ class SocketWriter extends AbstractWriter implements WriterInterface
     /**
      * {@inheritdoc}
      *
-     * @param Throwable $exception
+     * @param Throwable|ErrorInterface $exception
      * @param array $config
      *
      * @return void
@@ -68,7 +68,7 @@ class SocketWriter extends AbstractWriter implements WriterInterface
     }
     
     /**
-     * @param Throwable $exception
+     * @param Throwable|ErrorInterface $exception
      * @param array $config
      *
      * @return string

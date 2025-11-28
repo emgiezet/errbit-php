@@ -134,7 +134,7 @@ class Errbit
     /**
      * Notify an individual exception manually.
      *
-     * @param Throwable $exception
+     * @param Throwable|ErrorInterface $exception
      * @param array $options
      *
      * @return static [Errbit] the current instance
@@ -154,7 +154,7 @@ class Errbit
     }
     
     /**
-     * @param Throwable $exception
+     * @param Throwable|ErrorInterface $exception
      * @param array $skippedExceptions
      *
      * @return bool
@@ -176,7 +176,7 @@ class Errbit
     }
     
     /**
-     * @param Throwable $exception
+     * @param Throwable|ErrorInterface $exception
      * @param array $config
      *
      * @return void

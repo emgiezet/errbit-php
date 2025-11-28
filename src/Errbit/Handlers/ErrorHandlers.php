@@ -65,7 +65,7 @@ class ErrorHandlers
      *
      * @throws Throwable
      */
-    public function onException(Throwable $exception): void
+    public function onException($exception): void
     {
         $this->errbit->notify($exception);
     }

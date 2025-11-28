@@ -24,7 +24,7 @@ class Notice
     /**
      * Create a new notice for the given Exception with the given $options.
      *
-     * @param Throwable $exception - the exception that occurred
+     * @param Throwable|ErrorInterface $exception - the exception that occurred
      * @param array $options - full configuration + options
      */
     public function __construct(
