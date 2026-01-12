@@ -20,6 +20,6 @@ services:
     build:
       context: .
     depends_on:
-      - errbit 
+      - errbit
     volumes:
       - ./:/app
