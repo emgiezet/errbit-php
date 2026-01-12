@@ -15,7 +15,7 @@ to any PHP 8.2+ application.
 |-----------------|--------------------------------|
 | 1.x             | PHP 5.3                        |
 | 2.x             | PHP 8.0, 8.1                   |
-| **3.x**         | **PHP 8.2, 8.3** (recommended) |
+| **3.x**         | **PHP 8.2, 8.3, 8.4** (recommended) |
 
 Original idea and source has no support for php namespaces. 
 Moreover it has a bug and with newest errbit version the xml has not supported chars.
