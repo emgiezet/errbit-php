@@ -11,20 +11,25 @@ class FatalTest extends TestCase
 
     public function testFatal()
     {
-        $object = new Fatal('test', 12, __FILE__);
+        $previous = new \Exception("prev");
+        $object = new Fatal('test', 15, $previous);
 
         $msg = $object->getMessage();
-        $this->assertEquals('test', $msg, 'Message of base error missmatch');
+        $this->assertEquals('test', $msg, 'Message of base error mismatch');
 
         $line = $object->getLine();
-        $this->assertEquals(12, $line, 'Line no mismatch');
+        $this->assertEquals(15, $line, 'Line no mismatch');
 
         $file = $object->getFile();
-        $this->assertEquals(__FILE__, $file, 'File missmatch');
+        $this->assertEquals($previous, $object->getPrevious(), 'Prev mismatch');
 
-        $trace = $object->getTrace();
-
-        $actualTrace = [['line'     => 12, 'file'     => __FILE__, 'function' => '<unknown>']];
-        $this->assertEquals($actualTrace, $trace, 'trace missmatch');
+        $expectedTrace = [
+            'line' => 1536,
+            'file' => '/home/mgz/workspace/errbit-php/vendor/phpunit/phpunit/src/Framework/TestCase.php',
+            'function' => 'testFatal',
+            'class' => 'Unit\Errbit\Tests\Errors\FatalTest',
+            'type' => '->',
+        ];
+        $this->assertContainsEquals($expectedTrace, $object->getTrace(), 'trace ');
     }
 }

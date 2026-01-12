@@ -2,6 +2,6 @@
 declare(strict_types=1);
 namespace Errbit\Errors;
 
-class Notice extends BaseError implements ErrorInterface
+class Notice extends BaseError
 {
 }

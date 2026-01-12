@@ -54,7 +54,7 @@ class ErrorHandlers
      */
     public function onError(int $code, string $message, string $file, int $line): void
     {
-        $exception = $this->converter->convert($code, $message, $file,
+        $exception = $this->converter->convert($code, $message, null, $file,
             $line, debug_backtrace());
         $this->errbit->notify($exception);
     }

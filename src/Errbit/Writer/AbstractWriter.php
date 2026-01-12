@@ -29,12 +29,12 @@ abstract class AbstractWriter
     }
     
     /**
-     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param \Throwable $exception
      * @param array $options
      *
      * @return string
      */
-    protected function buildNoticeFor(ErrorInterface $exception, array $options): string
+    protected function buildNoticeFor(\Throwable $exception, array $options): string
     {
         return Notice::forException($exception, $options)->asXml();
     }

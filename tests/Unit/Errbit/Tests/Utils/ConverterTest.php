@@ -29,52 +29,56 @@ class ConverterTest extends TestCase
 
     public function testNotice()
     {
-        $notice = $this->object->convert(E_NOTICE, "TestNotice", "test.php", 8, [""]);
-        $expected = new Notice("TestNotice", 8, "test.php", [""]);
+        $prev = new \Exception('prev');
+        $notice = $this->object->convert(E_NOTICE, "TestNotice", $prev,"test.php", 8, [""]);
+        $expected = new Notice("TestNotice", 8, $prev, "test.php", [""]);
         $this->assertEquals($notice, $expected);
     }
 
     public function testUserNotice()
     {
-
-        $notice = $this->object->convert(E_USER_NOTICE, "TestNotice", "test.php", 8, [""]);
-        $expected = new Notice("TestNotice", 8, "test.php", [""]);
+        $prev = new \Exception('prev');
+        $notice = $this->object->convert(E_USER_NOTICE, "TestNotice", $prev, "test.php", 8, [""]);
+        $expected = new Notice("TestNotice", 8, $prev, "test.php", [""]);
         $this->assertEquals($notice, $expected);
     }
 
     public function testFatalError()
     {
-        $fatal = $this->object->convert(E_ERROR, "TestError", "test.php", 8, [""]);
-        $expected = new Fatal("TestError", 8, "test.php");
+        $prev = new \Exception('prev');
+        $fatal = $this->object->convert(E_ERROR, "TestError", $prev, "test.php", 8, [""]);
+        $expected = new Fatal("TestError", 8, $prev, "test.php");
         $this->assertEquals($fatal, $expected);
     }
 
     public function testCatchableFatalError()
     {
-        $notice = $this->object->convert(E_RECOVERABLE_ERROR, "TestError", "test.php", 8, [""]);
-        $expected = new Fatal("TestError", 8, "test.php");
+        $prev = new \Exception('prev');
+        $notice = $this->object->convert(E_RECOVERABLE_ERROR, "TestError",  $prev,"test.php", 8, [""]);
+        $expected = new Fatal("TestError", 8, $prev, "test.php");
         $this->assertEquals($notice, $expected);
     }
 
 
     public function testUserError()
     {
-        $notice = $this->object->convert(E_USER_ERROR, "TestError", "test.php", 8, [""]);
-        $expected = new Error("TestError", 8, "test.php", [""]);
+        
+        $notice = $this->object->convert(E_USER_ERROR, "TestError", null, "test.php", 8, [""]);
+        $expected = new Error("TestError", 8, null, "test.php", [""]);
         $this->assertEquals($notice, $expected);
     }
 
     public function testWarning()
     {
-        $notice = $this->object->convert(E_WARNING, "TestWarning", "test.php", 8, [""]);
-        $expected = new Warning("TestWarning", 8, "test.php", [""]);
+        $notice = $this->object->convert(E_WARNING, "TestWarning", null, "test.php", 8, [""]);
+        $expected = new Warning("TestWarning", 8, null, "test.php", [""]);
         $this->assertEquals($notice, $expected);
     }
 
     public function testUserWarning()
     {
-        $notice = $this->object->convert(E_USER_WARNING, "TestWarning", "test.php", 8, [""]);
-        $expected = new Warning("TestWarning", 8, "test.php", [""]);
+        $notice = $this->object->convert(E_USER_WARNING, "TestWarning", null, "test.php", 8, [""]);
+        $expected = new Warning("TestWarning", 8, null, "test.php", [""]);
         $this->assertEquals($notice, $expected);
     }
 }

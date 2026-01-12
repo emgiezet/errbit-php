@@ -17,13 +17,13 @@ class SocketWriter extends AbstractWriter implements WriterInterface
     /**
      * {@inheritdoc}
      *
-     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param \Throwable $exception
      * @param array $config
      *
      * @return void
      * @throws \JsonException
      */
-    public function write(ErrorInterface $exception, array $config)
+    public function write(\Throwable $exception, array $config)
     {
         $socket = fsockopen(
             $this->buildConnectionScheme($config),

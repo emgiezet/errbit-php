@@ -138,13 +138,13 @@ class Errbit
     /**
      * Notify an individual exception manually.
      *
-     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param \Throwable $exception
      * @param array $options
      *
      * @return static [Errbit] the current instance
      * @throws \Errbit\Exception\ConfigurationException
      */
-    public function notify(ErrorInterface $exception, array $options = []): static
+    public function notify(\Throwable $exception, array $options = []): static
     {
         $this->checkConfig();
         $config = array_merge($this->config, $options);
@@ -158,12 +158,12 @@ class Errbit
     }
     
     /**
-     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param \Throwable $exception
      * @param array $skippedExceptions
      *
      * @return bool
      */
-    protected function shouldNotify(ErrorInterface $exception, array $skippedExceptions): bool
+    protected function shouldNotify(\Throwable $exception, array $skippedExceptions): bool
     {
         foreach ($skippedExceptions as $skippedException) {
             if ($exception instanceof $skippedException) {
@@ -180,12 +180,12 @@ class Errbit
     }
     
     /**
-     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param \Throwable $exception
      * @param array $config
      *
      * @return void
      */
-    protected function notifyObservers(ErrorInterface $exception, array $config): void
+    protected function notifyObservers(\Throwable $exception, array $config): void
     {
         foreach ($this->observers as $observer) {
             $observer($exception, $config);

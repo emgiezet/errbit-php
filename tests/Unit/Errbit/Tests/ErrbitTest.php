@@ -40,7 +40,8 @@ class ErrbitTest extends TestCase
     public function shouldIgnoreSkippedExceptions()
     {
         $this->errbit->configure(['skipped_exceptions'=>[Notice::class]]);
-        $exception = new Notice('Notice test', 123,'test.php', ['test']);
+        $previous = new \Exception('prev exception');
+        $exception = new Notice('Notice test', 123,$previous);
         //don't write because this Notice should be ignored
         $writer = Mockery::mock(\Errbit\Writer\WriterInterface::class)->shouldNotReceive('write')->getMock();
         $this->errbit->setWriter($writer);

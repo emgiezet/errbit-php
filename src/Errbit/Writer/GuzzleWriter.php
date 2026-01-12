@@ -42,7 +42,7 @@ class GuzzleWriter extends AbstractWriter implements WriterInterface
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function write(ErrorInterface $exception, array $config): ResponseInterface|PromiseInterface
+    public function write(\Throwable $exception, array $config): ResponseInterface|PromiseInterface
     {
         if($config['async']) {
             return $this->asyncWrite($exception, $config);
@@ -55,7 +55,7 @@ class GuzzleWriter extends AbstractWriter implements WriterInterface
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function synchronousWrite(ErrorInterface  $exception, array $config): ResponseInterface
+    public function synchronousWrite(\Throwable  $exception, array $config): ResponseInterface
     {
         $uri = $this->buildConnectionScheme($config);
         $body = $this->buildNoticeFor($exception, $config);
@@ -73,7 +73,7 @@ class GuzzleWriter extends AbstractWriter implements WriterInterface
         );
     }
     
-    public function asyncWrite(ErrorInterface $exception, array $config): PromiseInterface
+    public function asyncWrite(\Throwable $exception, array $config): PromiseInterface
     {
         $uri = $this->buildConnectionScheme($config);
         $promise = $this->client->postAsync(
