@@ -2,7 +2,6 @@
 declare(strict_types=1);
 namespace Errbit\Writer;
 
-use Errbit\Errors\ErrorInterface;
 use Errbit\Exception\Notice;
 
 abstract class AbstractWriter
@@ -29,12 +28,12 @@ abstract class AbstractWriter
     }
     
     /**
-     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param \Throwable $exception
      * @param array $options
      *
      * @return string
      */
-    protected function buildNoticeFor(ErrorInterface $exception, array $options): string
+    protected function buildNoticeFor(\Throwable $exception, array $options): string
     {
         return Notice::forException($exception, $options)->asXml();
     }

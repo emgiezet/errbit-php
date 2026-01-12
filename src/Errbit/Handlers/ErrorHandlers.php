@@ -54,7 +54,7 @@ class ErrorHandlers
      */
     public function onError(int $code, string $message, string $file, int $line): void
     {
-        $exception = $this->converter->convert($code, $message, $file,
+        $exception = $this->converter->convert($code, $message, null, $file,
             $line, debug_backtrace());
         $this->errbit->notify($exception);
     }
@@ -66,8 +66,14 @@ class ErrorHandlers
      */
     public function onException(\Exception $exception): void
     {
-        $error = $this->converter->convert($exception->getCode(), $exception->getMessage(), $exception->getFile(),
-            $exception->getLine(), debug_backtrace());
+        $error = $this->converter->convert(
+            $exception->getCode(),
+            $exception->getMessage(),
+            $exception,
+            $exception->getFile(),
+            $exception->getLine(),
+            $exception->getTrace()
+        );
         $this->errbit->notify($error);
     }
     
@@ -79,7 +85,7 @@ class ErrorHandlers
     public function onShutdown(): void
     {
         if (($error = error_get_last()) && $error['type'] & error_reporting()) {
-            $this->errbit->notify(new Fatal($error['message'], $error['file'], $error['line']));
+            $this->errbit->notify(new Fatal($error['message'], $error['line'], null, $error['file']));
         }
     }
 

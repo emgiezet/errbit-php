@@ -2,14 +2,8 @@
 declare(strict_types=1);
 namespace Errbit;
 
-use Errbit\Errors\ErrorInterface;
-use Errbit\Errors\Warning;
 use Errbit\Exception\ConfigurationException;
 use Errbit\Exception\Exception;
-
-use Errbit\Errors\Notice;
-use Errbit\Errors\Error;
-use Errbit\Errors\Fatal;
 use Errbit\Handlers\ErrorHandlers;
 use Errbit\Writer\WriterInterface;
 
@@ -138,13 +132,13 @@ class Errbit
     /**
      * Notify an individual exception manually.
      *
-     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param \Throwable $exception
      * @param array $options
      *
      * @return static [Errbit] the current instance
      * @throws \Errbit\Exception\ConfigurationException
      */
-    public function notify(ErrorInterface $exception, array $options = []): static
+    public function notify(\Throwable $exception, array $options = []): static
     {
         $this->checkConfig();
         $config = array_merge($this->config, $options);
@@ -158,20 +152,21 @@ class Errbit
     }
     
     /**
-     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param \Throwable $exception
      * @param array $skippedExceptions
      *
      * @return bool
      */
-    protected function shouldNotify(ErrorInterface $exception, array $skippedExceptions): bool
+    protected function shouldNotify(\Throwable $exception, array $skippedExceptions): bool
     {
         foreach ($skippedExceptions as $skippedException) {
             if ($exception instanceof $skippedException) {
                 return false;
             }
         }
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
         foreach ($this->config['ignore_user_agent'] as $ua) {
-            if (str_contains($_SERVER['HTTP_USER_AGENT'],$ua) ) {
+            if ($userAgent !== '' && str_contains($userAgent, $ua)) {
                 return false;
             }
         }
@@ -180,12 +175,12 @@ class Errbit
     }
     
     /**
-     * @param \Errbit\Errors\ErrorInterface $exception
+     * @param \Throwable $exception
      * @param array $config
      *
      * @return void
      */
-    protected function notifyObservers(ErrorInterface $exception, array $config): void
+    protected function notifyObservers(\Throwable $exception, array $config): void
     {
         foreach ($this->observers as $observer) {
             $observer($exception, $config);

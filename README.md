@@ -2,14 +2,20 @@
 
 
 [![Coverage Status](https://coveralls.io/repos/emgiezet/errbitPHP/badge.png)](https://coveralls.io/r/emgiezet/errbitPHP)
-[![Build Status](https://travis-ci.org/emgiezet/errbitPHP.png?branch=master)](https://travis-ci.org/emgiezet/errbitPHP)
-[![Dependency Status](https://www.versioneye.com/user/projects/5249e725632bac0a4900b2bf/badge.png)](https://www.versioneye.com/user/projects/5249e725632bac0a4900b2bf)
+[![Build Status](https://github.com/emgiezet/errbit-php/actions/workflows/ci.yml/badge.svg)](https://github.com/emgiezet/errbit-php/actions/workflows/ci.yml)
 [![Latest Stable Version](https://poser.pugx.org/emgiezet/errbit-php/v/stable.png)](https://packagist.org/packages/emgiezet/errbit-php)
 [![SymfonyInsight](https://insight.symfony.com/projects/a0c405fb-8ee9-40e9-acf1-eee084fc35a6/mini.svg)](https://insight.symfony.com/projects/a0c405fb-8ee9-40e9-acf1-eee084fc35a6)
-[![Join the chat at https://gitter.im/emgiezet/errbitPHP](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/emgiezet/errbitPHP?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This is a full-featured client to add integration with [Errbit](https://github.com/errbit/errbit) (or Airbrake)
-to any PHP 8.0 and 8.1 application. 
+to any PHP 8.2+ application.
+
+## PHP Version Requirements
+
+| Library Version | PHP Version                    |
+|-----------------|--------------------------------|
+| 1.x             | PHP 5.3                        |
+| 2.x             | PHP 8.0, 8.1                   |
+| **3.x**         | **PHP 8.2, 8.3** (recommended) |
 
 Original idea and source has no support for php namespaces. 
 Moreover it has a bug and with newest errbit version the xml has not supported chars.
@@ -21,28 +27,46 @@ Check the presentation below!
 
 [![Huston whe have an Airbrake](http://image.slidesharecdn.com/hustonwehaveanairbrake-131125152637-phpapp02/95/slide-1-638.jpg?1385415083)](http://www.slideshare.net/MaxMaecki/meetphp-11-huston-we-have-an-airbrake)
 
+## Upgrading to v3.0
+
+Version 3.0 contains breaking changes. If you're upgrading from v2.x, please note:
+
+- **PHP 8.0 and 8.1 support has been dropped** - Minimum PHP version is now 8.2
+- **Removed `ErrorInterface`** - Use `\Throwable` type hints instead
+- **Changed `WriterInterface::write()` signature** - Now accepts `\Throwable` instead of `ErrorInterface`
+- **Updated error class constructors** - `Notice`, `Warning`, `Error`, `Fatal` now use named parameters
+
 ## ChangeLog
+
 Check the:
 
-[![Full change log here](Resources/doc/changlelog.md)]
-[![Releases](https://github.com/emgiezet/errbitPHP/releases)]
+- [Full change log here](Resources/doc/changlelog.md)
+- [Releases](https://github.com/emgiezet/errbitPHP/releases)
 
 ## Installation
 
 ### Composer Way
-For php 5.3
+For PHP 5.3
 ```json
 require: {
-    ...
     "emgiezet/errbit-php": "1.*"
-  }
+}
 ```
-For php 8.0+
+
+For PHP 8.0, 8.1
+
 ```json
 require: {
-    ...
     "emgiezet/errbit-php": "2.*"
-  }
+}
+```
+
+For PHP 8.2+ (recommended)
+
+```json
+require: {
+    "emgiezet/errbit-php": "^3.0"
+}
 ```
 
 ## Usage
