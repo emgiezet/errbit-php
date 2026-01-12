@@ -66,8 +66,14 @@ class ErrorHandlers
      */
     public function onException(\Exception $exception): void
     {
-        $error = $this->converter->convert($exception->getCode(), $exception->getMessage(), $exception->getFile(),
-            $exception->getLine(), debug_backtrace());
+        $error = $this->converter->convert(
+            $exception->getCode(),
+            $exception->getMessage(),
+            $exception,
+            $exception->getFile(),
+            $exception->getLine(),
+            $exception->getTrace()
+        );
         $this->errbit->notify($error);
     }
     
