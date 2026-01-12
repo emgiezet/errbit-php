@@ -143,9 +143,15 @@ use Errbit\Errbit;
 Errbit::instance()->start(array('error', 'fatal')); // using our own exception handler
 ```
 
-## Symfony2 Integration
+## Symfony Integration
 
-See the [documentation](https://github.com/emgiezet/errbitPHP/blob/master/Resources/doc/symfony2_integration.md) for symfony2 integration.
+### Symfony 7
+
+See the [Symfony 7 integration guide](Resources/doc/symfony7_integration.md) for modern Symfony 7+ integration using PHP attributes and best practices.
+
+### Symfony 2
+
+See the [Symfony 2 documentation](Resources/doc/symfony2_integration.md) for legacy Symfony 2 integration.
 
 ## Kohana 3.3 Integration
 
