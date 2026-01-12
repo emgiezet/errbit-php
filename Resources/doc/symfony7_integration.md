@@ -159,4 +159,4 @@ final class ErrbitExceptionSubscriber implements EventSubscriberInterface
 - **Autoconfigure**: With `autoconfigure: true`, Symfony automatically detects `#[AsEventListener]` attributes and registers them
 - **Priority**: Use priority `0` or lower to let Symfony's error handler run first if you want the normal error page to display
 - **Async mode**: The `async => true` option uses UDP for non-blocking error reporting
-- **Symfony 7.4+**: Supports union types in event listener method signatures
+- **Type declarations**: When running on PHP 8+, you can use union types in event listener method signatures
