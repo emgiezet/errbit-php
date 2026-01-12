@@ -12,6 +12,7 @@ permissions:
 jobs:
   build:
     runs-on: ${{ matrix.operating-system }}
+    continue-on-error: ${{ matrix.experimental || false }}
     strategy:
       matrix:
         operating-system: ["ubuntu-latest", "windows-latest", "macos-latest"]
@@ -21,6 +22,11 @@ jobs:
           - operating-system: "ubuntu-latest"
             php-versions: "8.0"
             phpunit-versions: 9
+            experimental: true
+          - operating-system: "ubuntu-latest"
+            php-versions: "8.1"
+            phpunit-versions: "latest"
+            experimental: true
     steps:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
