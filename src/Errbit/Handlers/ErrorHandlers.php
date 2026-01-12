@@ -79,7 +79,7 @@ class ErrorHandlers
     public function onShutdown(): void
     {
         if (($error = error_get_last()) && $error['type'] & error_reporting()) {
-            $this->errbit->notify(new Fatal($error['message'], $error['file'], $error['line']));
+            $this->errbit->notify(new Fatal($error['message'], $error['line'], null, $error['file']));
         }
     }
 

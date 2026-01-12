@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Errbit\Utils;
 
 use Errbit\Errors\Error;
-use Errbit\Errors\ErrorInterface;
 use Errbit\Errors\Fatal;
 use Errbit\Errors\Notice;
 use Errbit\Errors\Warning;

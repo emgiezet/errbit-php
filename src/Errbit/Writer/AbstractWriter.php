@@ -2,7 +2,6 @@
 declare(strict_types=1);
 namespace Errbit\Writer;
 
-use Errbit\Errors\ErrorInterface;
 use Errbit\Exception\Notice;
 
 abstract class AbstractWriter

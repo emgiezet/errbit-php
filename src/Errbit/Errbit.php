@@ -2,14 +2,8 @@
 declare(strict_types=1);
 namespace Errbit;
 
-use Errbit\Errors\ErrorInterface;
-use Errbit\Errors\Warning;
 use Errbit\Exception\ConfigurationException;
 use Errbit\Exception\Exception;
-
-use Errbit\Errors\Notice;
-use Errbit\Errors\Error;
-use Errbit\Errors\Fatal;
 use Errbit\Handlers\ErrorHandlers;
 use Errbit\Writer\WriterInterface;
 
@@ -170,8 +164,9 @@ class Errbit
                 return false;
             }
         }
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
         foreach ($this->config['ignore_user_agent'] as $ua) {
-            if (str_contains($_SERVER['HTTP_USER_AGENT'],$ua) ) {
+            if ($userAgent !== '' && str_contains($userAgent, $ua)) {
                 return false;
             }
         }
