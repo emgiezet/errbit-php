@@ -28,7 +28,7 @@
         "issues": "https://github.com/emgiezet/errbitPHP/issues"
     },
     "require": {
-        "php": "^8.0||8.1||8.2||^8.3",
+        "php": "^8.0||^8.1||^8.2||^8.3||^8.4",
         "guzzlehttp/guzzle": "^7.5.0",
         "ext-simplexml": "*"
     },
@@ -37,7 +37,7 @@
         "mockery/mockery": "1.5.1",
         "phpunit/phpunit": "9.4.4",
         "php-coveralls/php-coveralls": "^2.5",
-        "vimeo/psalm": "^5.6",
+        "vimeo/psalm": "^6.0",
         "phpstan/phpstan": "^1.9"
     },
     "replace": {
