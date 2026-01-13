@@ -4,6 +4,9 @@ namespace Errbit\Errors;
 
 class Error extends BaseError
 {
+    /**
+     * @param list<array<string, mixed>> $backtrace
+     */
     public function __construct(
         string $message,
         ?int $line = null,

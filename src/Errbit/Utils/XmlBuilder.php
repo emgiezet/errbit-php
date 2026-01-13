@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace Errbit\Utils;
 
+use DOMElement;
 use SimpleXMLElement;
 
 /**
@@ -41,8 +42,8 @@ class XmlBuilder
     /**
      * Insert a tag into the XML.
      *
-    * @param string $name the name of the tag, required.
-    * @param mixed $value the text value of the element, optional
+     * @param string $name the name of the tag, required
+     * @param mixed $value the text value of the element, optional
      * @param array<string, mixed> $attributes an array of attributes for the tag, optional
      * @param callable|null $callback a callback to receive an XmlBuilder for the new tag, optional
      * @param bool $getLastChild whether to get the last child element
@@ -55,10 +56,23 @@ class XmlBuilder
 
         $this->_xml->{$name}[$idx] = $this->normalizeValue($value);
 
-        foreach ($attributes as $attr => $v) {
-            $this->_xml->{$name}[$idx][$attr] = $this->normalizeValue($v);
+        $childElement = null;
+        if (isset($this->_xml->{$name}[$idx]) && $this->_xml->{$name}[$idx] instanceof SimpleXMLElement) {
+            $childElement = $this->_xml->{$name}[$idx];
+        } elseif ($this->_xml->{$name} instanceof SimpleXMLElement) {
+            $childElement = $this->_xml->{$name};
         }
-        $node = new self($this->_xml->$name);
+
+        if ($childElement instanceof SimpleXMLElement) {
+            foreach ($attributes as $attr => $v) {
+                if (!is_string($attr) || $attr === '') {
+                    continue;
+                }
+                $this->setAttribute($childElement, $attr, $this->normalizeValue($v));
+            }
+        }
+
+        $node = new self($childElement instanceof SimpleXMLElement ? $childElement : null);
         if ($getLastChild) {
             $array = $this->_xml->xpath($name."[last()]");
             if (is_array($array)) {
@@ -79,14 +93,18 @@ class XmlBuilder
     /**
      * Add an attribute to the current element.
      *
-     * @param String $name  the name of the attribute
-     * @param String $value the value of the attribute
+     * @param string $name the name of the attribute
+     * @param mixed $value the value of the attribute
      *
      * @return static the current builder
      */
-    public function attribute($name, $value): static
+    public function attribute(string $name, mixed $value): static
     {
-        $this->_xml[$name] = $this->normalizeValue($value);
+        if ($name === '') {
+            return $this;
+        }
+
+        $this->setAttribute($this->_xml, $name, $this->normalizeValue($value));
 
         return $this;
     }
@@ -143,6 +161,18 @@ class XmlBuilder
      */
     public static function utf8ForXML($string)
     {
-        return preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $string);
+        $filtered = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $string);
+
+        return is_string($filtered) ? $filtered : '';
+    }
+
+    private function setAttribute(SimpleXMLElement $element, string $name, string $value): void
+    {
+        $domNode = dom_import_simplexml($element);
+        if (!$domNode instanceof DOMElement) {
+            return;
+        }
+
+        $domNode->setAttribute($name, $value);
     }
 }

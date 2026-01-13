@@ -166,10 +166,14 @@ class Errbit
             }
         }
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        /** @var array<int, string> $ignoreUserAgents */
+        $userAgent = is_string($userAgent) ? $userAgent : '';
+        /** @var list<string> $ignoreUserAgents */
         $ignoreUserAgents = $this->config['ignore_user_agent'];
         foreach ($ignoreUserAgents as $ua) {
-            if ($userAgent !== '' && str_contains($userAgent, $ua)) {
+            if ($userAgent === '' || !is_string($ua) || $ua === '') {
+                continue;
+            }
+            if (str_contains($userAgent, $ua)) {
                 return false;
             }
         }

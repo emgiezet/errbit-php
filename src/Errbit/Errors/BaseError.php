@@ -10,8 +10,12 @@ use Throwable;
 abstract class BaseError extends \Exception
 {
     protected string $errorFile = '';
+    /** @var list<array<string, mixed>> */
     protected array $backtrace = [];
 
+    /**
+     * @param list<array<string, mixed>> $backtrace
+     */
     public function __construct(
         string $message = "",
         int $code = 0,
@@ -32,6 +36,9 @@ abstract class BaseError extends \Exception
         return $this->errorFile;
     }
 
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function getBacktrace(): array
     {
         return $this->backtrace;
