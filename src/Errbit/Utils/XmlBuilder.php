@@ -42,16 +42,22 @@ class XmlBuilder
      * Insert a tag into the XML.
      *
      * @param string $name the name of the tag, required.
-     * @param string $value the text value of the element, optional
+     * @param mixed $value the text value of the element, optional
      * @param array<string, mixed> $attributes an array of attributes for the tag, optional
      * @param callable|null $callback a callback to receive an XmlBuilder for the new tag, optional
      * @param bool $getLastChild whether to get the last child element
      *
      * @return XmlBuilder a builder for the inserted tag
      */
-    public function tag(string $name, string $value = '', array $attributes = [], ?callable $callback = null, bool $getLastChild = false): XmlBuilder
+    public function tag(string $name, mixed $value = '', array $attributes = [], ?callable $callback = null, bool $getLastChild = false): XmlBuilder
     {
         $idx = is_countable($this->_xml->$name) ? count($this->_xml->$name) : 0;
+
+        if (is_object($value)) {
+            $value = "[" . $value::class . "]";
+        } else {
+            $value = (string) $value;
+        }
 
         $this->_xml->{$name}[$idx] = $value;
 
