@@ -7,7 +7,7 @@ interface WriterInterface
 {
     /**
      * @param \Throwable $exception
-     * @param array $config
+     * @param array<string, mixed> $config
      *
      * @return mixed
      */

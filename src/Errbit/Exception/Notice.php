@@ -22,11 +22,11 @@ class Notice
     /**
      * Create a new notice for the given Exception with the given $options.
      *
-     * @param mixed $exception - the exception that occurred
-     * @param array $options - full configuration + options
+     * @param \Throwable $exception - the exception that occurred
+     * @param array<string, mixed> $options - full configuration + options
      */
     public function __construct(
-        private  mixed $exception,
+        private \Throwable $exception,
         array $options = []
     ) {
         $this->options = array_merge(
@@ -56,7 +56,7 @@ class Notice
                 $this->guessProtocol(),
                 $this->guessHost(),
                 $this->guessPort(),
-                $_SERVER['REQUEST_URI']
+                (string) $_SERVER['REQUEST_URI']
             );
         }
         
@@ -71,7 +71,7 @@ class Notice
     private function guessProtocol(): string
     {
         if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
-            return $_SERVER['HTTP_X_FORWARDED_PROTO'];
+            return (string) $_SERVER['HTTP_X_FORWARDED_PROTO'];
         } elseif (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) {
             return 'https';
         } else {
@@ -87,9 +87,9 @@ class Notice
     private function guessHost(): string
     {
         if (!empty($_SERVER['HTTP_HOST'])) {
-            return $_SERVER['HTTP_HOST'];
+            return (string) $_SERVER['HTTP_HOST'];
         } elseif (!empty($_SERVER['SERVER_NAME'])) {
-            return $_SERVER['SERVER_NAME'];
+            return (string) $_SERVER['SERVER_NAME'];
         } else {
             return '127.0.0.1';
         }
@@ -106,10 +106,10 @@ class Notice
                 $_SERVER['SERVER_PORT'],
                 [80, 443]
             )) {
-            return sprintf(':%d', $_SERVER['SERVER_PORT']);
+            return sprintf(':%d', (int) $_SERVER['SERVER_PORT']);
         }
-        
-        return '80';
+
+        return '';
     }
     
     /**
@@ -142,9 +142,12 @@ class Notice
         }
         
         if (is_array($this->options['params_filters'])) {
-            foreach ($this->options['params_filters'] as $pattern) {
-                foreach ($this->options[$name] as $key => $value) {
-                    
+            /** @var array<int, string> $paramsFilters */
+            $paramsFilters = $this->options['params_filters'];
+            foreach ($paramsFilters as $pattern) {
+                /** @var array<string|int, mixed> $params */
+                $params = $this->options[$name];
+                foreach ($params as $key => $value) {
                     if (preg_match($pattern, (string)$key)) {
                         $this->options[$name][$key] = '[FILTERED]';
                     }
@@ -158,13 +161,13 @@ class Notice
     /**
      * Convenience method to instantiate a new notice.
      *
-     * @param mixed $exception - Exception
-     * @param array $options - array of options
+     * @param \Throwable $exception - Exception
+     * @param array<string, mixed> $options - array of options
      *
      * @return Notice
      */
     public static function forException(
-        mixed $exception,
+        \Throwable $exception,
         array $options = []
     ): Notice {
         return new self($exception, $options);
@@ -187,7 +190,7 @@ class Notice
             '',
             ['version' => Errbit::API_VERSION],
             function (XmlBuilder $notice) use ($exception, $options, $self) {
-                $notice->tag('api-key', $options['api_key']);
+                $notice->tag('api-key', (string) ($options['api_key'] ?? ''));
                 $notice->tag(
                     'notifier',
                     '',
@@ -198,7 +201,7 @@ class Notice
                         $notifier->tag('url', Errbit::PROJECT_URL);
                     }
                 );
-                
+
                 $notice->tag(
                     'error',
                     '',
@@ -225,7 +228,7 @@ class Notice
                                 $self
                             ) {
                                 $trace = $exception->getTrace();
-                                
+
                                 $file1 = $exception->getFile();
                                 $backtrace->tag(
                                     'line',
@@ -238,7 +241,7 @@ class Notice
                                         'method' => "<unknown>",
                                     ]
                                 );
-                                
+
                                 // if there is no trace we should add an empty element
                                 if (empty($trace)) {
                                     $backtrace->tag(
@@ -251,7 +254,9 @@ class Notice
                                         ]
                                     );
                                 } else {
+                                    /** @var array<int, array<string, mixed>> $trace */
                                     foreach ($trace as $frame) {
+                                        /** @var array<string, mixed> $frame */
                                         $backtrace->tag(
                                             'line',
                                             '',
@@ -259,7 +264,7 @@ class Notice
                                                 'number' => $frame['line'] ?? 0,
                                                 'file' => isset($frame['file']) ?
                                                     $self->filterTrace(
-                                                        $frame['file']
+                                                        (string) $frame['file']
                                                     ) : '<unknown>',
                                                 'method' => $self->filterTrace(
                                                     $self->formatMethod($frame)
@@ -272,7 +277,7 @@ class Notice
                         );
                     }
                 );
-                
+
                 if (!empty($options['url'])
                     || !empty($options['controller'])
                     || !empty($options['action'])
@@ -287,56 +292,62 @@ class Notice
                         function (XmlBuilder $request) use ($options) {
                             $request->tag(
                                 'url',
-                                !empty($options['url']) ? $options['url'] : ''
+                                !empty($options['url']) ? (string) $options['url'] : ''
                             );
                             $request->tag(
                                 'component',
-                                !empty($options['controller']) ? $options['controller'] : ''
+                                !empty($options['controller']) ? (string) $options['controller'] : ''
                             );
                             $request->tag(
                                 'action',
-                                !empty($options['action']) ? $options['action'] : ''
+                                !empty($options['action']) ? (string) $options['action'] : ''
                             );
-                            if (!empty($options['parameters'])) {
+                            if (!empty($options['parameters']) && is_array($options['parameters'])) {
                                 $request->tag(
                                     'params',
                                     '',
                                     [],
                                     function (XmlBuilder $params) use ($options
                                     ) {
+                                        /** @var array<string|int, mixed> $parameters */
+                                        $parameters = $options['parameters'];
                                         Notice::xmlVarsFor(
                                             $params,
-                                            $options['parameters']
+                                            $parameters
                                         );
                                     }
                                 );
                             }
-                            
-                            if (!empty($options['session_data'])) {
+
+                            if (!empty($options['session_data']) && is_array($options['session_data'])) {
                                 $request->tag(
                                     'session',
                                     '',
                                     [],
                                     function (XmlBuilder $session) use ($options
                                     ) {
+                                        /** @var array<string|int, mixed> $sessionData */
+                                        $sessionData = $options['session_data'];
                                         Notice::xmlVarsFor(
                                             $session,
-                                            $options['session_data']
+                                            $sessionData
                                         );
                                     }
                                 );
                             }
-                            
-                            if (!empty($options['cgi_data'])) {
+
+                            if (!empty($options['cgi_data']) && is_array($options['cgi_data'])) {
                                 $request->tag(
                                     'cgi-data',
                                     '',
                                     [],
                                     function (XmlBuilder $cgiData) use ($options
                                     ) {
+                                        /** @var array<string|int, mixed> $cgiDataArr */
+                                        $cgiDataArr = $options['cgi_data'];
                                         Notice::xmlVarsFor(
                                             $cgiData,
-                                            $options['cgi_data']
+                                            $cgiDataArr
                                         );
                                     }
                                 );
@@ -344,27 +355,29 @@ class Notice
                         }
                     );
                 }
-                
-                if (!empty($options['user'])) {
+
+                if (!empty($options['user']) && is_array($options['user'])) {
                     $notice->tag(
                         'user-attributes',
                         '',
                         [],
                         function (XmlBuilder $user) use ($options) {
-                            Notice::xmlVarsFor($user, $options['user']);
+                            /** @var array<string|int, mixed> $userData */
+                            $userData = $options['user'];
+                            Notice::xmlVarsFor($user, $userData);
                         }
                     );
                 }
-                
+
                 $notice->tag(
                     'server-environment',
                     '',
                     [],
                     function (XmlBuilder $env) use ($options) {
-                        $env->tag('project-root', $options['project_root']);
+                        $env->tag('project-root', (string) ($options['project_root'] ?? ''));
                         $env->tag(
                             'environment-name',
-                            $options['environment_name']
+                            (string) ($options['environment_name'] ?? '')
                         );
                     }
                 );
@@ -432,16 +445,19 @@ class Notice
         }
         
         foreach ($this->options['backtrace_filters'] as $pattern => $replacement) {
-            $str = preg_replace($pattern, (string)$replacement, $str);
+            $result = preg_replace((string) $pattern, (string)$replacement, $str);
+            if ($result !== null) {
+                $str = $result;
+            }
         }
-        
+
         return $str;
     }
     
     /**
      * Extract a human-readable method/function name from the given stack frame.
      *
-     * @param array $frame - a single entry for the backtrace
+     * @param array<string, mixed> $frame - a single entry for the backtrace
      *
      * @return string -  the name of the method/function
      */
@@ -450,14 +466,14 @@ class Notice
         if (!empty($frame['class']) && !empty($frame['type']) && !empty($frame['function'])) {
             return sprintf(
                 '%s%s%s()',
-                $frame['class'],
-                $frame['type'],
-                $frame['function']
+                (string) $frame['class'],
+                (string) $frame['type'],
+                (string) $frame['function']
             );
         } else {
             return sprintf(
                 '%s()',
-                !empty($frame['function']) ? $frame['function'] : '<unknown>'
+                !empty($frame['function']) ? (string) $frame['function'] : '<unknown>'
             );
         }
     }
@@ -467,23 +483,20 @@ class Notice
      *
      * @param \Errbit\Utils\XmlBuilder $builder the builder instance to set the
      *     data into
-     * @param array $array the stack frame entry
+     * @param array<string|int, mixed> $array the stack frame entry
      *
      * @return void
      */
     public static function xmlVarsFor(XmlBuilder $builder, array $array): void
     {
-        
         foreach ($array as $key => $value) {
             if (is_object($value)) {
-                
                 $hash = spl_object_hash($value);
-                
                 $value = (array)$value;
             } else {
                 $hash = null;
             }
-            
+
             if (is_array($value)) {
                 if (null === $hash || !in_array($hash, self::$hashArray)) {
                     self::$hashArray[] = $hash;
@@ -491,7 +504,7 @@ class Notice
                         'var',
                         '',
                         ['key' => $key],
-                        function ($var) use ($value) {
+                        function (XmlBuilder $var) use ($value) {
                             Notice::xmlVarsFor($var, $value);
                         },
                         true
@@ -503,9 +516,8 @@ class Notice
                         ['key' => $key]
                     );
                 }
-                
             } else {
-                $builder->tag('var', $value, ['key' => $key]);
+                $builder->tag('var', (string) $value, ['key' => $key]);
             }
         }
     }

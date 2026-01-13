@@ -11,6 +11,7 @@ abstract class AbstractWriter
      */
     public const NOTICES_PATH  = '/notifier_api/v2/notices/';
     /**
+     * @param array<string, mixed> $config
      * @return string
      */
     protected function buildConnectionScheme(array $config): string
@@ -23,13 +24,13 @@ abstract class AbstractWriter
         } else {
             $proto = 'tcp';
         }
-        
-        return sprintf('%s://%s', $proto, $config['host']);
+
+        return sprintf('%s://%s', $proto, (string) $config['host']);
     }
     
     /**
      * @param \Throwable $exception
-     * @param array $options
+     * @param array<string, mixed> $options
      *
      * @return string
      */

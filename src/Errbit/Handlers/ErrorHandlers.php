@@ -21,7 +21,7 @@ class ErrorHandlers
     
     /**
      * @param \Errbit\Errbit $errbit
-     * @param array $handlers
+     * @param array<int, string> $handlers
      *
      * @return void
      */
@@ -32,9 +32,9 @@ class ErrorHandlers
     
     /**
      * @param \Errbit\Errbit $errbit
-     * @param array $handlers
+     * @param array<int, string> $handlers
      */
-    public function __construct(private Errbit $errbit, array $handlers=[])
+    public function __construct(private Errbit $errbit, array $handlers = [])
     {
         $this->install($handlers);
         $this->converter = Converter::createDefault();
@@ -50,21 +50,25 @@ class ErrorHandlers
      * @param string $file error file
      * @param int $line
      *
+     * @return bool
      * @throws \Errbit\Exception\Exception
      */
-    public function onError(int $code, string $message, string $file, int $line): void
+    public function onError(int $code, string $message, string $file, int $line): bool
     {
         $exception = $this->converter->convert($code, $message, null, $file,
             $line, debug_backtrace());
         $this->errbit->notify($exception);
+        return false;
     }
     
     /**
      * On exception
      *
-     * @throws \Exception
+     * @param \Throwable $exception
+     * @return void
+     * @throws \Errbit\Exception\ConfigurationException
      */
-    public function onException(\Exception $exception): void
+    public function onException(\Throwable $exception): void
     {
         $error = $this->converter->convert(
             $exception->getCode(),
@@ -94,7 +98,7 @@ class ErrorHandlers
     /**
      * Installer
      *
-     * @param array $handlers
+     * @param array<int, string> $handlers
      */
     private function install(array $handlers): void
     {
