@@ -112,6 +112,10 @@ class XmlBuilder
             return '';
         }
 
+        if (is_resource($value)) {
+            return sprintf('[resource:%s]', get_resource_type($value));
+        }
+
         if (is_array($value)) {
             return '[array]';
         }
