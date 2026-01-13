@@ -41,33 +41,17 @@ class XmlBuilder
     /**
      * Insert a tag into the XML.
      *
-     * @param string   $name       the name of the tag, required.
-     * @param string   $value      the text value of the element, optional
-     * @param array    $attributes an array of attributes for the tag, optional
-     * @param Callable $callback   a callback to receive an XmlBuilder for the new tag, optional
+     * @param string $name the name of the tag, required.
+     * @param string $value the text value of the element, optional
+     * @param array<string, mixed> $attributes an array of attributes for the tag, optional
+     * @param callable|null $callback a callback to receive an XmlBuilder for the new tag, optional
+     * @param bool $getLastChild whether to get the last child element
      *
      * @return XmlBuilder a builder for the inserted tag
      */
-    /**
-     * Insert a tag into the XML.
-     *
-     * @param string   $name       the name of the tag, required.
-     * @param string   $value      the text value of the element, optional
-     * @param array    $attributes an array of attributes for the tag, optional
-     * @param Callable $callback   a callback to receive an XmlBuilder for the new tag, optional
-     *
-     * @return XmlBuilder a builder for the inserted tag
-     */
-    public function tag($name, $value = '', $attributes = [], $callback = null, bool $getLastChild = false)
+    public function tag(string $name, string $value = '', array $attributes = [], ?callable $callback = null, bool $getLastChild = false): XmlBuilder
     {
-
         $idx = is_countable($this->_xml->$name) ? count($this->_xml->$name) : 0;
-
-        if (is_object($value)) {
-            $value = "[" . $value::class . "]";
-        } else {
-                $value = (string) $value;
-        }
 
         $this->_xml->{$name}[$idx] = $value;
 
@@ -77,8 +61,12 @@ class XmlBuilder
         $node = new self($this->_xml->$name);
         if ($getLastChild) {
             $array = $this->_xml->xpath($name."[last()]");
-            $xml = array_shift($array);
-            $node = new self($xml);
+            if (is_array($array)) {
+                $xml = array_shift($array);
+                if ($xml instanceof \SimpleXMLElement) {
+                    $node = new self($xml);
+                }
+            }
         }
 
         if ($callback) {
@@ -110,7 +98,8 @@ class XmlBuilder
      */
     public function asXml(): string
     {
-        return self::utf8ForXML($this->_xml->asXML());
+        $xml = $this->_xml->asXML();
+        return self::utf8ForXML($xml !== false ? $xml : '');
     }
 
     /**

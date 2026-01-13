@@ -54,7 +54,7 @@ class Errbit
      * This is made public for flexibility, though it is not expected you
      * should use it.
      *
-     * @param array $config the configuration for the API
+     * @param array<string, mixed> $config the configuration for the API
      */
     public function __construct(private array $config = [])
     {
@@ -102,7 +102,7 @@ class Errbit
      *   - params_filters
      *   - backtrace_filters
      *
-     * @param array $config
+     * @param array<string, mixed> $config
      *
      * @return static the current instance of the client
      * @throws \Errbit\Exception\ConfigurationException
@@ -116,7 +116,7 @@ class Errbit
     }
     
     /**
-     * @param array $handlers
+     * @param array<int, string> $handlers
      *
      * @return $this
      * @throws \Errbit\Exception\Exception
@@ -133,7 +133,7 @@ class Errbit
      * Notify an individual exception manually.
      *
      * @param \Throwable $exception
-     * @param array $options
+     * @param array<string, mixed> $options
      *
      * @return static [Errbit] the current instance
      * @throws \Errbit\Exception\ConfigurationException
@@ -142,8 +142,9 @@ class Errbit
     {
         $this->checkConfig();
         $config = array_merge($this->config, $options);
-
-        if ($this->shouldNotify($exception, $config['skipped_exceptions'])) {
+        /** @var array<int, class-string<\Throwable>> $skippedExceptions */
+        $skippedExceptions = $config['skipped_exceptions'];
+        if ($this->shouldNotify($exception, $skippedExceptions)) {
             $this->getWriter()->write($exception, $config);
             $this->notifyObservers($exception, $config);
         }
@@ -153,7 +154,7 @@ class Errbit
     
     /**
      * @param \Throwable $exception
-     * @param array $skippedExceptions
+     * @param array<int, class-string<\Throwable>> $skippedExceptions
      *
      * @return bool
      */
@@ -165,7 +166,9 @@ class Errbit
             }
         }
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        foreach ($this->config['ignore_user_agent'] as $ua) {
+        /** @var array<int, string> $ignoreUserAgents */
+        $ignoreUserAgents = $this->config['ignore_user_agent'];
+        foreach ($ignoreUserAgents as $ua) {
             if ($userAgent !== '' && str_contains($userAgent, $ua)) {
                 return false;
             }
@@ -176,7 +179,7 @@ class Errbit
     
     /**
      * @param \Throwable $exception
-     * @param array $config
+     * @param array<string, mixed> $config
      *
      * @return void
      */

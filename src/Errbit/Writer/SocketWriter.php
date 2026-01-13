@@ -13,7 +13,7 @@ class SocketWriter extends AbstractWriter implements WriterInterface
      * {@inheritdoc}
      *
      * @param \Throwable $exception
-     * @param array $config
+     * @param array<string, mixed> $config
      *
      * @return mixed
      * @throws \JsonException
@@ -25,25 +25,25 @@ class SocketWriter extends AbstractWriter implements WriterInterface
             (int) $config['port'],
             $errno,
             $errstr,
-            $config['connect_timeout']
+            (float) $config['connect_timeout']
         );
 
         if ($socket) {
-            stream_set_timeout($socket, $config['write_timeout']);
+            stream_set_timeout($socket, (int) $config['write_timeout']);
             $payLoad = $this->buildPayload($exception, $config);
-            if (strlen((string) $payLoad) > 7000 && $config['async']) {
+            if (strlen($payLoad) > 7000 && $config['async']) {
                 $messageId = uniqid('', true);
-                $chunks = str_split((string) $payLoad, 7000);
+                $chunks = str_split($payLoad, 7000);
                 foreach ($chunks as $idx => $chunk) {
                     $packet = ['messageid' => $messageId, 'data' => $chunk];
-                    if ($idx == count($chunks)-1) {
+                    if ($idx == count($chunks) - 1) {
                         $packet['last'] = true;
                     }
                     $fragment = json_encode($packet, JSON_THROW_ON_ERROR);
                     fwrite($socket, $fragment);
                 }
             } else {
-                fwrite($socket, (string) $payLoad);
+                fwrite($socket, $payLoad);
 
                 /**
                  * If errbit is behind a proxy, then we need read characters to make sure
@@ -52,9 +52,9 @@ class SocketWriter extends AbstractWriter implements WriterInterface
                  * Proxies usually do not make request to endpoints if client quits connection before
                  * proxy even gets the chance to create connection to endpoint
                  */
-                if ($this->charactersToRead !== false) {
+                if ($this->charactersToRead !== false && $this->charactersToRead > 0) {
                     while (!feof($socket)) {
-                        $character = fread($socket, $this->charactersToRead);
+                        fread($socket, $this->charactersToRead);
                         break;
                     }
                 }
@@ -68,7 +68,7 @@ class SocketWriter extends AbstractWriter implements WriterInterface
 
     /**
      * @param \Throwable $exception
-     * @param array $config
+     * @param array<string, mixed> $config
      *
      * @return string
      */
@@ -82,7 +82,7 @@ class SocketWriter extends AbstractWriter implements WriterInterface
     
     /**
      * @param string $body
-     * @param array $config
+     * @param array<string, mixed> $config
      *
      * @return string
      */
@@ -95,7 +95,15 @@ class SocketWriter extends AbstractWriter implements WriterInterface
                 "%s\r\n\r\n%s",
                 implode(
                     "\r\n",
-                    [sprintf('POST %s HTTP/1.1', self::NOTICES_PATH), sprintf('Host: %s', $config['host']), sprintf('User-Agent: %s', $config['agent']), sprintf('Content-Type: %s', 'text/xml'), sprintf('Accept: %s', 'text/xml, application/xml'), sprintf('Content-Length: %d', strlen((string) $body)), sprintf('Connection: %s', 'close')]
+                    [
+                        sprintf('POST %s HTTP/1.1', self::NOTICES_PATH),
+                        sprintf('Host: %s', (string) $config['host']),
+                        sprintf('User-Agent: %s', (string) $config['agent']),
+                        sprintf('Content-Type: %s', 'text/xml'),
+                        sprintf('Accept: %s', 'text/xml, application/xml'),
+                        sprintf('Content-Length: %d', strlen($body)),
+                        sprintf('Connection: %s', 'close')
+                    ]
                 ),
                 $body
             );
