@@ -81,9 +81,7 @@ class GuzzleWriter extends AbstractWriter implements WriterInterface
     public function asyncWrite(\Throwable $exception, array $config): PromiseInterface
     {
         $uri = $this->buildConnectionScheme($config);
-        /** @var \GuzzleHttp\Client $client */
-        $client = $this->client;
-        return $client->requestAsync(
+        return $this->client->requestAsync(
             'POST',
             $uri . self::NOTICES_PATH,
             [

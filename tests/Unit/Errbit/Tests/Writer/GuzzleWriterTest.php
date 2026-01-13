@@ -82,7 +82,8 @@ class GuzzleWriterTest extends TestCase
 
         $promiseMock = \Mockery::mock(PromiseInterface::class);
         $clientMock = \Mockery::mock(Client::class);
-        $clientMock->shouldReceive('requestAsync')
+        $clientMock
+            ->shouldReceive('requestAsync')
             ->once()
             ->andReturn($promiseMock);
 
@@ -101,7 +102,8 @@ class GuzzleWriterTest extends TestCase
 
         $responseMock = \Mockery::mock(ResponseInterface::class);
         $clientMock = \Mockery::mock(Client::class);
-        $clientMock->shouldReceive('request')
+        $clientMock
+            ->shouldReceive('request')
             ->once()
             ->andReturn($responseMock);
 

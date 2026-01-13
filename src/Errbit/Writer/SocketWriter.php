@@ -34,9 +34,10 @@ class SocketWriter extends AbstractWriter implements WriterInterface
             if (strlen($payLoad) > 7000 && $config['async']) {
                 $messageId = uniqid('', true);
                 $chunks = str_split($payLoad, 7000);
+                $lastIndex = count($chunks) - 1;
                 foreach ($chunks as $idx => $chunk) {
                     $packet = ['messageid' => $messageId, 'data' => $chunk];
-                    if ($idx == count($chunks) - 1) {
+                    if ($idx === $lastIndex) {
                         $packet['last'] = true;
                     }
                     $fragment = json_encode($packet, JSON_THROW_ON_ERROR);
