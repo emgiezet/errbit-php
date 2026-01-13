@@ -7,7 +7,6 @@ use Errbit\Errbit;
 use Errbit\Errors\Notice;
 use Errbit\Writer\GuzzleWriter;
 use GuzzleHttp\Client;
-use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Promise\PromiseInterface;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
@@ -47,7 +46,9 @@ class GuzzleWriterTest extends TestCase
         ];
         $errbit = new Errbit($config);
         $clientMock = \Mockery::mock(Client::class);
-        $clientMock->shouldReceive('post')->once();
+        $clientMock->shouldReceive('request')
+            ->once()
+            ->andReturn(\Mockery::mock(ResponseInterface::class));
         $writer = new GuzzleWriter($clientMock);
         $errbit->setWriter($writer);
         $handler = new \Errbit\Handlers\ErrorHandlers($errbit, ['exception', 'error', ['fatal', 'lol', 'doink']]);
@@ -81,7 +82,7 @@ class GuzzleWriterTest extends TestCase
 
         $promiseMock = \Mockery::mock(PromiseInterface::class);
         $clientMock = \Mockery::mock(Client::class);
-        $clientMock->shouldReceive('postAsync')
+            $clientMock->shouldReceive('requestAsync')
             ->once()
             ->andReturn($promiseMock);
 
@@ -100,7 +101,7 @@ class GuzzleWriterTest extends TestCase
 
         $responseMock = \Mockery::mock(ResponseInterface::class);
         $clientMock = \Mockery::mock(Client::class);
-        $clientMock->shouldReceive('post')
+            $clientMock->shouldReceive('request')
             ->once()
             ->andReturn($responseMock);
 
