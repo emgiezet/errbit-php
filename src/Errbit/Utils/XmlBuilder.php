@@ -31,7 +31,7 @@ class XmlBuilder
     /**
      * Instantiate a new XmlBuilder.
      *
-     * @param SimpleXMLElement $xml the parent node (only used internally)
+     * @param SimpleXMLElement|null $xml the parent node (only used internally)
      */
     public function __construct(?\SimpleXMLElement $xml = null)
     {
@@ -41,8 +41,8 @@ class XmlBuilder
     /**
      * Insert a tag into the XML.
      *
-    * @param string $name the name of the tag, required.
-    * @param mixed $value the text value of the element, optional
+     * @param string $name the name of the tag, required.
+     * @param mixed $value the text value of the element, optional
      * @param array<string, mixed> $attributes an array of attributes for the tag, optional
      * @param callable|null $callback a callback to receive an XmlBuilder for the new tag, optional
      * @param bool $getLastChild whether to get the last child element
@@ -53,10 +53,16 @@ class XmlBuilder
     {
         $idx = is_countable($this->_xml->$name) ? count($this->_xml->$name) : 0;
 
-        $this->_xml->{$name}[$idx] = $this->normalizeValue($value);
+        if (is_object($value)) {
+            $value = "[" . $value::class . "]";
+        } else {
+            $value = (string) $value;
+        }
+
+        $this->_xml->{$name}[$idx] = $value;
 
         foreach ($attributes as $attr => $v) {
-            $this->_xml->{$name}[$idx][$attr] = $this->normalizeValue($v);
+            $this->_xml->{$name}[$idx][(string) $attr] = (string) $v;
         }
         $node = new self($this->_xml->$name);
         if ($getLastChild) {
@@ -79,48 +85,16 @@ class XmlBuilder
     /**
      * Add an attribute to the current element.
      *
-     * @param String $name  the name of the attribute
-     * @param String $value the value of the attribute
+     * @param string $name  the name of the attribute
+     * @param string $value the value of the attribute
      *
      * @return static the current builder
      */
-    public function attribute($name, $value): static
+    public function attribute(string $name, string $value): static
     {
-        $this->_xml[$name] = $this->normalizeValue($value);
+        $this->_xml[$name] = $value;
 
         return $this;
-    }
-
-    /**
-     * Cast any scalar or object value into a string for XML nodes.
-     */
-    private function normalizeValue(mixed $value): string
-    {
-        if ($value instanceof \Stringable) {
-            return (string) $value;
-        }
-
-        if (is_object($value)) {
-            return sprintf('[%s]', $value::class);
-        }
-
-        if (is_bool($value)) {
-            return $value ? 'true' : 'false';
-        }
-
-        if (null === $value) {
-            return '';
-        }
-
-        if (is_resource($value)) {
-            return sprintf('[resource:%s]', get_resource_type($value));
-        }
-
-        if (is_array($value)) {
-            return '[array]';
-        }
-
-        return (string) $value;
     }
 
     /**
@@ -141,8 +115,10 @@ class XmlBuilder
      *
      * @return string escaped string
      */
-    public static function utf8ForXML($string)
+    public static function utf8ForXML(string $string): string
     {
-        return preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $string);
+        $filtered = preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $string);
+
+        return is_string($filtered) ? $filtered : '';
     }
 }
