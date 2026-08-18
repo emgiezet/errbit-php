@@ -2,7 +2,7 @@
 
 
 [![Coverage Status](https://coveralls.io/repos/emgiezet/errbitPHP/badge.png)](https://coveralls.io/r/emgiezet/errbitPHP)
-[![Build Status](https://github.com/emgiezet/errbit-php/actions/workflows/ci.yml/badge.svg)](https://github.com/emgiezet/errbit-php/actions/workflows/ci.yml)
+[![Build Status](https://github.com/emgiezet/errbit-php/actions/workflows/php.yml/badge.svg)](https://github.com/emgiezet/errbit-php/actions/workflows/php.yml)
 [![Latest Stable Version](https://poser.pugx.org/emgiezet/errbit-php/v/stable.png)](https://packagist.org/packages/emgiezet/errbit-php)
 [![SymfonyInsight](https://insight.symfony.com/projects/a0c405fb-8ee9-40e9-acf1-eee084fc35a6/mini.svg)](https://insight.symfony.com/projects/a0c405fb-8ee9-40e9-acf1-eee084fc35a6)
 
@@ -16,6 +16,9 @@ to any PHP 8.2+ application.
 | 1.x             | PHP 5.3                        |
 | 2.x             | PHP 8.0, 8.1                   |
 | **3.x**         | **PHP 8.2, 8.3, 8.4** (recommended) |
+
+Latest release: **3.1.0**. As of 3.1.0 the `composer.json` constraint is `^8.2||^8.3||^8.4`;
+earlier 3.0.x releases still allowed 8.1 in the manifest despite this table.
 
 Original idea and source has no support for php namespaces. 
 Moreover it has a bug and with newest errbit version the xml has not supported chars.

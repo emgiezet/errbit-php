@@ -56,13 +56,33 @@ class Notice
                 $this->guessProtocol(),
                 $this->guessHost(),
                 $this->guessPort(),
-                (string) $_SERVER['REQUEST_URI']
+                $this->serverString('REQUEST_URI')
             );
         }
         
         return null;
     }
-    
+
+    /**
+     * Read a $_SERVER entry as a string.
+     *
+     * $_SERVER is populated from the environment, so its values are not guaranteed to be
+     * strings even though the SAPI normally makes them so. This class runs inside the error
+     * reporting path, where a TypeError would mask the exception being reported, so coerce
+     * rather than trust. Psalm's stub types these as string, hence the mixed annotation.
+     *
+     * @param string $key
+     *
+     * @return string
+     */
+    private function serverString(string $key): string
+    {
+        /** @var mixed $value */
+        $value = $_SERVER[$key] ?? '';
+
+        return is_scalar($value) ? (string) $value : '';
+    }
+
     /**
      * Protocol guesser
      *
@@ -71,7 +91,7 @@ class Notice
     private function guessProtocol(): string
     {
         if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
-            return (string) $_SERVER['HTTP_X_FORWARDED_PROTO'];
+            return $this->serverString('HTTP_X_FORWARDED_PROTO');
         } elseif (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) {
             return 'https';
         } else {
@@ -87,9 +107,9 @@ class Notice
     private function guessHost(): string
     {
         if (!empty($_SERVER['HTTP_HOST'])) {
-            return (string) $_SERVER['HTTP_HOST'];
+            return $this->serverString('HTTP_HOST');
         } elseif (!empty($_SERVER['SERVER_NAME'])) {
-            return (string) $_SERVER['SERVER_NAME'];
+            return $this->serverString('SERVER_NAME');
         } else {
             return '127.0.0.1';
         }
@@ -145,6 +165,9 @@ class Notice
             /** @var array<int, string> $paramsFilters */
             $paramsFilters = $this->options['params_filters'];
             foreach ($paramsFilters as $pattern) {
+                if ($pattern === '') {
+                    continue;
+                }
                 /** @var array<string|int, mixed> $params */
                 $params = $this->options[$name];
                 foreach ($params as $key => $value) {
@@ -445,7 +468,11 @@ class Notice
         }
         
         foreach ($this->options['backtrace_filters'] as $pattern => $replacement) {
-            $result = preg_replace((string) $pattern, (string)$replacement, $str);
+            $pattern = (string) $pattern;
+            if ($pattern === '') {
+                continue;
+            }
+            $result = preg_replace($pattern, (string)$replacement, $str);
             if ($result !== null) {
                 $str = $result;
             }
