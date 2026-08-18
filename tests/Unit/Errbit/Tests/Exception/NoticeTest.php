@@ -202,6 +202,82 @@ class NoticeTest extends TestCase
         }
     }
 
+    /**
+     * The request URL is assembled from $_SERVER by guessProtocol()/guessHost()/guessPort(),
+     * so each branch is driven by swapping $_SERVER out and reading the <url> back.
+     *
+     * @dataProvider requestUrlProvider
+     *
+     * @param array<string, mixed> $server
+     */
+    public function testAsXmlBuildsUrlFromServer(array $server, string $expected): void
+    {
+        $original = $_SERVER;
+        $_SERVER = $server;
+
+        try {
+            $notice = new Notice(new \Exception('url test'), $this->getDefaultOptions());
+            $xml = $notice->asXml();
+
+            $this->assertStringContainsString('<url>' . $expected . '</url>', $xml);
+        } finally {
+            $_SERVER = $original;
+        }
+    }
+
+    /**
+     * @return array<string, array{0: array<string, mixed>, 1: string}>
+     */
+    public function requestUrlProvider(): array
+    {
+        return [
+            'forwarded proto wins' => [
+                ['REQUEST_URI' => '/a', 'HTTP_X_FORWARDED_PROTO' => 'https', 'HTTP_HOST' => 'proxied.test'],
+                'https://proxied.test/a',
+            ],
+            'port 443 implies https' => [
+                ['REQUEST_URI' => '/b', 'SERVER_PORT' => 443, 'HTTP_HOST' => 'secure.test'],
+                'https://secure.test/b',
+            ],
+            'plain port 80 stays http and is not shown' => [
+                ['REQUEST_URI' => '/c', 'SERVER_PORT' => 80, 'HTTP_HOST' => 'plain.test'],
+                'http://plain.test/c',
+            ],
+            'non standard port is appended' => [
+                ['REQUEST_URI' => '/d', 'SERVER_PORT' => 8080, 'HTTP_HOST' => 'dev.test'],
+                'http://dev.test:8080/d',
+            ],
+            'server name is the fallback host' => [
+                ['REQUEST_URI' => '/e', 'SERVER_NAME' => 'named.test'],
+                'http://named.test/e',
+            ],
+            'loopback is the last resort host' => [
+                ['REQUEST_URI' => '/f'],
+                'http://127.0.0.1/f',
+            ],
+        ];
+    }
+
+    /**
+     * An exception raised inside a test always carries frames, and Throwable cannot be mocked
+     * (PHP forbids userland classes implementing it) nor getTrace() overridden (it is final).
+     * Emptying the internal trace is the only way in.
+     */
+    public function testAsXmlEmitsAnEmptyLineForAnEmptyBacktrace(): void
+    {
+        $exception = new \Exception('no frames');
+        $trace = new \ReflectionProperty(\Exception::class, 'trace');
+        $trace->setAccessible(true);
+        $trace->setValue($exception, []);
+        $this->assertSame([], $exception->getTrace());
+
+        $notice = new Notice($exception, $this->getDefaultOptions());
+        $xml = $notice->asXml();
+
+        $this->assertStringContainsString('<backtrace>', $xml);
+        $this->assertStringContainsString('number="" file="" method=""', $xml);
+    }
+
     public function testFormatMethodWithClassAndType(): void
     {
         $frame = [

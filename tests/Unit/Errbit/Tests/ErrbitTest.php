@@ -254,4 +254,40 @@ class ErrbitTest extends TestCase
         $this->assertEquals('TestController', $receivedConfig['controller']);
         $this->assertEquals('index', $receivedConfig['action']);
     }
+
+    /**
+     * The filter list is skipped entry by entry when there is nothing to match against, e.g. on
+     * CLI where no user agent exists. The notification must still go out.
+     */
+    public function testIgnoreUserAgentIsSkippedWhenThereIsNoUserAgent(): void
+    {
+        unset($_SERVER['HTTP_USER_AGENT']);
+
+        $this->errbit->configure([
+            'api_key' => 'test',
+            'host' => 'test',
+            'ignore_user_agent' => ['Googlebot', ''],
+        ]);
+
+        $writer = Mockery::mock(\Errbit\Writer\WriterInterface::class);
+        $writer->shouldReceive('write')->once();
+        $this->errbit->setWriter($writer);
+
+        $this->assertIsObject($this->errbit->notify(new Error('test', 1)));
+    }
+
+    public function testGetWriterFallsBackToTheConfiguredDefaultWriter(): void
+    {
+        $this->errbit->configure(['api_key' => 'test', 'host' => 'test']);
+
+        // No setWriter() call, so getWriter() has to instantiate default_writer itself.
+        $getWriter = new \ReflectionMethod($this->errbit, 'getWriter');
+        $getWriter->setAccessible(true);
+
+        $writer = $getWriter->invoke($this->errbit);
+
+        $this->assertInstanceOf(\Errbit\Writer\SocketWriter::class, $writer);
+        // Cached, not rebuilt per call.
+        $this->assertSame($writer, $getWriter->invoke($this->errbit));
+    }
 }
