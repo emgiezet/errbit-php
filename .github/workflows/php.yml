@@ -20,10 +20,6 @@ jobs:
         phpunit-versions: ["latest"]
         include:
           - operating-system: "ubuntu-latest"
-            php-versions: "8.0"
-            phpunit-versions: 9
-            experimental: true
-          - operating-system: "ubuntu-latest"
             php-versions: "8.1"
             phpunit-versions: "latest"
             experimental: true
@@ -36,19 +32,20 @@ jobs:
           ini-values: post_max_size=256M, max_execution_time=180
           coverage: xdebug
           tools: php-cs-fixer, phpunit:${{ matrix.phpunit-versions }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - name: Check PHP Version
         run: php -v
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
       - name: Cache Composer packages
         id: composer-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php-
+          # composer.lock is not committed (library), so hash composer.json instead — the old
+          # key hashed a non-existent file and never changed. Keyed on the PHP version too, so
+          # a vendor tree built for one PHP is never restored into another and masks a failure.
+          key: ${{ runner.os }}-php${{ matrix.php-versions }}-${{ hashFiles('**/composer.json') }}
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 

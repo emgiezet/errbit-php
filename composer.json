@@ -34,8 +34,8 @@
     },
     "require-dev": {
         "rector/rector": "^0.15.10",
-        "mockery/mockery": "1.5.1",
-        "phpunit/phpunit": "9.4.4",
+        "mockery/mockery": "^1.6",
+        "phpunit/phpunit": "^9.6.33",
         "php-coveralls/php-coveralls": "^2.5",
         "vimeo/psalm": "^6.0",
         "phpstan/phpstan": "^1.9"
@@ -52,11 +52,14 @@
         }
     },
     "config": {
-        "bin-dir": "bin"
+        "bin-dir": "bin",
+        "platform": {
+            "php": "8.1.17"
+        }
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0.x-dev"
+            "dev-master": "3.0.x-dev"
         }
     },
     "scripts": {
