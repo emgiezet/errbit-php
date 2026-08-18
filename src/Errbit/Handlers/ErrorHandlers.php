@@ -71,7 +71,7 @@ class ErrorHandlers
     public function onException(\Throwable $exception): void
     {
         $error = $this->converter->convert(
-            $exception->getCode(),
+            (int) $exception->getCode(),
             $exception->getMessage(),
             $exception,
             $exception->getFile(),

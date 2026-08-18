@@ -22,9 +22,9 @@ class Errbit
     private static ?\Errbit\Errbit $instance = null;
 
     /**
-     * @var WriterInterface
+     * @var ?WriterInterface
      */
-    protected WriterInterface $writer;
+    protected ?WriterInterface $writer = null;
 
     /**
      * Get a singleton instance of the client.
@@ -165,8 +165,12 @@ class Errbit
                 return false;
             }
         }
-        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        $userAgent = is_string($userAgent) ? $userAgent : '';
+        // $_SERVER comes from the environment; psalm's stub types it as string, but a
+        // non-string here would TypeError inside str_contains() below and mask the
+        // exception being reported. Hence the mixed annotation plus a real check.
+        /** @var mixed $rawUserAgent */
+        $rawUserAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+        $userAgent = is_string($rawUserAgent) ? $rawUserAgent : '';
         /** @var list<string> $ignoreUserAgents */
         $ignoreUserAgents = $this->config['ignore_user_agent'];
         foreach ($ignoreUserAgents as $ua) {
@@ -199,9 +203,10 @@ class Errbit
      */
     protected function getWriter(): WriterInterface
     {
-        if (empty($this->writer)) {
-            $defaultWriter = new $this->config['default_writer'];
-            $this->writer = $defaultWriter;
+        if ($this->writer === null) {
+            /** @var class-string<WriterInterface> $writerClass */
+            $writerClass = $this->config['default_writer'];
+            $this->writer = new $writerClass();
         }
 
         return $this->writer;

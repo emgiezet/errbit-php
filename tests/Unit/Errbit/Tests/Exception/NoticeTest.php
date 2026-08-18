@@ -149,6 +149,59 @@ class NoticeTest extends TestCase
         $this->assertEquals('/var/www/app/src/file.php', $result);
     }
 
+    public function testFilterTraceSkipsEmptyPattern(): void
+    {
+        $options = $this->getDefaultOptions();
+        $options['backtrace_filters'] = [
+            '' => '[NOPE]',
+            '/\/var\/www\/app/' => '[PROJECT_ROOT]',
+        ];
+
+        $notice = new Notice(new \Exception(), $options);
+        $result = $notice->filterTrace('/var/www/app/src/file.php');
+
+        // An empty pattern is not a valid regex: preg_replace() warns and returns null on it.
+        // It must be skipped so the remaining filters still apply.
+        $this->assertEquals('[PROJECT_ROOT]/src/file.php', $result);
+    }
+
+    public function testParamsFilteringSkipsEmptyPattern(): void
+    {
+        $options = $this->getDefaultOptions();
+        $options['params_filters'] = ['', '/password/'];
+        $options['parameters'] = [
+            'username' => 'john',
+            'password' => 'secret123',
+        ];
+
+        $notice = new Notice(new \Exception(), $options);
+        $xml = $notice->asXml();
+
+        $this->assertStringContainsString('john', $xml);
+        $this->assertStringContainsString('[FILTERED]', $xml);
+        $this->assertStringNotContainsString('secret123', $xml);
+    }
+
+    /**
+     * $_SERVER is environment-supplied, so a non-string value must not blow up the notice
+     * being built - that would mask the exception being reported.
+     */
+    public function testAsXmlToleratesNonStringServerValues(): void
+    {
+        $original = $_SERVER;
+        $_SERVER['HTTP_HOST'] = ['not', 'a', 'string'];
+        $_SERVER['REQUEST_URI'] = ['also', 'not'];
+
+        try {
+            $notice = new Notice(new \Exception('boom'), $this->getDefaultOptions());
+            $xml = $notice->asXml();
+
+            $this->assertStringContainsString('<notice version="2.2">', $xml);
+        } finally {
+            $_SERVER = $original;
+        }
+    }
+
     public function testFormatMethodWithClassAndType(): void
     {
         $frame = [
