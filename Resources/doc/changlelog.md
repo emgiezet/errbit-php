@@ -1,3 +1,16 @@
+# v3.1.2
+## Fixes
+- `phpunit.xml.dist` did not validate. It used the PHPUnit 8 `<log type="coverage-clover">`
+  element, which 9.x moved under `<coverage>`, so every run printed "The configuration file did
+  not pass validation!" and the element was ignored. Removed, and the schema location bumped
+  from 9.3 to 9.6 to match the pinned PHPUnit.
+- The `test` composer script passed `--coverage-xml`, which takes a directory, so
+  `build/logs/clover.xml` was created as a directory of per-file PHPUnit XML. The `coveralls`
+  script expects a clover file at that path and so had nothing valid to read. Now
+  `--coverage-clover`.
+
+No runtime changes; this release only affects the test setup.
+
 # v3.1.1
 ## Bug fixes
 - An empty pattern in `params_filters`, or an empty key in `backtrace_filters`, was passed
