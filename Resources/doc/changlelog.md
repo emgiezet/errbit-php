@@ -1,3 +1,16 @@
+# v3.1.3
+## Tests
+- Line coverage raised from 91.26% to 100% (538/538), methods to 100% (56/56). Suite grew from
+  111 to 124 tests.
+- `SocketWriter::write()` was the large gap at 44.90%, untestable by mocking because it opens
+  its own socket. Now covered by binding a server on an ephemeral loopback port: the sync TCP
+  write, the async UDP fragmentation path, and the `charactersToRead` read-back.
+- Also covered: `ErrorHandlers::onShutdown()`, every `guessProtocol()`/`guessHost()`/
+  `guessPort()` branch behind the request URL, the empty-backtrace branch, the user-agent filter
+  skip, and `getWriter()` falling back to `default_writer`.
+
+No source changes; nothing in this release affects runtime behaviour.
+
 # v3.1.2
 ## Fixes
 - `phpunit.xml.dist` did not validate. It used the PHPUnit 8 `<log type="coverage-clover">`
