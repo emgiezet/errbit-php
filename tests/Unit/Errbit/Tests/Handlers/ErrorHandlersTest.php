@@ -159,4 +159,32 @@ class ErrorHandlersTest extends TestCase
             );
         }
     }
+
+    public function testOnShutdownReportsTheLastErrorAsFatal(): void
+    {
+        $errbit = new Errbit([
+            'api_key' => '9fa28ccc56ed3aae882d25a9cee5695a',
+            'host' => '127.0.0.1',
+            'port' => '8080',
+            'secure' => false,
+        ]);
+
+        $receivedException = null;
+        $writerMock = \Mockery::mock(SocketWriter::class);
+        $writerMock->shouldReceive('write')->andReturnUsing(function ($exception) use (&$receivedException) {
+            $receivedException = $exception;
+        });
+        $errbit->setWriter($writerMock);
+
+        $handler = new ErrorHandlers($errbit, ['fatal']);
+
+        // onShutdown reads error_get_last(), so give it something to find. Suppressed, or
+        // PHPUnit's error handler would convert it into a failure before we get here.
+        @trigger_error('shutdown under test', E_USER_WARNING);
+
+        $handler->onShutdown();
+
+        $this->assertInstanceOf(Fatal::class, $receivedException);
+        $this->assertStringContainsString('shutdown under test', $receivedException->getMessage());
+    }
 }
